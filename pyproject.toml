@@ -1,0 +1,16 @@
+[project]
+name = "mano-tracker"
+version = "0.1.0"
+description = "UK insolvency tracker — leading indicator for Manolete Partners (MANO.L)"
+requires-python = ">=3.12"
+dependencies = [
+    "pandas>=2.2",
+    "requests>=2.31",
+    "feedparser>=6.0",
+    "yfinance>=0.2.40",
+    "plotly>=5.20",
+    "streamlit>=1.35",
+]
+
+[tool.uv]
+dev-dependencies = []
