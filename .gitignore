@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.env
+
+# uv
+.uv/
+
+# Data (commit only seed CSV, not the SQLite db for large versions)
+# data/tracker.db   ← keep commented out for v0.1 so db is committed
+*.db-journal
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Streamlit
+.streamlit/secrets.toml
