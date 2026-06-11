@@ -7,8 +7,9 @@ __pycache__/
 # uv
 .uv/
 
-# Data (commit only seed CSV, not the SQLite db for large versions)
-# data/tracker.db   ← keep commented out for v0.1 so db is committed
+# Data — tracker.db built by CI, not committed
+data/tracker.db
+data/record_level_cache.zip
 *.db-journal
 
 # OS

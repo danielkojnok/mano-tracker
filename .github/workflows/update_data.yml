@@ -10,9 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+      COMPANIES_HOUSE_API_KEY: ${{ secrets.COMPANIES_HOUSE_API_KEY }}
 
     permissions:
-      contents: write       # needed to push tracker.db back to repo
+      contents: write
 
     steps:
       - name: Checkout repo
@@ -26,27 +27,28 @@ jobs:
           python-version: "3.12"
 
       - name: Install dependencies
-        run: pip install pandas requests yfinance feedparser
+        run: pip install pandas requests yfinance feedparser python-dotenv
 
-      - name: Ingest insolvency data
+      - name: Ingest insolvency stats
         run: python ingest/insolvency_stats.py
 
       - name: Ingest record-level data
         run: python ingest/record_level.py
 
-      - name: Enrich with Companies House profiles
-        run: python ingest/companies_house.py
-        env:
-          COMPANIES_HOUSE_API_KEY: ${{ secrets.COMPANIES_HOUSE_API_KEY }}
-
       - name: Seed historical KPIs
         run: python ingest/seed_kpis.py
+
+      - name: Enrich with Companies House profiles
+        run: python ingest/companies_house.py
+
+      - name: Ingest Gazette notices
+        run: python ingest/gazette_notices.py
 
       - name: Commit and push updated tracker.db
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/tracker.db
+          git add -f data/tracker.db
           if git diff --staged --quiet; then
             echo "No changes to tracker.db — skipping commit."
           else
