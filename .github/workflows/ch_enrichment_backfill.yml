@@ -1,0 +1,67 @@
+name: CH Insolvency Enrichment Backfill
+
+on:
+  workflow_dispatch:   # manual trigger only — not scheduled
+
+jobs:
+  enrich:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 2
+      fail-fast: false
+      matrix:
+        include:
+          - chunk_index: 0
+            api_key_secret: COMPANIES_HOUSE_API_KEY_1
+          - chunk_index: 1
+            api_key_secret: COMPANIES_HOUSE_API_KEY_2
+    env:
+      COMPANIES_HOUSE_API_KEY: ${{ secrets[matrix.api_key_secret] }}
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pandas requests python-dotenv
+      - name: Build DB from existing ingests (record-level needed for targets)
+        run: python ingest/record_level.py
+      - name: Run enrichment chunk ${{ matrix.chunk_index }}
+        run: |
+          python ingest/ch_insolvency_enrichment.py \
+            --chunk-index ${{ matrix.chunk_index }} \
+            --chunk-total 2 \
+            --api-key $COMPANIES_HOUSE_API_KEY
+      - name: Upload chunk artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ch-enrich-chunk-${{ matrix.chunk_index }}
+          path: data/ch_enrich_chunk_${{ matrix.chunk_index }}.csv
+
+  merge:
+    needs: enrich
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pandas requests python-dotenv
+      - name: Download all chunk artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: data/
+          merge-multiple: true
+      - name: Merge chunks and build seed CSV
+        run: |
+          python ingest/ch_insolvency_enrichment.py --merge-only
+      - name: Commit seed CSV
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/ch_insolvency_enrichment.csv
+          git commit -m "data: CH insolvency enrichment seed ($(date +%Y-%m-%d))"
+          git push
