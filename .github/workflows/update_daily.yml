@@ -1,8 +1,8 @@
-name: Monthly data update
+name: Daily data update
 
 on:
   schedule:
-    - cron: "0 7 1 * *"   # 1st of every month at 07:00 UTC
+    - cron: "0 8 * * *"   # every day at 08:00 UTC
   workflow_dispatch:        # manual trigger
 
 jobs:
@@ -12,7 +12,7 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     permissions:
-      contents: write       # needed to push tracker.db back to repo
+      contents: write
 
     steps:
       - name: Checkout repo
@@ -28,14 +28,14 @@ jobs:
       - name: Install dependencies
         run: pip install pandas requests yfinance feedparser
 
-      - name: Ingest insolvency data
-        run: python ingest/insolvency_stats.py
+      - name: Ingest Gazette notices
+        run: python ingest/gazette_notices.py
 
-      - name: Ingest record-level data
-        run: python ingest/record_level.py
+      - name: Ingest case law feed
+        run: python ingest/caselaw_feed.py
 
-      - name: Seed historical KPIs
-        run: python ingest/seed_kpis.py
+      - name: Ingest MANO share price
+        run: python ingest/mano_price.py
 
       - name: Commit and push updated tracker.db
         run: |
@@ -45,6 +45,6 @@ jobs:
           if git diff --staged --quiet; then
             echo "No changes to tracker.db — skipping commit."
           else
-            git commit -m "data: auto-update $(date -u '+%Y-%m-%d')"
+            git commit -m "data: daily update $(date -u '+%Y-%m-%d')"
             git push
           fi
