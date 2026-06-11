@@ -96,6 +96,12 @@ def load_insolvencies(db_path: Path = DB_PATH) -> pd.DataFrame:
 def build_pipeline(
     df: pd.DataFrame,
     scenario: str = DEFAULT_SCENARIO,
+    *,
+    referral_rate: float | None = None,
+    acceptance_rate: float | None = None,
+    compulsory_weight: float | None = None,
+    apply_capacity_cap: bool = True,
+    monthly_cap: float | None = None,
 ) -> pd.DataFrame:
     """
     Takes monthly insolvency data and returns a DataFrame with:
@@ -108,6 +114,12 @@ def build_pipeline(
       - fy                   : MANO financial year (Apr–Mar)
 
     `scenario` selects the revenue-per-case figure: "bear" | "base" | "bull".
+
+    The keyword-only overrides (referral_rate, acceptance_rate,
+    compulsory_weight, apply_capacity_cap, monthly_cap) all default to the
+    module-level constants so existing callers are unaffected. They let an
+    interactive caller (e.g. the dashboard scenario explorer) recompute the
+    projection with different assumptions without mutating module state.
     """
     if scenario not in REV_PER_CASE_SCENARIOS:
         raise ValueError(
@@ -115,18 +127,32 @@ def build_pipeline(
         )
     rev_per_case = REV_PER_CASE_SCENARIOS[scenario]
 
+    # Resolve overridable assumptions, falling back to module constants.
+    referral     = REFERRAL_RATE      if referral_rate     is None else referral_rate
+    acceptance   = ACCEPTANCE_RATE    if acceptance_rate   is None else acceptance_rate
+    comp_weight  = COMPULSORY_WEIGHT  if compulsory_weight is None else compulsory_weight
+    cap          = MONTHLY_INVESTMENT_CAP if monthly_cap   is None else monthly_cap
+
     out = df[
         ["date", "cvl", "compulsory", "mano_market", "mano_market_weighted"]
     ].copy()
 
-    # Funnel: weighted market → referrals → investments.
-    out["implied_referrals"]   = (out["mano_market_weighted"] * REFERRAL_RATE).round(1)
-    out["implied_investments"] = (out["implied_referrals"] * ACCEPTANCE_RATE).round(1)
+    # Re-derive the weighted market if the caller overrode the weight, so the
+    # slider on the dashboard actually moves the funnel.
+    if compulsory_weight is not None:
+        out["mano_market_weighted"] = (
+            out["cvl"].fillna(0) + out["compulsory"].fillna(0) * comp_weight
+        )
 
-    # Capacity cap: MANO can't sign more than ~MONTHLY_INVESTMENT_CAP/month.
-    out["implied_investments_capped"] = out["implied_investments"].clip(
-        upper=MONTHLY_INVESTMENT_CAP
-    )
+    # Funnel: weighted market → referrals → investments.
+    out["implied_referrals"]   = (out["mano_market_weighted"] * referral).round(1)
+    out["implied_investments"] = (out["implied_referrals"] * acceptance).round(1)
+
+    # Capacity cap: MANO can't sign more than ~cap investments/month.
+    if apply_capacity_cap:
+        out["implied_investments_capped"] = out["implied_investments"].clip(upper=cap)
+    else:
+        out["implied_investments_capped"] = out["implied_investments"]
 
     # Lag structure. Central case = case lag + cash lag. The low/high band
     # widens the *total* lag by ±LAG_UNCERTAINTY months. A longer lag means
