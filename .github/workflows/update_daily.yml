@@ -37,14 +37,13 @@ jobs:
       - name: Ingest MANO share price
         run: python ingest/mano_price.py
 
-      - name: Commit and push updated tracker.db
+      - name: Verify DB was built
         run: |
-          git config user.name  "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -f data/tracker.db
-          if git diff --staged --quiet; then
-            echo "No changes to tracker.db — skipping commit."
-          else
-            git commit -m "data: daily update $(date -u '+%Y-%m-%d')"
-            git push
-          fi
+          python - <<'EOF'
+          import sqlite3
+          conn = sqlite3.connect("data/tracker.db")
+          for tbl in ["mano_price", "gazette_notices", "judgments"]:
+              n = conn.execute(f"SELECT COUNT(*) FROM {tbl}").fetchone()[0]
+              print(f"  {tbl}: {n:,} rows")
+          conn.close()
+          EOF
