@@ -1,0 +1,48 @@
+name: Monthly data update
+
+on:
+  schedule:
+    - cron: "0 7 1 * *"   # 1st of every month at 07:00 UTC
+  workflow_dispatch:        # manual trigger
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write       # needed to push tracker.db back to repo
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install pandas requests yfinance feedparser
+
+      - name: Ingest insolvency data
+        run: python ingest/insolvency_stats.py
+
+      - name: Ingest MANO share price
+        run: python ingest/mano_price.py
+
+      - name: Seed historical KPIs
+        run: python ingest/seed_kpis.py
+
+      - name: Commit and push updated tracker.db
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/tracker.db
+          if git diff --staged --quiet; then
+            echo "No changes to tracker.db — skipping commit."
+          else
+            git commit -m "data: auto-update $(date -u '+%Y-%m-%d')"
+            git push
+          fi
