@@ -27,7 +27,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install dependencies
-        run: pip install pandas requests yfinance feedparser python-dotenv
+        run: pip install pandas requests yfinance feedparser python-dotenv openpyxl
 
       - name: Ingest insolvency stats
         run: python ingest/insolvency_stats.py
@@ -44,13 +44,17 @@ jobs:
       - name: Ingest Gazette notices
         run: python ingest/gazette_notices.py
 
+      - name: Ingest BoE Bank Rate
+        run: python ingest/boe_bank_rate.py
+
       - name: Verify DB was built
         run: |
           python - <<'EOF'
           import sqlite3
           conn = sqlite3.connect("data/tracker.db")
           for tbl in ["insolvencies_monthly", "insolvencies_record_level",
-                      "mano_kpis", "companies_house_profiles", "gazette_notices"]:
+                      "mano_kpis", "companies_house_profiles", "gazette_notices",
+                      "boe_bank_rate"]:
               n = conn.execute(f"SELECT COUNT(*) FROM {tbl}").fetchone()[0]
               print(f"  {tbl}: {n:,} rows")
           conn.close()
