@@ -14,7 +14,7 @@ CSV_PATH = ROOT / "data" / "mano_kpis.csv"
 
 
 def run() -> pd.DataFrame:
-    df = pd.read_csv(CSV_PATH)
+    df = pd.read_csv(CSV_PATH, comment="#")
     df.columns = [c.strip() for c in df.columns]
 
     conn = sqlite3.connect(DB_PATH)
