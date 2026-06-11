@@ -29,9 +29,13 @@ app.py                  # Streamlit dashboard
 
 ## Data sources
 - Insolvency Service Long-Run CSV: auto-discovered via GOV.UK content API
+- Insolvency Service Record-Level CSV: auto-discovered via GOV.UK content API (ZIP)
 - MANO.L price: yfinance ticker
 - RNS: https://www.investegate.co.uk/rss.aspx?id=MANO
 - Case law: https://caselaw.nationalarchives.gov.uk/atom.xml?query=manolete+partners&order=date
+- The Gazette: https://www.thegazette.co.uk (notice types 2443, 2450)
+- Companies House API: company profiles for recent insolvencies
+  Requires: COMPANIES_HOUSE_API_KEY in .env (and GitHub Secret for CI)
 
 ## Coding conventions
 - All ingest functions return DataFrames, never print

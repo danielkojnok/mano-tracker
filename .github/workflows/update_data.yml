@@ -34,6 +34,11 @@ jobs:
       - name: Ingest record-level data
         run: python ingest/record_level.py
 
+      - name: Enrich with Companies House profiles
+        run: python ingest/companies_house.py
+        env:
+          COMPANIES_HOUSE_API_KEY: ${{ secrets.COMPANIES_HOUSE_API_KEY }}
+
       - name: Seed historical KPIs
         run: python ingest/seed_kpis.py
 
