@@ -57,7 +57,8 @@ jobs:
           conn = sqlite3.connect("data/tracker.db")
           for tbl in ["insolvencies_monthly", "insolvencies_record_level",
                       "mano_kpis", "companies_house_profiles", "gazette_notices",
-                      "boe_bank_rate", "ons_demography_annual", "ons_demography_quarterly"]:
+                      "boe_bank_rate", "ons_demography_annual", "ons_demography_quarterly",
+                      "fca_short_positions"]:
               n = conn.execute(f"SELECT COUNT(*) FROM {tbl}").fetchone()[0]
               print(f"  {tbl}: {n:,} rows")
           conn.close()
