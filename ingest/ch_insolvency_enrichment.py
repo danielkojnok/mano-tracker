@@ -209,6 +209,28 @@ def save_csv(rows: list[dict], path: Path) -> pd.DataFrame:
     return df
 
 
+def git_checkpoint(path: Path, chunk_index: int, done: int, total: int) -> None:
+    """Commit + push chunk CSV to git. Silently ignores push conflicts."""
+    import subprocess
+    msg = f"chore: ch_enrich chunk {chunk_index} checkpoint ({done}/{total} firms)"
+    try:
+        subprocess.run(["git", "config", "user.name", "github-actions[bot]"],
+                       cwd=ROOT, capture_output=True)
+        subprocess.run(["git", "config", "user.email",
+                        "github-actions[bot]@users.noreply.github.com"],
+                       cwd=ROOT, capture_output=True)
+        subprocess.run(["git", "add", str(path)], cwd=ROOT, check=True, capture_output=True)
+        r = subprocess.run(["git", "commit", "-m", msg],
+                           cwd=ROOT, capture_output=True, text=True)
+        if r.returncode != 0 and "nothing to commit" in r.stdout + r.stderr:
+            return  # no new data since last checkpoint
+        subprocess.run(["git", "pull", "--rebase"], cwd=ROOT, capture_output=True)
+        subprocess.run(["git", "push"], cwd=ROOT, capture_output=True)
+        print(f"[ch_enrich] checkpoint committed: {done}/{total} firms")
+    except Exception as exc:
+        print(f"[ch_enrich] checkpoint git error (ignored): {exc}")
+
+
 def upsert_to_db(df: pd.DataFrame, db_path: Path = DB_PATH) -> int:
     conn = sqlite3.connect(db_path)
     ensure_table(conn)
@@ -293,6 +315,7 @@ def main() -> None:
 
         if i % CHECKPOINT_EVERY == 0:
             save_csv(rows, out_path)
+            git_checkpoint(out_path, args.chunk_index, len(done) + i, len(chunk))
         if i % LOG_EVERY == 0 or i == len(pending):
             rate = i / (time.time() - start)
             eta_h = (len(pending) - i) / rate / 3600 if rate else 0
