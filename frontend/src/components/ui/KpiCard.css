@@ -1,0 +1,41 @@
+.kpi-card {
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: 0;
+  padding: 16px;
+}
+
+/* Key metric: 2px gold top-border + gold value */
+.kpi-card-key {
+  border-top: 2px solid var(--gold);
+}
+
+.kpi-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--text-2);
+  margin-bottom: 8px;
+}
+
+.kpi-value {
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.kpi-value-key {
+  color: var(--gold);
+}
+
+/* Word-states ("Klesá") inherit semantic color */
+.kpi-value-up { color: var(--up); }
+.kpi-value-down { color: var(--down); }
+
+.kpi-sub {
+  font-size: 11px;
+  color: var(--text-2);
+  margin-top: 8px;
+}
+
+.kpi-sub-up { color: var(--up); }
+.kpi-sub-down { color: var(--down); }

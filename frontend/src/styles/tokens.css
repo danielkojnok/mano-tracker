@@ -1,0 +1,30 @@
+/* MANO Tracker design tokens — DESIGN-MANUAL.md §03, copy 1:1 */
+:root {
+  --bg-0: #0B0B09;
+  --bg-1: #14140F;
+  --bg-2: #1C1C14;
+  --border: #2A2A1F;
+  --border-strong: #45452F;
+  --row-line: #1E1E16;
+  --gold: #F5C400;
+  --gold-bright: #FFD93B;
+  --gold-dim: #8A7A2B;
+  --gold-tint: rgba(245, 196, 0, 0.08);
+  --text: #EDEBDF;
+  --text-2: #A8A493;
+  --up: #3DC97B;
+  --down: #E5484D;
+  --signal: #4CB8E8;
+  --warn: #F08C00;
+  --font-display: "Michroma", sans-serif;
+  --font-ui: "Archivo", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  /* Z-INDEX LAW — manual §00 law 6. Use ONLY these. */
+  --z-tooltip: 50;
+  --z-drawer: 40;
+  --z-toast: 30;
+  --z-sticky-header: 20;
+  --z-ticker: 10;
+  --z-content: 0;
+}

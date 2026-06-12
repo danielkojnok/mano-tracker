@@ -1,0 +1,18 @@
+.footer-disclaimer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text-2);
+  margin-top: 48px;
+}
+
+.footer-disclaimer a {
+  color: var(--gold);
+}
+
+.footer-disclaimer a:hover {
+  color: var(--gold-bright);
+}
