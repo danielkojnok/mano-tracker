@@ -1,0 +1,34 @@
+funder,metric,value,unit,period,source
+MANO,roic_cumulative,131,percent,FY2025,MANO annual report
+MANO,case_duration_to_cash,25,months,FY2025,MANO H1 FY25 (13.3m + 12m cash lag)
+MANO,win_settle_rate,93,percent,FY2025,MANO RNS
+MANO,completions_per_year,272,count,FY2025,MANO H1 FY25 annualised
+MANO,arrcc_base,110000,GBP,FY2025,pipeline.py baseline
+MANO,realised_revenue,28000000,GBP,FY2026,trading update apr 2026
+MANO,gross_cash_receipts,26600000,GBP,FY2026,trading update apr 2026
+MANO,net_debt,11500000,GBP,FY2026,trading update apr 2026
+MANO,forward_book,67000000,GBP,FY2026,trading update apr 2026
+MANO,forward_book_large_cases,32000000,GBP,FY2026,trading update apr 2026
+MANO,pb_ratio,0.38,multiple,jun2026,GuruFocus
+MANO,market_cap,17000000,GBP,jun2026,Stockopedia
+MANO,analyst_target,130,GBX,jun2026,Singer Capital Markets
+MANO,discount_rate_applied,12,percent,jun2026,AIM micro-cap premium estimate
+LCM,roic_cumulative,235,percent,FY2025,LCM initiation note (2.35x)
+LCM,irr_cumulative,78,percent,FY2025,LCM 9-year track record
+LCM,irr_fund1_net,30.4,percent,FY2025,LCM FY2025 annual results Investegate
+LCM,case_duration_to_cash,26,months,FY2025,LCM initiation (25-27m midpoint)
+LCM,win_rate,90,percent,FY2025,LCM initiation note
+LCM,pb_ratio,0.7,multiple,jun2026,market data
+BURFORD,roic_cumulative,83,percent,FY2025,Burford 10-K feb 2026
+BURFORD,irr_cumulative,26,percent,FY2025,Burford 2Q25 earnings deck
+BURFORD,wal_years,2.6,years,FY2025,Burford 2025 Investor Day
+BURFORD,realisations,710500000,USD,FY2025,Burford FY25 earnings release
+BURFORD,realisations_prior,907000000,USD,FY2024,Burford FY24
+BURFORD,ypf_concentration,46,percent,FY2025,AltStreet review may 2026
+BURFORD,pb_ratio,1.2,multiple,jun2026,pre-YPF reversal
+BURFORD,discount_rate_consensus,8.93,percent,jun2026,analyst consensus
+OMNI,moic_fy25,2.5,multiple,FY2025,Omni annual report aug 2025
+OMNI,moic_since_inception,2.3,multiple,FY2025,Omni annual report
+OMNI,irr_fy25,23,percent,FY2025,Omni FY25 60 completions
+OMNI,moic_1h26,2.6,multiple,1H2026,Omni 1H26 results feb 2026
+OMNI,pb_ratio,0.5,multiple,jun2026,market data
