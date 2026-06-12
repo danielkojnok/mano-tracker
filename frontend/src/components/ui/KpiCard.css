@@ -31,6 +31,13 @@
 .kpi-value-up { color: var(--up); }
 .kpi-value-down { color: var(--down); }
 
+.kpi-unit {
+  font-size: 0.5em;
+  color: var(--text-2);
+  margin-left: 6px;
+  vertical-align: baseline;
+}
+
 .kpi-sub {
   font-size: 11px;
   color: var(--text-2);
