@@ -122,6 +122,12 @@ company_number,date_of_creation,company_type,ip_name,ip_address_line,ip_locality
 00859104,1965-09-16,ltd,Nickolas Garth Rimes,3 The Courtyard Harris Business Park Hanbury Road,Bromsgrove,B60 4DJ,2025-01-24,2026-06-12T16:19:19Z
 00859710,1965-09-23,ltd,Alan David Fallows,100 Barbirolli Square,Manchester,M2 3BD,,2026-06-12T16:19:42Z
 00864598,1965-11-22,ltd,Engin Faik,136 Hertford Road,Enfield,EN3 5AX,2024-10-02,2026-06-12T16:22:05Z
+00876187,1966-04-05,ltd,Nimish Chandrakant Patel,Hudson Weir Limited 58 Leman Street,London,E1 8EU,,2026-06-12T16:28:04Z
+00878269,1966-05-02,ltd,Roderick Graham Butcher,79 Caroline Street,Birmingham,B3 1UP,2026-02-03,2026-06-12T16:29:04Z
+00883465,1966-07-14,ltd,The Official Receiver Or Leeds,3rd Floor,Leeds,LS11 9DA,,2026-06-12T16:31:24Z
+00892254,1966-11-18,ltd,Sandra Mcalister,10 St Helens Road,Swansea,SA1 4AW,2024-07-03,2026-06-12T16:36:24Z
+00893776,1966-12-09,ltd,Terry Evans,Rogers Evans,Southampton,SO1 2AQ,,2026-06-12T16:37:17Z
+00895561,1967-01-09,ltd,Paul Bailey,C/O Sic 12-16 Addiscombe Road,Croydon,CR0 0XT,2024-12-03,2026-06-12T16:38:16Z
 01000982,1971-01-28,ltd,Gareth David Wilcox,Cornwall Buildings 45-51 Newhall Street,Birmingham,B3 3QR,,2026-06-12T06:21:32Z
 01001210,1971-01-29,ltd,Andrew Ryder,"Jt Maxwell Limited, Unit 1 Lagan House",Lisburn,BT27 4AB,2025-07-17,2026-06-12T06:21:41Z
 01005254,1971-03-18,ltd,James David Robinson,Tong Hall Tong Lane,Bradford,BD4 0RR,2025-11-17,2026-06-12T06:23:57Z
@@ -6791,6 +6797,500 @@ company_number,date_of_creation,company_type,ip_name,ip_address_line,ip_locality
 08727762,2013-10-10,ltd,Samantha Hawkins,The Clock House High Street,Wrington,BS40 5QA,,2026-06-12T16:26:07Z
 08728052,2013-10-11,ltd,Andrew Richard Bailey,15 Horizon Business Village 1 Brooklands Road,Weybridge,KT13 0TJ,2025-12-22,2026-06-12T16:26:09Z
 08728131,2013-10-11,ltd,David Patrick Meany,The Old Town Hall 71 Christchurch Road,Ringwood,BH24 1DH,2025-09-22,2026-06-12T16:26:11Z
+08728501,2013-10-11,ltd,Joe Whiley,Saxon House Saxon Way,Cheltenham,GL52 6QX,2025-01-08,2026-06-12T16:26:15Z
+08729298,2013-10-11,ltd,The Official Receiver Or Leeds,3rd Floor,Leeds,LS11 9DA,,2026-06-12T16:26:17Z
+08729761,2013-10-11,ltd,Henry Lan,David Rubin & Partners,London,WC1R 4HE,,2026-06-12T16:26:18Z
+08730582,2013-10-14,ltd,Joe Whiley,Saxon House Saxon Way,Cheltenham,GL52 6QX,2026-02-03,2026-06-12T16:26:20Z
+08731926,2013-10-14,ltd,Daniel Taylor,683 - 693 Wilmslow Road,Manchester,M20 6RE,2025-08-21,2026-06-12T16:26:22Z
+08732941,2013-10-15,ltd,David F Perkins,5th Floor The Union Building,Norwich,NR1 1BY,2025-10-28,2026-06-12T16:26:23Z
+08733388,2013-10-15,ltd,Craig Povey,11th Floor One Temple Row,Birmingham,B2 5LG,2024-06-05,2026-06-12T16:26:25Z
+08734315,2013-10-16,ltd,Dean Anthony Nelson,Rural Enterprise Centre Vincent Carey Road,Hereford,HR2 6FE,2025-02-13,2026-06-12T16:26:27Z
+08734869,2013-10-16,ltd,Mustafa Abdulali,First Floor Suite 4 Alexander House Waters Edge Business Park,Stoke On Trent,ST4 4DB,2024-10-23,2026-06-12T16:26:28Z
+08735603,2013-10-16,ltd,Peter Herberts,Unit 6 12 O'Clock Court 21 Attercliffe Road,Sheffield,S4 7WW,2025-01-13,2026-06-12T16:26:30Z
+08735838,2013-10-17,ltd,John Radford,Atlanic Business Centre Atlantic Street,Altrincham,WA14 5NQ,2024-06-12,2026-06-12T16:26:31Z
+08736778,2013-10-17,ltd,Stuart Philip Kelly,7 Smithford Walk,Prescott,L35 1SF,,2026-06-12T16:26:33Z
+08737488,2013-10-17,ltd,Nicholas Parsk,"Oury Clark, Herschel House, 58 Herschel Street",Slough,SL1 1PG,,2026-06-12T16:26:35Z
+08737611,2013-10-17,ltd,The Official Receiver Or Manchester,"2nd Floor, 3 Piccadilly Place London Road",Manchester,M1 3BN,,2026-06-12T16:26:37Z
+08737642,2013-10-17,ltd,Rikki Burton,"1st Floor, Fairclough House Church Street",Chorley,PR7 4EX,2024-12-10,2026-06-12T16:26:38Z
+08737738,2013-10-17,ltd,Allister Manson,"Opus Restructuring Llp, 322 High Holborn",London,WC1V 7PB,,2026-06-12T16:26:40Z
+08737809,2013-10-17,ltd,Rikki Burton,"1st Floor, Fairclough House Church Street",Chorley,PR7 4EX,2024-10-25,2026-06-12T16:26:41Z
+08738298,2013-10-18,ltd,Zane Collins,1 Aire Street,Leeds,LS1 4PR,2025-01-22,2026-06-12T16:26:43Z
+08738942,2013-10-18,ltd,Ian Douglas Yerrill,"Office 3, Romney Marsh Businees Hub Mountfield Road",New Romney,TN28 8LH,2025-04-17,2026-06-12T16:26:45Z
+08739372,2013-10-18,ltd,Alan Simon,"Gable House, 239 Regents Park Road",London,N3 3LF,2025-01-09,2026-06-12T16:26:46Z
+08739659,2013-10-21,ltd,Constantinos Pedhiou,1 Kings Avenue,London,N21 3NA,2024-07-04,2026-06-12T16:26:48Z
+08739886,2013-10-21,ltd,The Official Receiver Or Nottingham,"The Insolvency Service, 4th Floor, Loxley House Station Street",Nottingham,NG2 3NG,,2026-06-12T16:26:50Z
+08740040,2013-10-21,ltd,Andrew Rumsey,Drewitt House 865 Ringwood Road,Bournemouth,BH11 8LW,2025-03-07,2026-06-12T16:26:51Z
+08740259,2013-10-21,ltd,Emma Dowd,The Manor House 260 Ecclesall Road South,Sheffield,S11 9PS,2026-03-16,2026-06-12T16:26:53Z
+08740696,2013-10-21,ltd,Stuart Garner,Tugby Orchards Wood Lane,Tugby,LE7 9AZ,2024-05-16,2026-06-12T16:26:55Z
+08741385,2013-10-21,ltd,Maria Ann Strong,Suite 14 Unit 2 94a Wycliffe Road,Northampton,NN1 5JF,2025-01-28,2026-06-12T16:26:56Z
+08741659,2013-10-21,private-limited-guarant-nsc,Ian Mcculloch,Rational House 32 Winckley Square,Preston,PR1 3JJ,2025-08-21,2026-06-12T16:26:58Z
+08741975,2013-10-22,ltd,The Official Receiver Or Ipswich,Franciscan House,Ipswich,IP1 1ED,,2026-06-12T16:27:00Z
+08742348,2013-10-22,ltd,Dean Andrew Smith,C/O Revolution Rti Limited Suite 19 Unit 2 24a Wycliffe Road,Northampton,NN1 5JF,2025-11-27,2026-06-12T16:27:01Z
+08742435,2013-10-22,ltd,Darren Brookes,Grosvenor House 22 Grafton Street,Altrincham,WA14 1DU,2025-12-03,2026-06-12T16:27:03Z
+08744147,2013-10-22,ltd,Situl Devji Raithatha,38 De Montfort Street,Leicester,LE1 7GS,2024-09-12,2026-06-12T16:27:05Z
+08745462,2013-10-23,ltd,,,,,,2026-06-12T16:27:06Z
+08745851,2013-10-24,ltd,Charles Michael Brook,100 Barbirolli Square,Manchester,M2 3BD,2024-07-31,2026-06-12T16:27:08Z
+08746360,2013-10-24,ltd,Rikki Burton,"1st Floor, Fairclough House Church Street",Chorley,PR7 4EX,2024-08-30,2026-06-12T16:27:10Z
+08747104,2013-10-24,ltd,Laura Baxter,"Unit 8b, Marina Court Castle Street",Hull,HU1 1TJ,2024-06-05,2026-06-12T16:27:11Z
+08747929,2013-10-25,ltd,Gareth Howarth,1 Hardman Street,Manchester,M3 3HF,2026-03-03,2026-06-12T16:27:13Z
+08748411,2013-10-25,ltd,Richard Hunt,Warehouse W 3 Western Gateway,London,E16 1BD,2025-04-16,2026-06-12T16:27:15Z
+08748538,2013-10-25,ltd,Jason Mark Elliott,Fourth Floor Unit 5b The Parklands,Bolton,BL6 4SD,2024-12-12,2026-06-12T16:27:16Z
+08749607,2013-10-25,ltd,Yiannis Koumettou,1 Kings Avenue,London,N21 3NA,2024-05-23,2026-06-12T16:27:18Z
+08750442,2013-10-28,ltd,Rikki Burton,"1st Floor, Fairclough House Church Street",Chorley,PR7 4EX,2024-06-11,2026-06-12T16:27:20Z
+08750933,2013-10-28,ltd,Zane Collins,1 Aire Street,Leeds,LS1 4PR,2026-01-09,2026-06-12T16:27:21Z
+08751176,2013-10-28,ltd,Mark Rodney Newton,Langley House Park Road,London,N2 8EY,2024-09-23,2026-06-12T16:27:23Z
+08751694,2013-10-28,ltd,Michael Howorth,The Waterscape 42 Leeds And Bradford Road,Leeds,LS5 3EG,2024-11-13,2026-06-12T16:27:25Z
+08752013,2013-10-29,ltd,Nicola Joanne Meadows,Langley House 53 Theobald Street,Borehamwood,WD6 4RT,2026-02-19,2026-06-12T16:27:26Z
+08752972,2013-10-29,ltd,Mark Reynolds,1st Floor Galley House Moon Lane,London,EN5 5YL,2024-08-15,2026-06-12T16:27:28Z
+08753421,2013-10-29,ltd,Andrew Hook,Begbies Traynor (Central) Llp Units 1-3 Hilltop Business Park,Salisbury,SP3 4UF,2025-06-17,2026-06-12T16:27:29Z
+08753532,2013-10-29,ltd,Andrew Ryder,"Jt Maxwell Limited, Unit 1 Lagan House",Lisburn,BT27 4AB,2024-11-29,2026-06-12T16:27:31Z
+08753745,2013-10-29,ltd,Robert John Coad,Orchard St Business Centre,Bristol,BS1 5EH,2024-05-28,2026-06-12T16:27:33Z
+08754254,2013-10-30,ltd,Richard Goodall,2nd Floor Abbey House 32 Booth Street,Manchester,M2 4AB,,2026-06-12T16:27:34Z
+08754913,2013-10-30,ltd,Nicholas Parsk,"Oury Clark, Herschel House, 58 Herschel Street",Slough,SL1 1PG,2025-09-02,2026-06-12T16:27:36Z
+08755377,2013-10-30,ltd,James David Robinson,Tong Hall Tong Lane,Bradford,BD4 0RR,2025-06-10,2026-06-12T16:27:38Z
+08755592,2013-10-31,ltd,James Fish,"Fourth Floor, Unit 5b The Parklands",Bolton,BL6 4SD,2024-09-26,2026-06-12T16:27:39Z
+08755737,2013-10-31,ltd,The Official Receiver Or Nottingham,Level One Apex Court,Nottingham,NG2 4LA,,2026-06-12T16:27:41Z
+08756216,2013-10-31,ltd,Scott Christian Bevan,Park View House 58 The Ropewalk,Nottingham,NG1 5DW,2024-05-22,2026-06-12T16:27:43Z
+08756845,2013-10-31,ltd,The Official Receiver Or Manchester,"2nd Floor, 3 Piccadilly Place London Road",Manchester,M1 3BN,,2026-06-12T16:27:44Z
+08757376,2013-10-31,ltd,Ian Douglas Yerrill,"Office 3, Romney Marsh Businees Hub Mountfield Road",New Romney,TN28 8LH,2024-11-07,2026-06-12T16:27:46Z
+08757443,2013-10-31,ltd,Christopher Newell,2nd Floor Arcadia House 15 Forlease Road,Maidenhead,SL6 1RX,2025-09-17,2026-06-12T16:27:48Z
+08757558,2013-11-01,ltd,Neil Richard Gibson,8a Kingsway House King Street,Bedworth,CV12 8HY,2025-01-02,2026-06-12T16:27:49Z
+08757648,2013-11-01,ltd,Richard Cole,Stamford House Northenden Road,Sale,M33 2DH,,2026-06-12T16:27:51Z
+08758240,2013-11-01,ltd,The Official Receiver Or Nottingham,"The Insolvency Service, 4th Floor, Loxley House Station Street",Nottingham,NG2 3NG,,2026-06-12T16:27:53Z
+08759359,2013-11-04,ltd,The Official Receiver Or Manchester,"2nd Floor, 3 Piccadilly Place London Road",Manchester,M1 3BN,,2026-06-12T16:27:54Z
+08759682,2013-11-04,ltd,Gary Thompson,The Old Town Hall 71 Christchurch Road,Ringwood,BH24 1DH,2025-08-01,2026-06-12T16:27:56Z
+08759808,2013-11-04,ltd,Michelle Gillian Breslin,Trinity House 28-30 Blucher Street,Birmingham,B1 1QH,2025-06-16,2026-06-12T16:27:58Z
+08760524,2013-11-04,ltd,The Official Receiver Or Manchester,"2nd Floor, 3 Piccadilly Place",Manchester,M1 3BN,,2026-06-12T16:27:59Z
+08760652,2013-11-04,private-limited-guarant-nsc,John Dean Cullen,5th Floor  Hodge House  114-116 St Mary Street,Cardiff,CF10 1DY,2024-07-04,2026-06-12T16:28:01Z
+08761365,2013-11-04,ltd,Miles Needham,4 Beaconsfield Road,St Albans,AL1 3RD,2025-09-04,2026-06-12T16:28:03Z
+08762927,2013-11-05,ltd,Rikki Burton,"1st Floor, Fairclough House Church Street",Chorley,PR7 4EX,2025-03-20,2026-06-12T16:28:06Z
+08763285,2013-11-05,ltd,Kevin James Wilson Weir,"Small Business Rescue, 56 Leman Street",London,E1 8EU,2025-08-21,2026-06-12T16:28:08Z
+08763887,2013-11-06,ltd,Rikki Burton,"1st Floor, Fairclough House Church Street",Chorley,PR7 4EX,2024-11-07,2026-06-12T16:28:09Z
+08763981,2013-11-06,ltd,The Official Receiver Or London,16th Floor  1 Westfield Avenue,London,E20 1HZ,,2026-06-12T16:28:11Z
+08764196,2013-11-06,ltd,Julian Pitts,Floor 2  10 Wellington Place,Leeds,LS1 4AP,2026-03-19,2026-06-12T16:28:13Z
+08764536,2013-11-06,ltd,Amie Johnson,1 Kings Avenue,London,N21 3NA,2025-02-07,2026-06-12T16:28:14Z
+08765164,2013-11-07,ltd,Miles Needham,4 Beaconsfield Road,St Albans,AL1 3RD,2025-04-28,2026-06-12T16:28:16Z
+08765661,2013-11-07,ltd,Thomas Harris,C/O Begbies Traynor 2 Harcourt Way,Leicester,LE19 1WP,2025-11-10,2026-06-12T16:28:18Z
+08766303,2013-11-07,ltd,Richard James Beard,"Suite 3, Avery House, 69 North Street",Brighton,BN41 1DH,2025-09-29,2026-06-12T16:28:19Z
+08766510,2013-11-07,ltd,Nicola Elaine Layland,1580 Parkway Solent Business Park,Fareham,PO15 7AG,2026-03-27,2026-06-12T16:28:21Z
+08766994,2013-11-07,ltd,Kelly Burton,The Manor House,Sheffield,S11 9PS,2024-07-04,2026-06-12T16:28:23Z
+08767815,2013-11-08,ltd,Darren Brookes,Grosvenor House 22 Grafton Street,Altrincham,WA14 1DU,,2026-06-12T16:28:24Z
+08768238,2013-11-08,ltd,Paul Atkinson,Centre Block 4th Floor Central Court Knoll Rise,Orpington,BR6 0JA,2025-06-19,2026-06-12T16:28:26Z
+08768597,2013-11-11,ltd,Joseph Fox,The Manor House 260 Ecclesall Road South,Sheffield,S11 9PS,2025-11-25,2026-06-12T16:28:28Z
+08769307,2013-11-11,ltd,Richard Hunt,9 Ensign House Admirals Way,London,E14 9XQ,2024-11-26,2026-06-12T16:28:29Z
+08769874,2013-11-11,ltd,Anthony Murphy,C/O Harrisons Westgate House 9 Holborn,London,EC1N 2LL,,2026-06-12T16:28:31Z
+08770558,2013-11-12,ltd,Dean Andrew Smith,Suite 1 Heritage House,Southport,PR9 0TE,2024-07-31,2026-06-12T16:28:32Z
+08770733,2013-11-12,ltd,Simon Weir,2 Lakeside Calder Island Way,Wakefield,WF2 7AW,2025-12-17,2026-06-12T16:28:34Z
+08771823,2013-11-12,ltd,Lila Thomas,Derby House 12 Winckley Square,Preston,PR1 3JJ,,2026-06-12T16:28:36Z
+08772477,2013-11-12,ltd,Louise Williams,"Bridgford Business Centre, 29 Bridgford Road",Nottingham,NG2 6AU,2024-11-29,2026-06-12T16:28:37Z
+08773026,2013-11-13,ltd,Deborah Ann Cockerton,18 Clarence Road,Southend On Sea,SS1 1AN,2024-08-20,2026-06-12T16:28:39Z
+08773514,2013-11-13,ltd,Darren Edwards,"Warehouse W, 3 Western Gateway",London,E16 1BD,2025-11-05,2026-06-12T16:28:41Z
+08774208,2013-11-13,ltd,Nicola Baker,6 Festival Building Ashley Lane,Saltaire,BD17 7DQ,2025-04-30,2026-06-12T16:28:42Z
+08774629,2013-11-14,ltd,Richard Cacho,64-66 Westwick Street,Norwich,NR2 4SZ,2025-05-20,2026-06-12T16:28:44Z
+08775385,2013-11-14,ltd,Thomas William Gardiner,Town Wall House Balkerne Hill,Colchester,CO3 3AD,2025-09-16,2026-06-12T16:28:46Z
+08775582,2013-11-14,ltd,Philip Lewis Armstrong,2nd Floor 110 Cannon Street,London,EC4N 6EU,,2026-06-12T16:28:47Z
+08775892,2013-11-14,ltd,Richard Hunt,9 Ensign House Admirals Way,London,E14 9XQ,2024-09-13,2026-06-12T16:28:49Z
+08776674,2013-11-15,ltd,David Kemp,9 Ensign House Admirals Way,London,E14 9XQ,,2026-06-12T16:28:51Z
+08777786,2013-11-15,ltd,Michael James Wellard,28 Castle Street,Hertford,SG14 1HH,2025-03-04,2026-06-12T16:28:52Z
+08778060,2013-11-15,ltd,Fiona Grant,The Manor House 260 Ecclesall Road South,Sheffield,S11 9PS,2025-12-19,2026-06-12T16:28:54Z
+08778542,2013-11-18,ltd,Christopher Newell,The Old Town Hall  71 Christchurch Road,Ringwood,BH24 1DH,2025-04-14,2026-06-12T16:28:56Z
+08779974,2013-11-18,ltd,Frazer Ulrick,Ferriby Hall 2 High Street,North Ferriby,HU14 3JP,2025-08-14,2026-06-12T16:28:57Z
+08780094,2013-11-18,ltd,Christopher Brooksbank,Ground Floor Offices Riverside Mills Saddleworth Road,Elland,HX5 0RY,2026-02-13,2026-06-12T16:28:59Z
+08780934,2013-11-19,ltd,Joanne Louise Hammond,3rd Floor Westfield House 60 Charter Row,Sheffield,S1 3FZ,2025-08-04,2026-06-12T16:29:01Z
+08782411,2013-11-19,ltd,Benjamin Neil Jones,"2nd Floor, 120 Colmore Row",Birmingham,B3 3BD,,2026-06-12T16:29:02Z
+08784142,2013-11-20,ltd,Lloyd Edward Hinton,14 Bonhill Street,London,EC2A 4BX,2024-08-14,2026-06-12T16:29:06Z
+08784550,2013-11-21,ltd,Jamie Playford,Lawrence House,Norwich,NR2 1AD,2025-08-06,2026-06-12T16:29:07Z
+08784588,2013-11-21,ltd,Engin Faik,136 Hertford Road,Enfield,EN3 5AX,2024-06-21,2026-06-12T16:29:09Z
+08785402,2013-11-21,ltd,Steven Phillip Ross,F17 Evolve Business Centre Cygnet Way,Houghton Le Spring,DH4 5DQ,2025-03-19,2026-06-12T16:29:11Z
+08786069,2013-11-21,ltd,Lila Thomas,Derby House 12 Winckley Square,Preston,PR1 3JJ,2026-01-28,2026-06-12T16:29:12Z
+08786241,2013-11-22,ltd,Molly Monks,Suite C Sovereign House,Bramhall,SK7 1AW,2024-07-11,2026-06-12T16:29:14Z
+08786675,2013-11-22,ltd,Craig Johns,Fourth Floor Unit 5b The Parklands,Bolton,BL6 4SD,2026-01-15,2026-06-12T16:29:16Z
+08789430,2013-11-25,ltd,Simon Weir,2 Lakeside Calder Island Way,Wakefield,WF2 7AW,2024-10-22,2026-06-12T16:29:17Z
+08790441,2013-11-26,ltd,Paul Bailey,Sussex Innovation Centre Science Park Square,Brighton,BN1 9SB,2025-08-29,2026-06-12T16:29:19Z
+08790923,2013-11-26,ltd,Paul Ellison,Unit 8 The Aquarium Building,Reading,RG1 2AN,,2026-06-12T16:29:21Z
+08791279,2013-11-26,ltd,Anthony Milnes,1&2 Lion Chambers John William Street,Huddersfield,HD1 1ES,2025-09-09,2026-06-12T16:29:22Z
+08791885,2013-11-27,ltd,David Nicholas Clark,8 Fusion Court Aberford Road,Leeds,LS25 2GH,,2026-06-12T16:29:24Z
+08792534,2013-11-27,ltd,Mustafa Abdulali,First Floor Suite 4 Alexander House Waters Edge Business Park,Stoke On Trent,ST4 4DB,2025-10-24,2026-06-12T16:29:26Z
+08793523,2013-11-27,ltd,Chris Ferguson,Rmt Accountants & Business Advisors Ltd Gosforth Park Avenue,Newcastle Upon Tyne,NE12 8EG,2025-12-18,2026-06-12T16:29:27Z
+08795514,2013-11-28,ltd,Anthony Davidson,Prospect House Rouen Road,Norwich,NR1 1RE,2024-07-25,2026-06-12T16:29:29Z
+08796299,2013-11-29,ltd,Kate Cutler,Office 033 Northlight Parade,Nelson,BB9 5EG,2025-02-24,2026-06-12T16:29:30Z
+08796733,2013-11-29,ltd,Craig Johns,Fourth Floor Unit 5b The Parklands,Bolton,BL6 4SD,2024-08-22,2026-06-12T16:29:32Z
+08797309,2013-12-02,ltd,Martin Richard Buttriss,2 Harcourt Way,Leicester,LE19 1WP,2024-07-09,2026-06-12T16:29:34Z
+08798582,2013-12-02,ltd,Jamie Playford,Lawrence House,Norwich,NR2 1AD,2024-11-27,2026-06-12T16:29:36Z
+08799047,2013-12-02,ltd,James David Robinson,Tong Hall Tong Lane,Bradford,BD4 0RR,2024-06-03,2026-06-12T16:29:37Z
+08799243,2013-12-02,ltd,John Anthony Lowe,Ashcroft House Ervington Court,Leicester,LE19 1WL,2025-06-24,2026-06-12T16:29:39Z
+08799967,2013-12-03,ltd,Ian Douglas Yerrill,"Office 3, Romney Marsh Businees Hub Mountfield Road",New Romney,TN28 8LH,2024-07-30,2026-06-12T16:29:41Z
+08800404,2013-12-03,ltd,Nickolas Garth Rimes,3 The Courtyard Harris Business Park Hanbury Road,Bromsgrove,B60 4DJ,2025-02-26,2026-06-12T16:29:42Z
+08800892,2013-12-03,ltd,Richard Cacho,64-66 Westwick Street,Norwich,NR2 4SZ,2024-10-23,2026-06-12T16:29:44Z
+08801887,2013-12-04,ltd,Steven George Hodgson,2nd Floor 11 Park Square East,Leeds,LS1 2NG,2025-07-29,2026-06-12T16:29:46Z
+08802024,2013-12-04,ltd,Mark Rodney Newton,Langley House Park Road,London,N2 8EY,2025-02-26,2026-06-12T16:29:47Z
+08802353,2013-12-04,ltd,Jasmine Baxter,"1st Floor, Fairclough House Church Street",Chorley,PR7 4EX,2026-02-23,2026-06-12T16:29:49Z
+08802750,2013-12-04,ltd,The Official Receiver Or London,16th Floor  1 Westfield Avenue,London,E20 1HZ,,2026-06-12T16:29:51Z
+08804132,2013-12-05,ltd,Christopher Andersen,Langley House Park Road,London,N2 8EY,2024-05-23,2026-06-12T16:29:52Z
+08804980,2013-12-06,ltd,Kate E Ellis,The Tannery 91 Kirkstall Road,Leeds,LS3 1HS,2025-07-23,2026-06-12T16:29:54Z
+08805488,2013-12-06,ltd,Megan Singleton,20 Roundhouse Court South Rings Business Park,Preston,PR5 6DA,2024-05-31,2026-06-12T16:29:56Z
+08805813,2013-12-06,ltd,Edward Avery-Gee,27 Byrom Street,Manchester,M3 4PF,2025-03-10,2026-06-12T16:29:57Z
+08806119,2013-12-06,ltd,Andrew Richard Bailey,15 Horizon Business Village 1 Brooklands Road,Weybridge,KT13 0TJ,2025-12-09,2026-06-12T16:29:59Z
+08806660,2013-12-09,ltd,The Official Receiver Or Manchester,"2nd Floor, 3 Piccadilly Place London Road",Manchester,M1 3BN,,2026-06-12T16:30:01Z
+08807169,2013-12-09,ltd,Lane Gary Bednash,Craftwork Studios  1-3 Dufferin Street,London,EC1Y 8NA,2025-02-05,2026-06-12T16:30:02Z
+08807631,2013-12-09,ltd,Andrew Ryder,"Jt Maxwell Limited, Unit 1 Lagan House",Lisburn,BT27 4AB,2024-06-10,2026-06-12T16:30:04Z
+08808259,2013-12-10,ltd,Neil A Bennett,5th Floor Grove House 248a Marylebone Road,London,NW1 6BB,2025-07-09,2026-06-12T16:30:06Z
+08808922,2013-12-10,ltd,Claire Louise Dwyer,4 The Stables,Didsbury,M20 5PG,2024-12-05,2026-06-12T16:30:07Z
+08809230,2013-12-10,ltd,The Official Receiver Or Nottingham,"The Insolvency Service, 4th Floor, Loxley House Station Street",Nottingham,NG2 3NG,,2026-06-12T16:30:09Z
+08809523,2013-12-10,ltd,Colin David Wilson,1 Radian Court,Milton Keynes,MK5 8PJ,,2026-06-12T16:30:11Z
+08809986,2013-12-11,ltd,Brendan P Hogan,5 Mercia Business Village Torwood Close,Coventry,CV4 8HX,2025-06-12,2026-06-12T16:30:12Z
+08810271,2013-12-11,ltd,Jessica Barker,100 Barbirolli Square,Manchester,M2 3BD,2025-10-15,2026-06-12T16:30:14Z
+08810776,2013-12-11,ltd,Jeremy Nicholas Bleazard,Premier House Bradford Road,Cleckheaton,BD19 3TT,2024-07-01,2026-06-12T16:30:16Z
+08811229,2013-12-11,ltd,Julie Anne Palmer,Unit 1-3 Hilltop Business Park Devizes Road,Salisbury,SP3 4UF,2025-10-16,2026-06-12T16:30:17Z
+08811442,2013-12-11,ltd,Emma Priest,"Jupiter House, Warley Hill Business Park The Drive",Brentwood,CM13 3BE,2024-10-16,2026-06-12T16:30:19Z
+08811774,2013-12-12,ltd,Richard Hunt,9 Ensign House Admirals Way,London,E14 9XQ,2024-09-30,2026-06-12T16:30:21Z
+08811895,2013-12-12,ltd,Umang Patel,Suite 9 Amba House,Harrow,HA1 1BA,2025-06-27,2026-06-12T16:30:22Z
+08812162,2013-12-12,ltd,Ian Lawrence Goodhew,67 Grosvenor Street,London,W1K 3JN,2024-06-06,2026-06-12T16:30:24Z
+08813323,2013-12-13,ltd,Ashok K Bhardwaj,47-49 Green Lane,Northwood,HA6 3AE,2025-08-13,2026-06-12T16:30:26Z
+08813657,2013-12-13,ltd,Cameron Gunn,22 York Buildings,London,WC2N 6JU,,2026-06-12T16:30:27Z
+08814190,2013-12-13,ltd,Lee Morris,Heskin Hall Farm Wood Lane,Preston,PR7 5PA,2025-11-13,2026-06-12T16:30:29Z
+08814965,2013-12-13,ltd,Martin Richard Buttriss,2 Harcourt Way,Leicester,LE19 1WP,2024-09-12,2026-06-12T16:30:31Z
+08816858,2013-12-16,ltd,Mark Boast,73 Park Lane,Croydon,CR0 1JG,2025-12-16,2026-06-12T16:30:32Z
+08817495,2013-12-17,ltd,Paul Matthew Kings,C/O Kre (North) Limited 7-8 Delta Bank Road,Gateshead,NE11 9DJ,2025-07-30,2026-06-12T16:30:34Z
+08817780,2013-12-17,ltd,The Official Receiver Or Cardiff,1st Floor Ty William Morgan 6 Central Square,Cardiff,CF10 1EP,,2026-06-12T16:30:36Z
+08818067,2013-12-17,ltd,Richard Hunt,Sfp Warehouse W 3 Western Gateway,London,E16 1BD,2025-01-29,2026-06-12T16:30:37Z
+08818741,2013-12-18,ltd,David Patrick Meany,18a Capricorn Centre Cranes Farm Road,Basildon,SS14 3JJ,2025-10-08,2026-06-12T16:30:39Z
+08819294,2013-12-18,ltd,Molly Monks,Suite C Victoria House,Bramhall,SK7 2BE,2024-12-23,2026-06-12T16:30:40Z
+08820281,2013-12-19,ltd,Jamie Taylor,1066 London Road,Leigh On Sea,SS9 3NA,2024-10-24,2026-06-12T16:30:42Z
+08820716,2013-12-19,ltd,Sean Ward,Sophia House  28 Cathedral Road,Cardiff,CF11 9LJ,2024-07-31,2026-06-12T16:30:44Z
+08820852,2013-12-19,ltd,Molly Monks,"Suite C, Victoria House, 19-21 Ack Lane East",Bramhall,SK7 2BE,2025-11-24,2026-06-12T16:30:46Z
+08821609,2013-12-19,ltd,Julie Humphrey,Jupiter House Warley Hill Business Park,Brentwood,CM13 3BE,2025-01-08,2026-06-12T16:30:47Z
+08822056,2013-12-20,ltd,The Official Receiver Or Manchester,"2nd Floor, 3 Piccadilly Place",Manchester,M1 3BN,,2026-06-12T16:30:49Z
+08822385,2013-12-20,ltd,Jonathan Mark Taylor,"1st Floor, The Portal Bridgewater Close",Burnley,BB11 5TT,2024-09-06,2026-06-12T16:30:51Z
+08822612,2013-12-20,ltd,Steven John Currie,"Riverside 2, No.3 Campbell Road",Stoke On Trent,ST4 4RJ,,2026-06-12T16:30:52Z
+08824188,2013-12-23,ltd,Or Hove,Suite 2a City Gate 185 Dyke Road,Hove,BN3 1TL,,2026-06-12T16:30:54Z
+08824446,2013-12-23,ltd,Jason Mark Elliott,Fourth Floor Unit 5b The Parklands,Bolton,BL6 4SD,2025-03-27,2026-06-12T16:30:56Z
+08824707,2013-12-23,ltd,Dean Andrew Smith,C/O Revolution Rti Limited Suite 19 Unit 2 24a Wycliffe Road,Northampton,NN1 5JF,2025-01-30,2026-06-12T16:30:57Z
+08825359,2013-12-23,ltd,Carl Stuart Jackson,Office D Beresford House,Southampton,SO14 2AQ,,2026-06-12T16:30:59Z
+08826267,2013-12-27,ltd,The Official Receiver Or Ipswich,Franciscan House,Ipswich,IP1 1ED,,2026-06-12T16:31:01Z
+08827318,2013-12-30,ltd,Nickolas Garth Rimes,3 The Courtyard Harris Business Park Hanbury Road,Bromsgrove,B60 4DJ,2024-06-06,2026-06-12T16:31:02Z
+08827986,2013-12-31,ltd,The Official Receiver Or London,16th Floor  1 Westfield Avenue,London,E20 1HZ,,2026-06-12T16:31:04Z
+08829088,2014-01-02,ltd,Rikki Burton,"1st Floor, Fairclough House Church Street",Chorley,PR7 4EX,2025-02-21,2026-06-12T16:31:06Z
+08830075,2014-01-02,ltd,Simon John Lowes,5 Prospect House Meridians Cross Ocean Way,Southampton,SO14 3TJ,2025-06-26,2026-06-12T16:31:07Z
+08830770,2014-01-03,ltd,Richard Alan Warwick,Winchester House Deane Gate Avenue,Taunton,TA1 2UH,2025-11-20,2026-06-12T16:31:09Z
+08830903,2014-01-03,ltd,Luke Venner,Brook House Manor Drive,Exeter,EX5 1GD,2025-05-29,2026-06-12T16:31:11Z
+08832320,2014-01-06,ltd,Dean Andrew Smith,C/O Revolution Rti Limited Suite 19 Unit 2 24a Wycliffe Road,Northampton,NN1 5JF,2025-11-28,2026-06-12T16:31:12Z
+08832582,2014-01-06,ltd,Paul Anthony George,Office 033 Northlight Parade,Nelson,BB9 5EG,2025-06-10,2026-06-12T16:31:14Z
+08832685,2014-01-06,ltd,Martin John Weller,Jupiter House Warley Hill Business Park,Brentwood,CM13 3BE,2026-01-30,2026-06-12T16:31:16Z
+08833215,2014-01-06,ltd,Daniel Ormerod,Leonard Curtis House Elms Square,Whitefield,M45 7TA,2024-11-21,2026-06-12T16:31:17Z
+08833680,2014-01-07,ltd,Simon John Killick,"31st Floor, 40 Bank Street",London,E14 5NR,2024-09-12,2026-06-12T16:31:19Z
+08833977,2014-01-07,ltd,Richard Hunt,9 Ensign House Admirals Way,London,E14 9XQ,2024-12-09,2026-06-12T16:31:20Z
+08834158,2014-01-07,ltd,Zain Iqbal,Hunter House 109 Snakes Lane West,Woodford Green,IG8 0DY,2024-09-16,2026-06-12T16:31:22Z
+08834921,2014-01-07,ltd,The Official Receiver Or Brighton,Suite 2a City Gate 185 Dyke Road,Hove,BN3 1TL,,2026-06-12T16:31:25Z
+08835879,2014-01-07,ltd,Nicholas Parsk,"Herschel House, 58 Herschel Street",Slough,SL1 1PG,,2026-06-12T16:31:27Z
+08836809,2014-01-08,ltd,Christopher Newell,2nd Floor Arcadia House 15 Forlease Road,Maidenhead,SL6 1RX,2024-08-19,2026-06-12T16:31:29Z
+08837121,2014-01-08,ltd,James Varney,C/O  Arafino Advisory Limited Central Court 25 Southampton Buildings,London,WC2A 1AL,2025-08-27,2026-06-12T16:31:30Z
+08837420,2014-01-08,ltd,Simon Weir,Ashfield House Illingworth Street,Ossett,WF5 8AL,,2026-06-12T16:31:32Z
+08838036,2014-01-09,ltd,Andrew Knowles,Leonard Curtis Riverside House Irwell Street,Manchester,M3 5EN,,2026-06-12T16:31:34Z
+08838504,2014-01-09,plc,Lindsay Kate Hallam,200 Aldersgate Aldersgate Street,London,EC1A 4HD,,2026-06-12T16:31:35Z
+08838862,2014-01-09,ltd,Michael Howorth,The Waterscape 42 Leeds And Bradford Road,Leeds,LS5 3EG,2025-06-11,2026-06-12T16:31:37Z
+08838943,2014-01-09,ltd,Lindsay Kate Hallam,200 Aldersgate Aldersgate Street,London,EC1A 4HD,,2026-06-12T16:31:39Z
+08839472,2014-01-10,ltd,Robert Paul Gibbons,Office 3  Swan Park Business Centre Kettlebrook Road,Tamworth,B77 1AG,2025-12-16,2026-06-12T16:31:40Z
+08839821,2014-01-10,ltd,Janet Frances Mary Mayo,41 Greek Street,Stockport,SK3 8AX,2025-09-24,2026-06-12T16:31:42Z
+08840557,2014-01-10,ltd,The Official Receiver Or London,16th Floor  1 Westfield Avenue,London,E20 1HZ,,2026-06-12T16:31:44Z
+08840954,2014-01-10,ltd,Stella Davis,"Gable House, 239 Regents Park Road",London,N3 3LF,2026-01-19,2026-06-12T16:31:45Z
+08842634,2014-01-13,ltd,Jeremy Michael Bennett,Moorend House Snelsins Lane,Cleckheaton,BD19 3UE,2024-05-29,2026-06-12T16:31:47Z
+08843067,2014-01-13,ltd,Richard Paul Rendle,9 Hockley Court,Solihull,B94 6NW,2024-06-27,2026-06-12T16:31:49Z
+08843292,2014-01-13,ltd,The Official Receiver Or Croydon,7th Floor 1 Ruskin Square,Croydon,CR0 2WF,,2026-06-12T16:31:50Z
+08843579,2014-01-14,ltd,Situl Devji Raithatha,38 De Montfort Street,Leicester,LE1 7GS,2025-09-17,2026-06-12T16:31:52Z
+08843797,2014-01-14,ltd,Robert William Leslie Horton,St Clement'S House 27 Clements Lane,London,EC4N 7AE,,2026-06-12T16:31:54Z
+08844341,2014-01-14,ltd,The Official Receiver Or London,16th Floor  1 Westfield Avenue,London,E20 1HZ,,2026-06-12T16:31:55Z
+08844633,2014-01-14,ltd,Gareth Self,Suite 44 Dunston House Dunston Road,Chesterfield,S41 9QD,2025-03-14,2026-06-12T16:31:57Z
+08845124,2014-01-14,ltd,Darren Edwards,"Warehouse W, 3 Western Gateway",London,E16 1BD,2025-09-17,2026-06-12T16:31:59Z
+08845258,2014-01-14,ltd,Allan Christopher Cadman,100 Barbirolli Square,Manchester,M2 3BD,2024-08-15,2026-06-12T16:32:00Z
+08845405,2014-01-14,ltd,Adam Price,Craftwork Studios 1-3 Dufferin Street,London,EC1Y 8NA,2024-08-08,2026-06-12T16:32:02Z
+08845749,2014-01-15,ltd,Christopher Andersen,Langley House Park Road,London,N2 8EY,2024-07-11,2026-06-12T16:32:04Z
+08846056,2014-01-15,ltd,Andrew Ryder,"Jt Maxwell Limited, Unit 1 Lagan House",Lisburn,BT27 4AB,2026-02-05,2026-06-12T16:32:05Z
+08846977,2014-01-15,ltd,Lawrence John King,The Wooden Barn Little Baldon,Oxford,OX44 9PU,2025-06-25,2026-06-12T16:32:07Z
+08847694,2014-01-16,ltd,Molly Monks,"Suite C, Victoria House, 19-21 Ack Lane East",Bramhall,SK7 2BE,2025-02-21,2026-06-12T16:32:09Z
+08848074,2014-01-16,ltd,Jason Dean Greenhalgh,Begbies Traynor (Central) Llp. No 1 Old Hall Street,Liverpool,L3 9HF,2025-05-13,2026-06-12T16:32:10Z
+08848281,2014-01-16,ltd,Matthew Reeds,"Certus Ip Solutions Ltd, Room 5, 88a High Street",Billericay,CM12 9BT,2026-03-06,2026-06-12T16:32:12Z
+08849242,2014-01-16,ltd,Ian Lawrence Goodhew,20 North Audley Street,London,W1K 6WE,2025-05-15,2026-06-12T16:32:14Z
+08849488,2014-01-17,ltd,Marc Norman,3rd Floor 37 Frederick Place,Brighton,BN1 4EA,2026-02-10,2026-06-12T16:32:15Z
+08849639,2014-01-17,ltd,Andrew Knowles,3rd Floor Exchange Station Tithebarn Street,Liverpool,L2 2QP,2024-07-19,2026-06-12T16:32:17Z
+08849802,2014-01-17,ltd,Jamie Playford,Lawrence House,Norwich,NR2 1AD,2024-08-07,2026-06-12T16:32:19Z
+08850323,2014-01-17,ltd,Gerald Irwin,Station House Midland Drive,Sutton Coldfield,B72 1TU,2024-08-15,2026-06-12T16:32:20Z
+08850537,2014-01-17,ltd,The Official Receiver Or London,16th Floor  1 Westfield Avenue,London,E20 1HZ,,2026-06-12T16:32:22Z
+08850995,2014-01-17,ltd,Constantinos Pedhiou,1 Kings Avenue,London,N21 3NA,2025-05-16,2026-06-12T16:32:24Z
+08851083,2014-01-20,ltd,Darren Edwards,"Warehouse W, 3 Western Gateway",London,E16 1BD,2026-02-09,2026-06-12T16:32:25Z
+08851866,2014-01-20,ltd,Brendan P Hogan,13 Ensign Business Centre,Coventry,CV4 8JA,2026-03-12,2026-06-12T16:32:27Z
+08851955,2014-01-20,ltd,Nicola Elaine Layland,1580 Parkway Solent Business Park,Fareham,PO15 7AG,2026-03-27,2026-06-12T16:32:28Z
+08852700,2014-01-20,ltd,Nicholas Andrew Stratten,"Trinity House, 28-30 Blucher Street",Birmingham,B1 1QH,2024-11-11,2026-06-12T16:32:30Z
+08853090,2014-01-20,ltd,Paul Steven Cooper,31st Floor 40 Bank Street,London,E14 5NR,2026-02-23,2026-06-12T16:32:32Z
+08853218,2014-01-20,ltd,Kristina Kicks,9th Floor  10 Fleet Place,London,EC4M 7RB,2024-10-31,2026-06-12T16:32:33Z
+08853721,2014-01-21,ltd,Brendan P Hogan,5 Mercia Business Village Torwood Close,Coventry,CV4 8HX,2025-11-28,2026-06-12T16:32:35Z
+08854064,2014-01-21,ltd,Rikki Burton,"1st Floor, Fairclough House Church Street",Chorley,PR7 4EX,2025-10-02,2026-06-12T16:32:37Z
+08854571,2014-01-21,ltd,,,,,,2026-06-12T16:32:38Z
+08854841,2014-01-21,ltd,The Official Receiver Or Nottingham,"The Insolvency Service, 4th Floor, Loxley House Station Street",Nottingham,NG2 3NG,,2026-06-12T16:32:40Z
+08855072,2014-01-21,ltd,Gregory John Mullarkey,18-22 Lloyd Street,Manchester,M2 5WA,,2026-06-12T16:32:42Z
+08855945,2014-01-22,ltd,Richard Hunt,9 Ensign House Admirals Way,London,E14 9XQ,2024-10-01,2026-06-12T16:32:43Z
+08856545,2014-01-22,ltd,Wayne Macpherson,1066 London Road,Leigh On Sea,SS9 3NA,2025-11-27,2026-06-12T16:32:45Z
+08856701,2014-01-22,ltd,Stephen Patrick Jens Wadsted,Clockwise Bromley Old Town Hall 30 Tweedy Road,Bromley,BR1 3FE,2024-10-30,2026-06-12T16:32:47Z
+08858393,2014-01-23,ltd,Nicholas Andrew Stratten,"Trinity House, 28-30 Blucher Street",Birmingham,B1 1QH,2024-08-06,2026-06-12T16:32:48Z
+08858785,2014-01-23,ltd,William Antony Batty,3 Field Court,London,WC1R 5EF,2024-12-06,2026-06-12T16:32:50Z
+08859086,2014-01-23,ltd,Lucinda Clare Coleman,Centenary House Peninsula Park,Exeter,EX2 7XE,2025-04-10,2026-06-12T16:32:52Z
+08859298,2014-01-23,ltd,Hilary Pascoe,Riverside House Irwell Street,Manchester,M3 5EN,,2026-06-12T16:32:53Z
+08859468,2014-01-23,ltd,Lisa Alford,Purnells 5a Kernick Industrial Estate,Penryn,TR10 9EP,2025-06-12,2026-06-12T16:32:55Z
+08859558,2014-01-23,ltd,Kirsty Swan,Cavendish House 39-41 Waterloo Street,Birmingham,B2 5PP,2024-07-17,2026-06-12T16:32:57Z
+08859897,2014-01-24,ltd,The Official Receiver Or Newcastle,Civic Centre Barras Bridge,Newcastle Upon Tyne,NE1 8QF,,2026-06-12T16:32:58Z
+08860053,2014-01-24,ltd,Gareth Buckley,"Suite B, Blackdown House Blackbrook Park Avenue",Taunton,TA1 2PX,2025-02-10,2026-06-12T16:33:00Z
+08860870,2014-01-24,ltd,Wayne Macpherson,1066 London Road,Leigh On Sea,SS9 3NA,2024-08-22,2026-06-12T16:33:02Z
+08861055,2014-01-24,ltd,Philip Lewis Armstrong,2nd Floor 110 Cannon Street,London,EC4N 6EU,,2026-06-12T16:33:03Z
+08861452,2014-01-27,ltd,John Peter Fisher,"2nd Floor, 14 Castle Street",Liverpool,L2 0NE,2024-08-28,2026-06-12T16:33:05Z
+08861792,2014-01-27,ltd,The Official Receiver Or Cardiff,"3rd Floor, Companies House Crown Way",Cardiff,CF14 3ZA,,2026-06-12T16:33:07Z
+08862066,2014-01-27,ltd,Daniel Taylor,683 - 693 Wilmslow Road,Manchester,M20 6RE,2025-10-24,2026-06-12T16:33:08Z
+08862382,2014-01-27,ltd,Adam Price,49 Tabernacle Street,London,EC2A 4AA,2026-02-17,2026-06-12T16:33:10Z
+08862440,2014-01-27,ltd,David Gerard Kirk,5 Barnfield Crescent,Exeter,EX1 1QT,2024-05-24,2026-06-12T16:33:12Z
+08863398,2014-01-27,ltd,Luke Venner,Brook House Manor Drive,Exeter,EX5 1GD,2026-01-05,2026-06-12T16:33:13Z
+08863690,2014-01-27,private-limited-guarant-nsc,Antonya Allison,Suite 5 2nd Floor Bulman House Regent Centre,Newcastle Upon Tyne,NE3 3LS,,2026-06-12T16:33:15Z
+08863974,2014-01-28,ltd,Thomas Grummitt,"Cumberland House, 35 Park Row",Nottingham,NG1 6EE,2024-12-10,2026-06-12T16:33:17Z
+08864605,2014-01-28,ltd,Lloyd Christopher Biscoe,170a-172 High Street,Rayleigh,SS6 7BS,2024-11-28,2026-06-12T16:33:18Z
+08865160,2014-01-28,ltd,Lee Morris,Heskin Hall Farm Wood Lane,Preston,PR7 5PA,2025-11-21,2026-06-12T16:33:20Z
+08865207,2014-01-28,ltd,Andreas Arakapiotis,"Mountview Court, 1148 High Road",London,N20 0RA,2025-07-10,2026-06-12T16:33:22Z
+08865880,2014-01-28,ltd,Mark Reynolds,1st Floor Galley House Moon Lane,London,EN5 5YL,2025-08-12,2026-06-12T16:33:23Z
+08866157,2014-01-29,ltd,Megan Singleton,20 Roundhouse Court South Rings Business Park,Preston,PR5 6DA,2024-09-30,2026-06-12T16:33:25Z
+08866655,2014-01-29,ltd,Janet Frances Mary Mayo,41 Greek Street,Stockport,SK3 8AX,2025-09-29,2026-06-12T16:33:26Z
+08866830,2014-01-29,ltd,The Official Receiver Or Leeds,3rd Floor,Leeds,LS11 9DA,,2026-06-12T16:33:28Z
+08867048,2014-01-29,ltd,Stuart Rathmell,Egyptian Mill Egyptian Street,Bolton,BL1 2HS,2025-01-16,2026-06-12T16:33:30Z
+08867374,2014-01-29,ltd,The Official Receiver Or Nottingham,"The Insolvency Service, 4th Floor, Loxley House Station Street",Nottingham,NG2 3NG,,2026-06-12T16:33:31Z
+08867660,2014-01-29,ltd,Martyn James Pullin,1st Floor 34 Falcon Court,Stockton On Tees,TS18 3TX,2025-03-17,2026-06-12T16:33:33Z
+08868061,2014-01-29,ltd,The Official Receiver Or London,16th Floor  1 Westfield Avenue,London,E20 1HZ,,2026-06-12T16:33:35Z
+08868493,2014-01-30,ltd,The Official Receiver Or Nottingham,"The Insolvency Service, 4th Floor, Loxley House Station Street",Nottingham,NG2 3NG,,2026-06-12T16:33:36Z
+08869353,2014-01-30,ltd,Simon Carvill-Biggs,Lynton House 7-12 Tavistock Square,London,WC1H 9LT,2017-08-07,2026-06-12T16:33:38Z
+08869954,2014-01-30,ltd,The Official Receiver Or London,16th Floor  1 Westfield Avenue,London,E20 1HZ,,2026-06-12T16:33:40Z
+08871354,2014-01-31,ltd,Jamie Playford,Lawrence House,Norwich,NR2 1AD,2025-03-12,2026-06-12T16:33:41Z
+08872612,2014-02-03,ltd,The Official Receiver Or Brighton,Suite 2a City Gate 185 Dyke Road,Hove,BN3 1TL,,2026-06-12T16:33:43Z
+08873404,2014-02-03,ltd,Daniel Ormerod,Leonard Curtis House Elms Square,Whitefield,M45 7TA,2024-10-31,2026-06-12T16:33:45Z
+08874623,2014-02-04,ltd,Mark Reynolds,1st Floor Galley House Moon Lane,London,EN5 5YL,2024-11-13,2026-06-12T16:33:46Z
+08874796,2014-02-04,ltd,Christopher Newell,2nd Floor Arcadia House 15 Forlease Road,Maidenhead,SL6 1RX,,2026-06-12T16:33:48Z
+08875107,2014-02-04,ltd,The Official Receiver Or Birmingham,"3rd Floor, Cannon House, 18 The Priory",Birmingham,B4 6FD,,2026-06-12T16:33:50Z
+08875612,2014-02-04,ltd,Zain Iqbal,Hunter House 109 Snakes Lane West,Woodford Green,IG8 0DY,2025-02-04,2026-06-12T16:33:51Z
+08876041,2014-02-04,ltd,Andrew Ryder,"Jt Maxwell Limited, Unit 1 Lagan House",Lisburn,BT27 4AB,2024-07-17,2026-06-12T16:33:53Z
+08876362,2014-02-04,ltd,Stuart Philip Kelly,7 Smithford Walk,Prescott,L35 1SF,,2026-06-12T16:33:55Z
+08876573,2014-02-05,ltd,Sam Shepherd,73-75 Aston Road North,Birmingham,B6 4DA,2025-04-03,2026-06-12T16:33:56Z
+08877062,2014-02-05,ltd,Henry Nicholas Page,7th Floor 21 Lombard Street,London,EC3V 9AH,,2026-06-12T16:33:58Z
+08877283,2014-02-05,ltd,Stuart Rathmell,Egyptian Mill Egyptian Street,Bolton,BL1 2HS,2025-08-22,2026-06-12T16:34:00Z
+08877662,2014-02-05,ltd,Timothy Frank Corfield,26/28 Goodall Street,Walsall,WS1 1QL,2025-09-29,2026-06-12T16:34:01Z
+08879766,2014-02-06,ltd,Stuart Rathmell,Egyptian Mill Egyptian Street,Bolton,BL1 2HS,2025-11-19,2026-06-12T16:34:03Z
+08879988,2014-02-06,ltd,Andrew Lawrence Hosking,3rd Floor 37 Frederick Place,Brighton,BN1 4EA,,2026-06-12T16:34:05Z
+08880387,2014-02-06,ltd,James Varney,20 St Andrew Street,London,EC4A 3AG,,2026-06-12T16:34:06Z
+08880970,2014-02-07,ltd,James Richard Clark,"C/O Interpath Ltd, 4th Floor, Tailors Corner Thirsk Row",Leeds,LS1 4DP,,2026-06-12T16:34:08Z
+08881162,2014-02-07,ltd,Dean Andrew Smith,C/O Revolution Rti Limited Suite 19 Unit 2 24a Wycliffe Road,Northampton,NN1 5JF,2025-04-04,2026-06-12T16:34:10Z
+08881446,2014-02-07,ltd,Adrian Paul Dante,First Floor Milwood House 36b Albion Place,Maidstone,ME14 5DZ,2024-08-09,2026-06-12T16:34:11Z
+08881681,2014-02-07,ltd,Timothy Frank Corfield,26/28 Goodall Street,Walsall,WS1 1QL,2024-06-17,2026-06-12T16:34:13Z
+08882212,2014-02-07,ltd,Kelly Burton,The Manor House 260 Ecclesall Road South,Sheffield,S11 9PS,2024-11-29,2026-06-12T16:34:15Z
+08882277,2014-02-07,ltd,Brendan P Hogan,5 Mercia Business Village Torwood Close,Coventry,CV4 8HX,2025-03-03,2026-06-12T16:34:16Z
+08882436,2014-02-07,ltd,Tracy Ann Taylor,"Office 9, Stone Cross House Doncaster Road",Doncaster,DN3 1QS,2024-11-20,2026-06-12T16:34:18Z
+08882739,2014-02-07,ltd,David Ronald Elliott,1st Floor Galley House,London,EN5 5YL,2024-08-13,2026-06-12T16:34:20Z
+08883523,2014-02-10,ltd,Isobel Brett,21 Highfield Road,Dartford,DA1 2JS,2024-05-17,2026-06-12T16:34:21Z
+08883957,2014-02-10,ltd,Rikki Burton,"1st Floor, Fairclough House Church Street",Chorley,PR7 4EX,2025-04-14,2026-06-12T16:34:23Z
+08884556,2014-02-10,ltd,The Official Receiver Or Manchester,"2nd Floor, 3 Piccadilly Place",Manchester,M1 3BN,,2026-06-12T16:34:25Z
+08884961,2014-02-10,ltd,Richard Jeffery Rones,311 High Road,Loughton,IG10 1AH,2025-06-16,2026-06-12T16:34:26Z
+08885263,2014-02-11,ltd,Richard Wragg,Office D Beresford House Town Quay,Southampton,SO14 2AQ,2025-05-22,2026-06-12T16:34:28Z
+08885691,2014-02-11,ltd,Christopher Herron,Herron Fisher 135 Seaside,Eastbourne,BN22 7NN,2025-10-14,2026-06-12T16:34:30Z
+08885844,2014-02-11,ltd,Paul A Palmer,Bartle House Oxford Court,Manchester,M2 3WQ,2024-12-12,2026-06-12T16:34:31Z
+08885938,2014-02-11,ltd,Ian Lawrence Goodhew,67 Grosvenor Street,London,W1K 3JN,2024-11-07,2026-06-12T16:34:33Z
+08886229,2014-02-11,ltd,,,,,,2026-06-12T16:34:35Z
+08887129,2014-02-11,ltd,Grace Jones,5th Floor The Union Building,Norwich,NR1 1BY,2024-08-09,2026-06-12T16:34:36Z
+08887594,2014-02-11,ltd,Zain Iqbal,Hunter House 109 Snakes Lane West,Woodford Green,IG8 0DY,2024-10-15,2026-06-12T16:34:38Z
+08888081,2014-02-12,ltd,Duncan Robert Beat,The Old Town Hall 71 Christchurch Road,Ringwood,BH24 1DH,2024-10-16,2026-06-12T16:34:40Z
+08888252,2014-02-12,ltd,Kate E Ellis,The Tannery 91 Kirkstall Road,Leeds,LS3 1HS,2024-09-18,2026-06-12T16:34:41Z
+08888707,2014-02-12,ltd,Gareth Stones,63 Walter Road,Swansea,SA1 4PT,2026-02-25,2026-06-12T16:34:43Z
+08889971,2014-02-12,ltd,The Official Receiver Or London,16th Floor  1 Westfield Avenue,London,E20 1HZ,,2026-06-12T16:34:45Z
+08890359,2014-02-12,ltd,Allister Manson,"Opus Restructuring Llp, 322 High Holborn",London,WC1V 7PB,2024-07-11,2026-06-12T16:34:46Z
+08891073,2014-02-12,ltd,Philip Booth,Coopers House Intake Lane,Ossett,WF5 0RG,2025-07-14,2026-06-12T16:34:48Z
+08891665,2014-02-12,ltd,James William Stares,3 Field Court,London,WC1R 5EF,2024-11-14,2026-06-12T16:34:50Z
+08893327,2014-02-13,ltd,Nedim Patrick Ailyan,Centre Block 4th Floor Central Court,Orpington,BR6 0JA,2024-06-27,2026-06-12T16:34:51Z
+08894413,2014-02-13,ltd,Gregory John Mullarkey,18-22 Lloyd Street,Manchester,M2 5WA,2024-08-20,2026-06-12T16:34:53Z
+08895081,2014-02-14,ltd,Mark Elijah Thomas Bowen,11 Roman Way Business Centre,Droitwich Spa,WR9 9AJ,2025-07-22,2026-06-12T16:34:55Z
+08895775,2014-02-14,ltd,Andrew John Whelan,"Unit 2 Spinnaker Court, 1c Becketts Place",Kingston Upon Thames,KT1 4EQ,2025-04-30,2026-06-12T16:34:56Z
+08896013,2014-02-14,ltd,Rishi Karia,"Parker Andrews Limited, 5th Floor The Union Building",Norwich,NR1 1BY,2024-08-29,2026-06-12T16:34:58Z
+08896568,2014-02-17,ltd,Andrew J Cordon,22 Regent Street,Nottingham,NG1 5BQ,2024-11-22,2026-06-12T16:34:59Z
+08896710,2014-02-17,ltd,Neil Henry,5 Tabley Court Victoria Street,Altrincham,WA14 1EZ,2026-03-18,2026-06-12T16:35:01Z
+08896826,2014-02-17,ltd,Philip Ballard,"2nd Floor, 39 Bore Street",Lichfield,WS13 6LZ,2024-11-21,2026-06-12T16:35:03Z
+08897216,2014-02-17,ltd,Richard Hunt,9 Ensign House Admirals Way,London,E14 9XQ,2024-12-16,2026-06-12T16:35:05Z
+08897236,2014-02-17,ltd,Paul Anthony George,Office 033 Northlight Parade,Nelson,BB9 5EG,2025-03-04,2026-06-12T16:35:06Z
+08897272,2014-02-17,ltd,Neil Richard Gibson,8a Kingsway House King Street,Bedworth,CV12 8HY,2025-05-07,2026-06-12T16:35:08Z
+08898022,2014-02-17,ltd,Richard Paul Rendle,9 Hockley Court,Solihull,B94 6NW,2024-07-17,2026-06-12T16:35:10Z
+08898452,2014-02-17,ltd,Andrew Knowles,Leonard Curtis Riverside House Irwell Street,Manchester,M3 5EN,,2026-06-12T16:35:11Z
+08898699,2014-02-17,ltd,Rikki Burton,"1st Floor, Fairclough House Church Street",Chorley,PR7 4EX,2025-03-28,2026-06-12T16:35:13Z
+08898996,2014-02-17,ltd,Jamie Playford,Lawrence House,Norwich,NR2 1AD,2026-03-18,2026-06-12T16:35:15Z
+08899543,2014-02-18,ltd,Nicola Joanne Meadows,Langley House Park Road,London,N2 8EY,2025-07-30,2026-06-12T16:35:16Z
+08899981,2014-02-18,ltd,Michael John Gillard,Scope House Weston Road,Crewe,CW1 6DD,2025-06-06,2026-06-12T16:35:18Z
+08900140,2014-02-18,ltd,Andrew Poxon,Leonard Curtis Riverside House Irwell Street,Manchester,M3 5EN,,2026-06-12T16:35:19Z
+08900556,2014-02-18,ltd,Andrew James Nichols,The Chapel Bridge Street,Driffield,YO25 6DA,2024-08-30,2026-06-12T16:35:21Z
+08901091,2014-02-18,ltd,Rikki Burton,"1st Floor, Fairclough House Church Street",Chorley,PR7 4EX,2024-07-08,2026-06-12T16:35:23Z
+08902148,2014-02-19,ltd,Molly Monks,"Suite C, Victoria House, 19-21 Ack Lane East",Bramhall,SK7 2BE,,2026-06-12T16:35:24Z
+08903229,2014-02-19,ltd,Christopher James Lawton,2-3 Winckley Court Chapel Street,Preston,PR1 8BU,,2026-06-12T16:35:26Z
+08903311,2014-02-19,ltd,Neil Richard Gibson,8a Kingsway House King Street,Bedworth,CV12 8HY,2024-08-08,2026-06-12T16:35:28Z
+08903657,2014-02-20,ltd,Andrew Fender,"Sanderlings, Becketts Farm Alcester Road",Birmingham,B47 6AJ,,2026-06-12T16:35:29Z
+08904001,2014-02-20,ltd,David Robert Acland,Derby House 12 Winckley Square,Preston,PR1 3JJ,2025-08-04,2026-06-12T16:35:31Z
+08904779,2014-02-20,ltd,Dean Andrew Smith,C/O Revolution Rti Limited Suite 19 Unit 2 24a Wycliffe Road,Northampton,NN1 5JF,2025-06-05,2026-06-12T16:35:33Z
+08905035,2014-02-20,ltd,Deborah Ann Cockerton,18 Clarence Road,Southend On Sea,SS1 1AN,2025-08-05,2026-06-12T16:35:34Z
+08905819,2014-02-21,ltd,Martyn James Pullin,1st Floor 34 Falcon Court,Stockton On Tees,TS18 3TX,2026-02-09,2026-06-12T16:35:36Z
+08906683,2014-02-21,ltd,Alan David Fallows,100 Barbirolli Square,Manchester,M2 3BD,2024-11-19,2026-06-12T16:35:38Z
+08907482,2014-02-24,ltd,The Official Receiver Or Nottingham,"The Insolvency Service, 4th Floor, Loxley House Station Street",Nottingham,NG2 3NG,,2026-06-12T16:35:39Z
+08908953,2014-02-24,ltd,James Sleight,4th Floor 12 King Street,Leeds,LS1 2HL,2026-01-14,2026-06-12T16:35:41Z
+08909673,2014-02-25,ltd,Robert L Cooksey,Bridgestones  2 Cromwell Court,Oldham,OL1 1ET,2025-03-07,2026-06-12T16:35:43Z
+08909843,2014-02-25,ltd,The Official Receiver Or London,16th Floor  1 Westfield Avenue,London,E20 1HZ,,2026-06-12T16:35:44Z
+08910874,2014-02-25,ltd,Hasib Howlader,Hudson Weir Limited 58 Leman Street,London,E1 8EU,2025-08-21,2026-06-12T16:35:46Z
+08911403,2014-02-25,ltd,Ian Robert,"6th Floor, 9 Appold Street",London,EC2A 2AP,,2026-06-12T16:35:48Z
+08911476,2014-02-25,ltd,James David Robinson,Tong Hall Tong Lane,Bradford,BD4 0RR,2025-04-22,2026-06-12T16:35:49Z
+08911985,2014-02-26,ltd,Glyn Mummery,Jupiter House Warley Hill Business Park,Brentwood,CM13 3BE,2025-09-23,2026-06-12T16:35:51Z
+08912618,2014-02-26,ltd,Elliot H Green,Suite 103 Moda Business Centre Stirling Way,Borehamwood,WD6 2BW,2026-02-06,2026-06-12T16:35:53Z
+08913521,2014-02-26,ltd,Andrew Ryder,"Jt Maxwell Limited, Unit 1 Lagan House",Lisburn,BT27 4AB,2024-11-28,2026-06-12T16:35:54Z
+08914105,2014-02-27,ltd,David Adam Broadbent,"Levelq, Sheraton House Surtees Way",Stockton On Tees,TS18 3HR,2025-08-07,2026-06-12T16:35:56Z
+08914511,2014-02-27,ltd,Vincent Andrew Simmons,7 St Petersgate,Stockport,SK1 1EB,2024-10-30,2026-06-12T16:35:58Z
+08915363,2014-02-27,ltd,Kirsty Swan,Cavendish House 39-41 Waterloo Street,Birmingham,B2 5PP,2025-02-13,2026-06-12T16:35:59Z
+08915821,2014-02-27,ltd,Alan Simon,"Gable House, 239 Regents Park Road",London,N3 3LF,2025-03-06,2026-06-12T16:36:01Z
+08916191,2014-02-28,ltd,Nicola Baker,6 Festival Building Ashley Lane,Saltaire,BD17 7DQ,2025-05-08,2026-06-12T16:36:03Z
+08916564,2014-02-28,ltd,John Anthony Lowe,Ashcroft House Ervington Court,Leicester,LE19 1WL,2026-01-06,2026-06-12T16:36:04Z
+08917564,2014-02-28,ltd,Nicholas Laurie West,11th Floor One Temple Row,Birmingham,B2 5LG,2025-10-21,2026-06-12T16:36:06Z
+08917677,2014-02-28,ltd,Rikki Burton,"1st Floor, Fairclough House Church Street",Chorley,PR7 4EX,2024-08-30,2026-06-12T16:36:08Z
+08918236,2014-03-03,ltd,Mark Reynolds,C/O Valentine & Co Galley House,Moon Lane,EN5 5YL,2024-11-21,2026-06-12T16:36:09Z
+08918693,2014-03-03,ltd,Daniel Taylor,683 - 693 Wilmslow Road,Manchester,M20 6RE,2024-11-27,2026-06-12T16:36:11Z
+08919083,2014-03-03,ltd,Elizabeth Anne Welch,Cavendish House 39-41 Waterloo Street,Birmingham,B2 5PP,2025-06-26,2026-06-12T16:36:13Z
+08919194,2014-03-03,ltd,The Official Receiver Or Nottingham,Level One Apex Court,Nottingham,NG2 4LA,,2026-06-12T16:36:14Z
+08919912,2014-03-03,ltd,Asher Miller,Pearl Assurance House,London,N12 8LY,2024-05-31,2026-06-12T16:36:16Z
+08920218,2014-03-03,ltd,Allan Christopher Cadman,100 Barbirolli Square,Manchester,M2 3BD,2024-09-16,2026-06-12T16:36:18Z
+08920256,2014-03-03,ltd,David Farmer,170a-172 High Street,Rayleigh,SS6 7BS,2024-08-15,2026-06-12T16:36:19Z
+08920542,2014-03-03,ltd,Neil Frank Vinnicombe,11c Kingsmead Square,Bath,BA1 2AB,2025-12-08,2026-06-12T16:36:21Z
+08922197,2014-03-04,ltd,The Official Receiver Or Leeds,3rd Floor,Leeds,LS11 9DA,,2026-06-12T16:36:23Z
+08922608,2014-03-04,ltd,Matthew John Waghorn,The Wooden Barn Little Baldon,Oxford,OX44 9PU,2025-05-30,2026-06-12T16:36:26Z
+08922743,2014-03-05,ltd,Adam Jordan,3 The Courtyard Harris Business Park Hanbury Road,Bromsgrove,B60 4DJ,2025-07-10,2026-06-12T16:36:28Z
+08923169,2014-03-05,ltd,The Official Receiver Or Brighton,Suite 2a City Gate 185 Dyke Road,Hove,BN3 1TL,,2026-06-12T16:36:29Z
+08923598,2014-03-05,ltd,Robert Paul Gibbons,Office 3  Swan Park Business Centre Kettlebrook Road,Tamworth,B77 1AG,2024-12-19,2026-06-12T16:36:31Z
+08923653,2014-03-05,ltd,The Official Receiver Or London,16th Floor  1 Westfield Avenue,London,E20 1HZ,,2026-06-12T16:36:33Z
+08924290,2014-03-05,ltd,Paul Anthony George,Office 038 Northlight Parade,Nelson,BB9 5EG,2025-10-16,2026-06-12T16:36:34Z
+08924559,2014-03-05,ltd,Patrick O'Brien,37 Walter Road,Swansea,SA1 5NW,2025-04-25,2026-06-12T16:36:36Z
+08925047,2014-03-06,ltd,Francis Gavin Savage,26 Stroudley Road,Brighton,BN1 4BH,2025-11-28,2026-06-12T16:36:38Z
+08925383,2014-03-06,ltd,Dean Andrew Smith,Suite 1 Heritage House,Southport,PR9 0TE,2024-05-30,2026-06-12T16:36:39Z
+08925635,2014-03-06,ltd,Stella Davis,"Gable House, 239 Regents Park Road",London,N3 3LF,2026-02-19,2026-06-12T16:36:41Z
+08925894,2014-03-06,ltd,Neil Richard Gibson,8a Kingsway House King Street,Bedworth,CV12 8HY,2024-12-05,2026-06-12T16:36:43Z
+08926273,2014-03-06,ltd,Michael James Gregson,Brightfield Business Limited Bakewell Road,Peterborough,PE2 6XU,2024-12-02,2026-06-12T16:36:44Z
+08926725,2014-03-06,ltd,Michael Howorth,The Waterscape 42 Leeds And Bradford Road,Leeds,LS5 3EG,2024-12-03,2026-06-12T16:36:46Z
+08927236,2014-03-06,ltd,Jonathan Mark Taylor,"1st Floor, The Portal Bridgewater Close",Burnley,BB11 5TT,,2026-06-12T16:36:48Z
+08927336,2014-03-07,ltd,Molly Monks,"Suite C, Victoria House, 19-21 Ack Lane East",Bramhall,SK7 2BE,2026-02-09,2026-06-12T16:36:49Z
+08927781,2014-03-07,ltd,Manubhai Govindbhai Mistry,Horsfields Belgrave Place,Bury,BL9 0ED,2025-04-11,2026-06-12T16:36:51Z
+08928117,2014-03-07,ltd,Gareth Bishop,10 St Helen'S Road,Swansea,SA1 4AW,2025-07-18,2026-06-12T16:36:52Z
+08929302,2014-03-07,ltd,Dean Andrew Smith,Suite 1 Heritage House,Southport,PR9 0TE,2024-10-23,2026-06-12T16:36:54Z
+08929403,2014-03-07,ltd,Jamie Playford,Lawrence House,Norwich,NR2 1AD,2025-12-03,2026-06-12T16:36:56Z
+08929521,2014-03-10,ltd,Stephen Phillip Lancaster,"Stanmore House, 64-68 Blackburn Street",Manchester,M26 2JS,2024-07-17,2026-06-12T16:36:57Z
+08930282,2014-03-10,ltd,Keith Jeffery Algie,"Landmark, St Peter'S Square 1 Oxford Street",Manchester,M1 4PB,,2026-06-12T16:36:59Z
+08930894,2014-03-10,ltd,Brendan P Hogan,5 Mercia Business Village Torwood Close,Coventry,CV4 8HX,2024-08-12,2026-06-12T16:37:01Z
+08931776,2014-03-10,ltd,The Official Receiver Or Birmingham,"3rd Floor, Cannon House, 18 The Priory",Birmingham,B4 6FD,,2026-06-12T16:37:02Z
+08932186,2014-03-11,ltd,Craig Johns,Fourth Floor Unit 5b The Parklands,Bolton,BL6 4SD,2025-07-03,2026-06-12T16:37:04Z
+08932864,2014-03-11,ltd,Nicholas Parsk,"Oury Clark, Herschel House, 58 Herschel Street",Slough,SL1 1PG,2026-02-25,2026-06-12T16:37:06Z
+08933173,2014-03-11,ltd,Thomas Bowes,2nd Floor Abbey House 32 Booth Street,Manchester,M2 4AB,2024-07-29,2026-06-12T16:37:07Z
+08933862,2014-03-11,ltd,Emma Dowd,The Manor House 260 Ecclesall Road South,Sheffield,S11 9PS,2024-12-16,2026-06-12T16:37:09Z
+08934334,2014-03-11,ltd,The Official Receiver Or Ipswich,Franciscan House,Ipswich,IP1 1ED,,2026-06-12T16:37:11Z
+08935964,2014-03-12,ltd,Louise Donna Baxter,1066 London Road,Leigh On Sea,SS9 3NA,2025-10-02,2026-06-12T16:37:12Z
+08936427,2014-03-12,ltd,Stratford Hamilton,Pkf Littlejohn Advisory Limited 15 Westferry Circus,London,E14 4HD,2026-02-11,2026-06-12T16:37:14Z
+08937274,2014-03-13,ltd,Grace Jones,5th Floor The Union Building,Norwich,NR1 1BY,2025-05-23,2026-06-12T16:37:16Z
+08937962,2014-03-13,ltd,Roderick Graham Butcher,79 Caroline Street,Birmingham,B3 1UP,2025-03-17,2026-06-12T16:37:19Z
+08938071,2014-03-13,ltd,The Official Receiver Or Croydon,"5th Floor, 1 Ruskin Square",Croydon,CR0 2WF,,2026-06-12T16:37:21Z
+08938210,2014-03-13,ltd,John William Butler,The Chapel Bridge Street,Driffield,YO25 6DA,2024-07-29,2026-06-12T16:37:22Z
+08938517,2014-03-13,ltd,The Official Receiver Or Leeds,3rd Floor,Leeds,LS11 9DA,,2026-06-12T16:37:24Z
+08939142,2014-03-14,ltd,Jamie Playford,Lawrence House,Norwich,NR2 1AD,2025-08-13,2026-06-12T16:37:26Z
+08939440,2014-03-14,ltd,Situl Devji Raithatha,38 De Montfort Street,Leicester,LE1 7GS,2024-05-21,2026-06-12T16:37:27Z
+08939855,2014-03-14,ltd,Steven John Currie,Ground Floor 10 King Street,Newcastle Under Lyme,ST5 1EL,2024-06-20,2026-06-12T16:37:29Z
+08940121,2014-03-14,ltd,The Official Receiver Or Manchester,"2nd Floor, 3 Piccadilly Place London Road",Manchester,M1 3BN,,2026-06-12T16:37:31Z
+08940704,2014-03-14,ltd,Robert Neil Dymond,"Suite 500, Unit 2, 94a Wycliffe Road",Northampton,NN1 5JF,2025-01-16,2026-06-12T16:37:32Z
+08941009,2014-03-17,ltd,Dean Andrew Smith,C/O Revolution Rti Limited Suite 19 Unit 2 24a Wycliffe Road,Northampton,NN1 5JF,2025-06-30,2026-06-12T16:37:34Z
+08941295,2014-03-17,ltd,Gordon Thomson,25 Farringdon Street,London,EC4A 4AB,,2026-06-12T16:37:36Z
+08941605,2014-03-17,ltd,Carl Derek Faulds,1580 Parkway Solent Business Park,Fareham,PO15 7AG,2025-06-17,2026-06-12T16:37:37Z
+08941842,2014-03-17,ltd,Rikki Burton,"1st Floor, Fairclough House Church Street",Chorley,PR7 4EX,2025-06-23,2026-06-12T16:37:39Z
+08942649,2014-03-17,ltd,Robert Alexander Henry Maxwell,Floor 2 10 Wellington Place,Leeds,LS1 4AP,2025-02-18,2026-06-12T16:37:41Z
+08942925,2014-03-17,ltd,Zain Iqbal,Hunter House 109 Snakes Lane West,Woodford Green,IG8 0DY,2024-07-02,2026-06-12T16:37:42Z
+08943388,2014-03-17,ltd,David Adam Broadbent,"Levelq, Sheraton House Surtees Way",Stockton On Tees,TS18 3HR,2025-07-31,2026-06-12T16:37:44Z
+08944156,2014-03-18,ltd,Jamie Playford,Lawrence House,Norwich,NR2 1AD,2024-11-06,2026-06-12T16:37:45Z
+08944390,2014-03-18,ltd,The Official Receiver Or London,16th Floor  1 Westfield Avenue,London,E20 1HZ,,2026-06-12T16:37:47Z
+08945020,2014-03-18,ltd,Ian Lawrence Goodhew,20 North Audley Street,London,W1K 6WE,2025-08-14,2026-06-12T16:37:49Z
+08945760,2014-03-18,ltd,Marco Piacquadio,"Ground Floor, Baird House Seebeck Place",Milton Keynes,MK5 8FR,2026-02-19,2026-06-12T16:37:50Z
+08946408,2014-03-19,ltd,Paul A Palmer,Heskin Hall Farm Wood Lane,Preston,PR7 5PA,2024-06-07,2026-06-12T16:37:52Z
+08946812,2014-03-19,ltd,Michelle Williams,Ty Antur Navigation Park,Abercynon,CF45 4SN,2026-01-29,2026-06-12T16:37:54Z
+08947225,2014-03-19,ltd,Paul Anthony George,Office 033 Northlight Parade,Nelson,BB9 5EG,2025-04-30,2026-06-12T16:37:55Z
+08948501,2014-03-19,ltd,Jonathan Paul Philmore,"Yorkshire House, 7 South Lane",Holmfirth,HD9 1HN,2024-12-13,2026-06-12T16:37:57Z
+08949410,2014-03-20,ltd,Christopher Andersen,Langley House Park Road,London,N2 8EY,2024-10-03,2026-06-12T16:37:59Z
+08949618,2014-03-20,ltd,Ashok K Bhardwaj,47-49 Green Lane,Northwood,HA6 3AE,2025-09-26,2026-06-12T16:38:01Z
+08951098,2014-03-20,ltd,Andrew Ryder,"Jt Maxwell Limited, Unit 1 Lagan House",Lisburn,BT27 4AB,2025-01-31,2026-06-12T16:38:02Z
+08951280,2014-03-20,ltd,Paul Steven Cooper,31st Floor 40 Bank Street,London,E14 5NR,2025-06-06,2026-06-12T16:38:04Z
+08951762,2014-03-21,ltd,The Official Receiver Or Nottingham,Level One Apex Court,Nottingham,NG2 4LA,,2026-06-12T16:38:06Z
+08952941,2014-03-21,ltd,Darren Edwards,"Warehouse W, 3 Western Gateway",London,E16 1BD,2025-10-15,2026-06-12T16:38:07Z
+08953207,2014-03-21,ltd,The Official Receiver Or Nottingham,Level One Apex Court,Nottingham,NG2 4LA,,2026-06-12T16:38:09Z
+08953649,2014-03-24,ltd,Or Hove,Suite 2a City Gate 185 Dyke Road,Hove,BN3 1TL,,2026-06-12T16:38:11Z
+08954623,2014-03-24,ltd,Christopher Brindle,Seneca House/Links Point Amy Johnson Way,Blackpool,FY4 2FF,2025-06-11,2026-06-12T16:38:12Z
+08955025,2014-03-24,ltd,Martin Charles Armstrong,Allen House 1 Westmead Road,Sutton,SM1 4LA,,2026-06-12T16:38:14Z
+08955735,2014-03-24,ltd,Joann Leach,2nd Floor Arcadia House  15 Forlease Road,Maidenhead,SL6 1RX,,2026-06-12T16:38:17Z
+08955894,2014-03-24,ltd,Brett Barton,Rural Enterprise Centre Vincent Carey Road,Hereford,HR2 6FE,2024-11-19,2026-06-12T16:38:19Z
+08956035,2014-03-24,ltd,Matthew Carter,Unit 121 Gloucester Quays Outlet,Gloucester,GL1 5SH,,2026-06-12T16:38:20Z
+08956276,2014-03-24,ltd,Nicholas Andrew Stratten,"Trinity House, 28-30 Blucher Street",Birmingham,B1 1QH,2024-07-29,2026-06-12T16:38:22Z
+08957058,2014-03-25,ltd,John Peter Fisher,3rd Floor Yorkshire House,Liverpool,L3 9AG,2025-08-08,2026-06-12T16:38:24Z
+08957663,2014-03-25,ltd,Natalie Hughes,The Town Hall Burnley Road,Burnley,BB12 8BS,2025-06-25,2026-06-12T16:38:25Z
+08958116,2014-03-25,ltd,James Kaye,"Suite 4, 2nd Floor Aus Bore House",Wilmslow,SK9 1BQ,2025-09-30,2026-06-12T16:38:27Z
+08958454,2014-03-25,ltd,Samuel Jonathan Talby,"Orchard St Business Centre, 13-14 Orchard Street",Bristol,BS1 5EH,2025-04-08,2026-06-12T16:38:29Z
+08959054,2014-03-25,ltd,Darren Edwards,"Warehouse W, 3 Western Gateway",London,E16 1BD,2025-10-23,2026-06-12T16:38:30Z
+08959360,2014-03-26,ltd,Joe Whiley,Saxon House Saxon Way,Cheltenham,GL52 6QX,2024-09-05,2026-06-12T16:38:32Z
+08959803,2014-03-26,ltd,Stacey Phipps,2 The Crescent,Taunton,TA1 4EA,2024-08-14,2026-06-12T16:38:34Z
+08960092,2014-03-26,ltd,Jonathan James Beard,26 Stroudley Road,Brighton,BN1 4BH,,2026-06-12T16:38:35Z
+08960721,2014-03-26,ltd,Yiannis Koumettou,1 Kings Avenue,London,N21 3NA,2026-02-13,2026-06-12T16:38:37Z
+08961584,2014-03-27,ltd,Andrew Hook,Begbies Traynor (Central) Llp Units 1-3 Hilltop Business Park,Salisbury,SP3 4UF,2025-02-11,2026-06-12T16:38:39Z
+08962342,2014-03-27,ltd,Joann Leach,2nd Floor Arcadia House  15 Forlease Road,Maidenhead,SL6 1RX,,2026-06-12T16:38:40Z
+08963089,2014-03-27,ltd,Simon Jagger,45 Gresham Street,London,EC2V 7BG,,2026-06-12T16:38:42Z
+08963225,2014-03-27,ltd,Daniel Ormerod,Leonard Curtis House Elms Square,Whitefield,M45 7TA,2024-06-04,2026-06-12T16:38:44Z
+08963353,2014-03-27,ltd,The Official Receiver Or Ipswich,Franciscan House,Ipswich,IP1 1ED,,2026-06-12T16:38:45Z
+08963796,2014-03-27,ltd,Mark Reynolds,C/O Valentine & Co Galley House,Moon Lane,EN5 5YL,2025-10-29,2026-06-12T16:38:47Z
+08964729,2014-03-28,ltd,Ryan Russell,Allen House   1 Westmead Road,Sutton,SM1 4LA,2026-03-05,2026-06-12T16:38:49Z
+08965182,2014-03-28,ltd,Christopher Newell,2nd Floor Arcadia House 15 Forlease Road,Maidenhead,SL6 1RX,,2026-06-12T16:38:50Z
+08965496,2014-03-28,ltd,Lee Morris,Bartle House Oxford Court,Manchester,M2 3WQ,2025-09-24,2026-06-12T16:38:52Z
+08965845,2014-03-28,ltd,Rikki Burton,"1st Floor, Fairclough House Church Street",Chorley,PR7 4EX,2025-01-14,2026-06-12T16:38:54Z
+08965978,2014-03-28,ltd,Scott Milne,26 Market Street,Wigan,WN6 0HN,2025-10-14,2026-06-12T16:38:55Z
+08966543,2014-03-31,ltd,Deborah Ann Cockerton,18 Clarence Road,Southend On Sea,SS1 1AN,2024-08-19,2026-06-12T16:38:57Z
+08967076,2014-03-31,ltd,Penny Mccoull,Suite 2096 6-8 Revenge Road,Chatham,ME5 8UD,2024-06-13,2026-06-12T16:38:59Z
+08967387,2014-03-31,ltd,John Paul Bell,"C/O Clarke Bell Ltd, 3rd Floor, The Pinnacle, 73 King Street",Manchester,M2 4NG,2024-07-01,2026-06-12T16:39:00Z
+08967485,2014-03-31,ltd,Jason Mark Elliott,Fourth Floor Unit 5b The Parklands,Bolton,BL6 4SD,2025-02-27,2026-06-12T16:39:02Z
+08967534,2014-03-31,ltd,Colin David Wilson,1 Radian Court,Milton Keynes,MK5 8PJ,,2026-06-12T16:39:04Z
+08968467,2014-03-31,ltd,Gareth Hunt,The Copper Room Deva City Office Park,Manchester,M3 7BG,2025-02-18,2026-06-12T16:39:06Z
+08968584,2014-03-31,ltd,Steve Kenny,Stamford House Northenden Road,Sale,M33 2DH,2025-03-06,2026-06-12T16:39:07Z
+08968964,2014-03-31,ltd,Andrew David Rosler,Lancaster House 171 Chorley New Road,Bolton,BL1 4QZ,,2026-06-12T16:39:09Z
+08969071,2014-03-31,ltd,David Ronald Taylor,Unit 8 The Aquarium,Reading,RG1 2AN,2025-07-31,2026-06-12T16:39:11Z
+08969350,2014-04-01,ltd,Paul Anthony George,Office 007 Northlight Parade,Nelson,BB9 5EG,2025-01-10,2026-06-12T16:39:12Z
+08969580,2014-04-01,ltd,Jason Mark Elliott,Fourth Floor Unit 5b The Parklands,Bolton,BL6 4SD,2024-12-05,2026-06-12T16:39:14Z
+08970109,2014-04-01,ltd,The Official Receiver Or London,16th Floor  1 Westfield Avenue,London,E20 1HZ,,2026-06-12T16:39:16Z
+08970566,2014-04-01,ltd,Ian James Royle,Level Q Sheraton House Surtees Way,Stockton On Tees,TS18 3HR,2025-07-10,2026-06-12T16:39:17Z
+08970899,2014-04-01,ltd,Rikki Burton,"1st Floor, Fairclough House Church Street",Chorley,PR7 4EX,2024-09-16,2026-06-12T16:39:19Z
+08971888,2014-04-02,ltd,Andrew James Pear,82 St John Street,London,EC1M 4JN,2024-11-19,2026-06-12T16:39:21Z
+08972309,2014-04-02,ltd,Nimish Chandrakant Patel,Hudson Weir Limited 58 Leman Street,London,E1 8EU,2025-03-18,2026-06-12T16:39:22Z
+08972380,2014-04-02,ltd,Kate Cutler,Office 038 Northlight Parade,Nelson,BB9 5EG,2025-09-03,2026-06-12T16:39:24Z
+08972812,2014-04-02,ltd,Giuseppe Parla,Lynton House 7-12 Tavistock Square,London,WC1H 9LT,2024-09-05,2026-06-12T16:39:26Z
+08973709,2014-04-02,ltd,Philip David Nunney,3rd Floor Westfield House,Sheffield,S1 3FZ,2025-12-23,2026-06-12T16:39:27Z
+08974036,2014-04-02,ltd,Timothy Frank Corfield,26/28 Goodall Street,Walsall,WS1 1QL,2024-06-11,2026-06-12T16:39:29Z
+08975860,2014-04-03,ltd,Andrew James Pear,1 Liverpool Terrace,Worthing,BN11 1TA,2024-12-23,2026-06-12T16:39:30Z
+08977436,2014-04-03,private-limited-guarant-nsc,Richard Hunt,Sfp Warehouse W 3 Western Gateway,London,E16 1BD,2025-03-06,2026-06-12T16:39:32Z
+08978063,2014-04-04,ltd,Michael Royce,Suite One Peel Mill Commercial Street,Morley,LS27 8AG,2024-11-01,2026-06-12T16:39:34Z
+08978743,2014-04-04,ltd,Dean Andrew Smith,Suite 1 Heritage House,Southport,PR9 0TE,2024-12-17,2026-06-12T16:39:35Z
+08978894,2014-04-04,ltd,The Official Receiver Or Birmingham,"3rd Floor, Cannon House, 18 The Priory",Birmingham,B4 6FD,,2026-06-12T16:39:37Z
+08979275,2014-04-04,ltd,David Antony Willis,1st Floor 34 Falcon Court,Stockton On Tees,TS18 3TX,2024-10-03,2026-06-12T16:39:39Z
+08979454,2014-04-04,ltd,Richard Hunt,Warehouse W 3 Western Gateway,London,E16 1BD,2025-08-26,2026-06-12T16:39:40Z
+08980210,2014-04-04,ltd,The Official Receiver Or Birmingham,"3rd Floor, Cannon House, 18 The Priory",Birmingham,B4 6FD,,2026-06-12T16:39:42Z
+08980298,2014-04-07,ltd,Andrew Ryder,"Jt Maxwell Limited, Unit 1 Lagan House",Lisburn,BT27 4AB,2025-01-24,2026-06-12T16:39:44Z
+08980375,2014-04-07,ltd,Michaela Daly,Lymedale Business Centre Hooters Hall Road,Newcastle,ST5 9QF,2025-01-06,2026-06-12T16:39:45Z
+08980851,2014-04-07,ltd,Yiannis Koumettou,1 Kings Avenue,London,N21 3NA,2024-09-17,2026-06-12T16:39:47Z
+08981473,2014-04-07,ltd,Christopher James Lawton,2-3 Winckley Court Chapel Street,Preston,PR1 8BU,2025-04-07,2026-06-12T16:39:49Z
+08982107,2014-04-07,ltd,James Kaye,"Suite 4, 2nd Floor Aus Bore House",Wilmslow,SK9 1BQ,2025-06-30,2026-06-12T16:39:50Z
+08982432,2014-04-07,ltd,Deborah Ann Cockerton,18 Clarence Road,Southend On Sea,SS1 1AN,2024-11-25,2026-06-12T16:39:52Z
+08983924,2014-04-08,ltd,The Official Receiver Or Manchester,"2nd Floor, 3 Piccadilly Place",Manchester,M1 3BN,,2026-06-12T16:39:54Z
+08985656,2014-04-08,ltd,Peter Charalambous,Mountview Court 1148 High Road,London,N20 0RA,2025-02-24,2026-06-12T16:39:55Z
+08985825,2014-04-08,ltd,Michael John Magnay,Suite 3 Regency House 91 Western Road,Brighton,BN1 2NW,,2026-06-12T16:39:57Z
+08986321,2014-04-08,ltd,The Official Receiver Or Nottingham,"The Insolvency Service, 4th Floor, Loxley House Station Street",Nottingham,NG2 3NG,,2026-06-12T16:39:58Z
+08986511,2014-04-08,ltd,Jeremy Nicholas Bleazard,Premier House Bradford Road,Cleckheaton,BD19 3TT,2025-05-28,2026-06-12T16:40:00Z
+08987009,2014-04-09,ltd,Gareth Bishop,10 St Helen'S Road,Swansea,SA1 4AW,2025-04-01,2026-06-12T16:40:02Z
+08987648,2014-04-09,ltd,Zain Iqbal,Hunter House 109 Snakes Lane West,Woodford Green,IG8 0DY,2025-07-29,2026-06-12T16:40:03Z
 10000001,2016-02-11,ltd,Frazer Ulrick,Ferriby Hall 2 High Street,North Ferriby,HU14 3JP,2024-07-24,2026-06-12T06:21:07Z
 10000574,2016-02-11,ltd,Matthew James Hoy,Grove House Meridians Cross Ocean Village,Southampton,SO14 3TJ,2025-04-17,2026-06-12T06:21:08Z
 10001125,2016-02-11,ltd,The Official Receiver Or Nottingham,"The Insolvency Service, 4th Floor, Loxley House Station Street",Nottingham,NG2 3NG,,2026-06-12T06:21:09Z
