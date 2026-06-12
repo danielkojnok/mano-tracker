@@ -56,6 +56,9 @@ ch_insolvency_enrichment.csv  # 45 000 firiem, IP + vek + PSČ
 - Forward book: £67m (+37% YoY), veľké prípady £32m
 - Riziko: provisions do £2m na 2 oneskorených dlžníkov (£4.7m expozícia)
 
+## Frontend
+Frontend design spec: DESIGN-MANUAL.md — binding for all UI work.
+
 ## Coding conventions
 - DataFrames only, idempotent skripty
 - INSERT OR REPLACE / INSERT OR IGNORE
