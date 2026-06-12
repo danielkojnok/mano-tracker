@@ -45,7 +45,7 @@ load_dotenv(ROOT / ".env")
 
 BASE_URL = "https://api.company-information.service.gov.uk"
 SINCE_MONTH = "2024-06"
-SLEEP_BETWEEN = 0.4      # seconds after each API call
+SLEEP_BETWEEN = 0.3      # seconds after each API call
 RATELIMIT_FLOOR = 10     # wait for reset when X-Ratelimit-Remain drops below this
 BACKOFF_429 = [10, 30, 60]
 CHECKPOINT_EVERY = 500   # companies between CSV checkpoints
