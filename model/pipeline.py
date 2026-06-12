@@ -44,7 +44,7 @@ ACCEPTANCE_RATE = 0.30     # fraction of enquiries accepted as investments
 # compulsory case is worth more to MANO than a CVL. We express this as a
 # weight applied to the compulsory count BEFORE the referral rate is applied.
 # 1.0 = treat them the same as CVL (old behaviour); 1.3 = 30% more valuable.
-COMPULSORY_WEIGHT = 1.30
+COMPULSORY_WEIGHT = 1.25   # CH enrichment jun2026: OR/large = 17.6%, znížené z 1.30
 
 # --- lag structure (research_01) -------------------------------------------
 # The median lag is the central estimate. Real case durations are bimodal
@@ -52,7 +52,8 @@ COMPULSORY_WEIGHT = 1.30
 # band of ±LAG_UNCERTAINTY months around the central lag.
 CASE_LAG_MONTHS  = 13       # investment → completion (central)
 CASH_LAG_MONTHS  = 12       # completion → cash (central)
-LAG_UNCERTAINTY  = 6        # ± months applied to the TOTAL lag for the band
+LAG_SLOW = 9        # duration creep (industry-wide) + MANO mix shift k väčším prípadom
+LAG_FAST = 4        # rýchle malé prípady (SME, prázdne schránky)
 
 # --- revenue per case scenarios (research_02) ------------------------------
 # ARRCC = Average Realised Revenue per Completed Case. The old model used a
@@ -159,8 +160,8 @@ def build_pipeline(
     # cash arrives later (the "low/slow" projection); a shorter lag means it
     # arrives sooner (the "high/fast" projection).
     total_lag      = CASE_LAG_MONTHS + CASH_LAG_MONTHS
-    total_lag_slow = total_lag + LAG_UNCERTAINTY
-    total_lag_fast = max(total_lag - LAG_UNCERTAINTY, 1)
+    total_lag_slow = total_lag + LAG_SLOW
+    total_lag_fast = max(total_lag - LAG_FAST, 1)
 
     out["implied_completions"] = out["implied_investments_capped"].shift(CASE_LAG_MONTHS)
 
