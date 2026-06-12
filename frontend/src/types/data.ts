@@ -1,0 +1,74 @@
+/* Shapes of frontend/public/data/*.json — produced by ingest/export_frontend_data.py (F2). */
+
+export interface Kpis {
+  insolvencies_12m: number;
+  insolvencies_yoy_pct: number;
+  mano_price_gbx: number;
+  mano_price_change_pct: number;
+  fy27_revenue_base_m: number;
+  pipeline_health: string;
+  pipeline_health_trend: "up" | "down" | "neutral";
+  pipeline_health_pct: number;
+  generated_at: string;
+}
+
+export interface InsolPoint {
+  date: string; // "YYYY-MM"
+  cvl: number;
+  compulsory: number;
+  total: number;
+}
+
+export interface InsolTimeseries {
+  series: InsolPoint[];
+}
+
+export interface IPNode {
+  id: string;
+  label: string;
+  full_name: string;
+  total_cases: number;
+  primary_region: string | null;
+  top_sic_1: string | null;
+  top_sic_pct_1: number | null;
+  top_sic_2: string | null;
+  top_sic_pct_2: number | null;
+  top_sic_3: string | null;
+  top_sic_pct_3: number | null;
+  sweet_spot_cases: number;
+  pct_sweet_spot: number;
+}
+
+export interface IPNetwork {
+  nodes: IPNode[];
+  meta: { total_ips: number; total_cases: number; generated_at: string };
+}
+
+export interface GazetteNotice {
+  date: string;
+  company_name: string;
+  notice_type: string;
+  notice_type_label: string;
+  display_type: string; // LIKVIDÁCIA | PETÍCIA | INÉ
+}
+
+export interface GazetteRecent {
+  notices: GazetteNotice[];
+}
+
+export interface PipelineAssumptions {
+  referral_rate: number;
+  acceptance_rate: number;
+  arrcc_base: number;
+  arrcc_pessimistic: number;
+  arrcc_optimistic: number;
+  lag_months_base: number;
+  lag_months_bear: number;
+  lag_months_bull: number;
+  compulsory_weight: number;
+  fy27_base: number;
+  fy27_pessimistic: number;
+  fy27_optimistic: number;
+  model_version: string;
+  calibrated_at: string;
+}

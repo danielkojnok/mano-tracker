@@ -1,19 +1,26 @@
 import Panel from "../components/ui/Panel";
-import KpiCard from "../components/ui/KpiCard";
+import KpiRow from "../components/ui/KpiRow";
+import ScrambleText from "../components/ui/ScrambleText";
+import HeroChart from "../components/charts/HeroChart";
 
-/* KPI sample values — DESIGN-MANUAL.md §06, hardcoded for F1. */
 export default function Overview() {
   return (
     <>
-      <h1 className="page-title">Prehľad</h1>
-      <div className="kpi-row">
-        <KpiCard label="MESAČNÉ INSOLVENCIE" value="2,138" sub="▲ 2.8% medziročne" trend="up" />
-        <KpiCard label="IMPLIK. TRŽBY FY27" value="£32.4m" sub="model · základný scenár" isKeyMetric />
-        <KpiCard label="ZDRAVIE PIPELINE" value="Klesá" sub="▼ 2.3% vážený trh 12m" trend="down" wordState />
-        <KpiCard label="CENA AKCIE MANO.L" value="39.3" unit="GBX" sub="▲ 0.8% deň" trend="up" />
-      </div>
-      <Panel title="Prehľad trhu" source="Insolvency Service · jún 2026">
-        F3
+      <h1 className="page-title">
+        <ScrambleText text="PREHĽAD" />
+      </h1>
+      <p className="page-subtitle">
+        Podporuje insolvenčný pipeline tézu o oživení tržieb MANO pre FY2026–27?
+      </p>
+      <KpiRow />
+      <Panel
+        title="Téza: insolvencie vedú tržby MANO o ~24 mesiacov"
+        source="Insolvency Service · MANO RNS · model/pipeline.py"
+      >
+        <HeroChart />
+      </Panel>
+      <Panel title="IP network graf" source="Gazette appointments × MANO case records" headerRight="F4">
+        F4
       </Panel>
     </>
   );

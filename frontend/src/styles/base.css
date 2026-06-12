@@ -77,14 +77,59 @@ textarea {
   margin-bottom: 32px;
 }
 
+/* Page subtitle — Archivo 14px below Michroma title */
+.page-subtitle {
+  font-size: 14px;
+  color: var(--text-2);
+  margin: -24px 0 32px;
+}
+
+/* Chart loading / error states — manual §23 */
+.chart-skeleton {
+  height: 420px;
+  background: var(--bg-2);
+  animation: kpi-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes kpi-pulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chart-skeleton { animation: none; }
+}
+
+.chart-error {
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--down);
+  font-size: 11px;
+}
+
 /* Semantic helpers */
 .up { color: var(--up); }
 .down { color: var(--down); }
+.warn { color: var(--warn); }
 
 /* Layout grid — 12 col, max 1440px */
 .container {
   max-width: 1440px;
   margin: 0 auto;
+}
+
+/* Two-column panel row — Law 3: 16px gap */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .two-col { grid-template-columns: 1fr; }
 }
 
 /* KPI row — law 5: max 4 cards */

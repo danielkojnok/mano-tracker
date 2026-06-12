@@ -1,0 +1,26 @@
+.chart-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+/* Secondary button style — manual §06 */
+.toggle-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-2);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 2px;
+}
+
+.toggle-btn:hover {
+  background: var(--bg-2);
+}
+
+.toggle-active {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: var(--gold-tint);
+}

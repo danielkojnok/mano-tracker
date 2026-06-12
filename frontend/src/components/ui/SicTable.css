@@ -1,0 +1,45 @@
+.sic-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.sic-table th {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-2);
+  text-align: left;
+  padding: 0 8px 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sic-table td {
+  height: 38px;
+  padding: 0 8px;
+  border-bottom: 1px solid var(--row-line);
+}
+
+.sic-table tbody tr:hover {
+  background: var(--bg-2);
+}
+
+.sic-table .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* In-cell bar behind the number — number always outside the bar, right */
+.cell-bar-wrap {
+  display: inline-block;
+  width: 70px;
+  height: 12px;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+.cell-bar {
+  display: block;
+  height: 100%;
+  background: var(--gold-dim);
+  opacity: 0.3;
+}

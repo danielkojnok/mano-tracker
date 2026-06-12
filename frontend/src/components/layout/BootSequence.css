@@ -1,0 +1,32 @@
+.boot-screen {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-0);
+  z-index: var(--z-tooltip); /* topmost layer per Law 6 scale */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 1;
+  transition: opacity 120ms ease-out;
+}
+
+.boot-fading {
+  opacity: 0;
+}
+
+.boot-text {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.8;
+  text-align: left;
+}
+
+/* cursor blinks once — animation-iteration-count 1, no loop (§19) */
+.boot-cursor-line {
+  animation: boot-blink 0.6s step-end 1;
+}
+
+@keyframes boot-blink {
+  50% { opacity: 0; }
+}

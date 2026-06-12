@@ -1,19 +1,31 @@
 import Panel from "../components/ui/Panel";
-import KpiCard from "../components/ui/KpiCard";
+import KpiRow from "../components/ui/KpiRow";
+import ScrambleText from "../components/ui/ScrambleText";
+import InsolvencyChart from "../components/charts/InsolvencyChart";
+import SicTable from "../components/ui/SicTable";
+import GazetteFeed from "../components/ui/GazetteFeed";
 
 export default function Market() {
   return (
     <>
-      <h1 className="page-title">Insolvenčný trh</h1>
-      <div className="kpi-row">
-        <KpiCard label="MESAČNÉ INSOLVENCIE" value="2,138" sub="▲ 2.8% medziročne" trend="up" />
-        <KpiCard label="IMPLIK. TRŽBY FY27" value="£32.4m" sub="model · základný scenár" isKeyMetric />
-        <KpiCard label="ZDRAVIE PIPELINE" value="Klesá" sub="▼ 2.3% vážený trh 12m" trend="down" />
-        <KpiCard label="CENA AKCIE MANO.L" value="39.3 GBX" sub="▲ 0.8% deň" trend="up" />
-      </div>
-      <Panel title="Mesačné insolvencie" source="Insolvency Service · jún 2026" headerRight="12M">
-        F3
+      <h1 className="page-title">
+        <ScrambleText text="INSOLVENČNÝ TRH" />
+      </h1>
+      <KpiRow />
+      <Panel
+        title="Mesačné insolvencie"
+        source="Insolvency Service · Insolvency Service Long-Run Series"
+      >
+        <InsolvencyChart />
       </Panel>
+      <div className="two-col">
+        <Panel title="Sektory SIC" source="Insolvency Service · jún 2026" headerRight="F4">
+          <SicTable />
+        </Panel>
+        <Panel title="Gazette feed" source="The Gazette · gazette_notices">
+          <GazetteFeed />
+        </Panel>
+      </div>
     </>
   );
 }

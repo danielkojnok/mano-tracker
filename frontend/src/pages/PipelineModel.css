@@ -1,0 +1,152 @@
+/* Scenario tabs */
+.scenario-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.scenario-tab-btn {
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+/* Sliders panel 40% / output panel 60% */
+.pipeline-grid {
+  display: grid;
+  grid-template-columns: 2fr 3fr;
+  gap: 16px;
+  align-items: start;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 1024px) {
+  .pipeline-grid { grid-template-columns: 1fr; }
+}
+
+/* Slider — manual §06: 4px track, 14px square thumb with 2px gold border */
+.slider-row {
+  padding: 8px;
+  margin-bottom: 8px;
+  transition: background-color 120ms ease-out;
+}
+
+.slider-flash {
+  background: var(--gold-tint);
+}
+
+.slider-head {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 11px;
+}
+
+.slider-label {
+  color: var(--text-2);
+}
+
+.slider-value {
+  color: var(--gold);
+  font-weight: 600;
+}
+
+.slider-row input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 0;
+  outline-offset: 4px;
+}
+
+.slider-row input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background: var(--bg-1);
+  border: 2px solid var(--gold);
+  border-radius: 0;
+  cursor: pointer;
+}
+
+.slider-row input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: var(--bg-1);
+  border: 2px solid var(--gold);
+  border-radius: 0;
+  cursor: pointer;
+}
+
+/* Revenue output */
+.revenue-display {
+  font-size: 48px;
+  font-weight: 600;
+  color: var(--gold);
+  margin-bottom: 16px;
+}
+
+.scenario-compare {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.scenario-cell {
+  border: 1px solid var(--border);
+  padding: 12px;
+}
+
+.scenario-cell-label {
+  font-size: 10px;
+  color: var(--text-2);
+  margin-bottom: 4px;
+}
+
+.scenario-cell-value {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.scenario-cell-delta {
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+/* Backtest table */
+.backtest-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.backtest-table th {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-2);
+  text-align: left;
+  padding: 0 8px 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.backtest-table td {
+  height: 38px;
+  padding: 0 8px;
+  border-bottom: 1px solid var(--row-line);
+}
+
+.backtest-table tbody tr:hover {
+  background: var(--bg-2);
+}
+
+.backtest-table .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.mape-row td {
+  color: var(--text-2);
+  font-size: 11px;
+}

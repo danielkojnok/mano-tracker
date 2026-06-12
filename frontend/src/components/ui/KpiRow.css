@@ -1,0 +1,12 @@
+/* Loading skeleton — manual §23: animated --bg-2 pulse, same size as card. */
+.kpi-skeleton {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  height: 118px;
+  animation: kpi-pulse 1.2s ease-in-out infinite;
+}
+
+/* @keyframes kpi-pulse lives in base.css */
+@media (prefers-reduced-motion: reduce) {
+  .kpi-skeleton { animation: none; }
+}

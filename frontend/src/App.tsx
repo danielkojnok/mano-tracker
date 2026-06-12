@@ -1,5 +1,6 @@
 import { HashRouter, Routes, Route } from "react-router-dom";
 import AppShell from "./components/layout/AppShell";
+import BootSequence from "./components/layout/BootSequence";
 import Overview from "./pages/Overview";
 import Market from "./pages/Market";
 import PipelineModel from "./pages/PipelineModel";
@@ -10,6 +11,7 @@ import Diagnostics from "./pages/Diagnostics";
 export default function App() {
   return (
     <HashRouter>
+      <BootSequence />
       <AppShell>
         <Routes>
           <Route path="/" element={<Overview />} />

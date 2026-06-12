@@ -1,0 +1,26 @@
+.gazette-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 36px;
+  border-bottom: 1px solid var(--row-line);
+  font-size: 12px;
+}
+
+.gazette-row:hover {
+  background: var(--bg-2);
+}
+
+.gazette-date {
+  color: var(--text-2);
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.gazette-name {
+  flex: 1;
+  min-width: 180px; /* Law 4 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
