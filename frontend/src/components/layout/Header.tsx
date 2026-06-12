@@ -7,7 +7,7 @@ export default function Header() {
   return (
     <header className="app-header">
       <div className="header-brand">
-        <span className="header-logo" aria-label="MANO Tracker logo" />
+        <img src="/mano-tracker/logo-dark.png" alt="MANO TRACKER logo" style={{ height: "40px", width: "auto" }} />
         <div>
           <div className="header-wordmark">MANO TRACKER</div>
           <div className="header-subtitle mono">UK INSOLVENČNÝ PREDSTIH ~24 MES.</div>
