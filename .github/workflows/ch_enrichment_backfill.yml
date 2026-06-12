@@ -17,6 +17,7 @@ jobs:
             api_key_secret: COMPANIES_HOUSE_API_KEY_2
     env:
       COMPANIES_HOUSE_API_KEY: ${{ secrets[matrix.api_key_secret] }}
+      PYTHONUNBUFFERED: "1"
     permissions:
       contents: write
     steps:
