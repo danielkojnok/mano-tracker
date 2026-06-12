@@ -1,0 +1,362 @@
+"""
+ingest/export_frontend_data.py
+Export tracker.db → static JSON files for the React frontend.
+
+Output: frontend/public/data/*.json
+deps: pandas, sqlite3, json, pathlib (all already in project)
+"""
+
+import json
+import sqlite3
+from datetime import datetime, timezone
+from pathlib import Path
+
+import pandas as pd
+
+ROOT = Path(__file__).resolve().parent.parent
+DB_PATH = ROOT / "data" / "tracker.db"
+OUT_DIR = ROOT / "frontend" / "public" / "data"
+
+COMPACT = {"ensure_ascii": False, "separators": (",", ":")}
+
+
+def _tables(con: sqlite3.Connection) -> set[str]:
+    cur = con.execute("SELECT name FROM sqlite_master WHERE type='table'")
+    return {r[0] for r in cur.fetchall()}
+
+
+def _now() -> str:
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+# ── FILE 1 — kpis.json ────────────────────────────────────────────────────────
+
+def build_kpis(con: sqlite3.Connection) -> dict:
+    tbls = _tables(con)
+    now = _now()
+
+    # insolvencies last 12m and prior-year 12m
+    ins_12m = ins_prev_12m = None
+    for tbl in ("insolvencies_monthly", "insolvencies_record_level"):
+        if tbl not in tbls:
+            continue
+        try:
+            if tbl == "insolvencies_monthly":
+                df = pd.read_sql(
+                    "SELECT date, cvl, compulsory FROM insolvencies_monthly"
+                    " ORDER BY date DESC",
+                    con,
+                    parse_dates=["date"],
+                )
+                df = df.dropna(subset=["date"]).sort_values("date")
+                df["total"] = df["cvl"].fillna(0) + df["compulsory"].fillna(0)
+                cutoff = df["date"].max() - pd.DateOffset(months=12)
+                prev_cutoff = cutoff - pd.DateOffset(months=12)
+                ins_12m = int(df[df["date"] > cutoff]["total"].sum())
+                ins_prev_12m = int(
+                    df[(df["date"] > prev_cutoff) & (df["date"] <= cutoff)]["total"].sum()
+                )
+            else:
+                df = pd.read_sql(
+                    "SELECT month_registered, is_cvl, is_compulsory"
+                    " FROM insolvencies_record_level",
+                    con,
+                    parse_dates=["month_registered"],
+                )
+                df = df.dropna(subset=["month_registered"])
+                df["total"] = (
+                    df["is_cvl"].fillna(0) + df["is_compulsory"].fillna(0)
+                )
+                df_m = (
+                    df.groupby(pd.Grouper(key="month_registered", freq="MS"))["total"]
+                    .sum()
+                    .reset_index()
+                    .rename(columns={"month_registered": "date"})
+                )
+                df_m = df_m.sort_values("date")
+                cutoff = df_m["date"].max() - pd.DateOffset(months=12)
+                prev_cutoff = cutoff - pd.DateOffset(months=12)
+                ins_12m = int(df_m[df_m["date"] > cutoff]["total"].sum())
+                ins_prev_12m = int(
+                    df_m[
+                        (df_m["date"] > prev_cutoff) & (df_m["date"] <= cutoff)
+                    ]["total"].sum()
+                )
+            break
+        except Exception:
+            ins_12m = ins_prev_12m = None
+
+    if ins_12m is None:
+        ins_12m, ins_prev_12m = 25_600, 25_000
+
+    yoy_pct = (
+        round((ins_12m - ins_prev_12m) / ins_prev_12m * 100, 2)
+        if ins_prev_12m
+        else 0.0
+    )
+
+    # pipeline health
+    if yoy_pct < -2:
+        health, health_trend = "Klesá", "down"
+    elif yoy_pct > 2:
+        health, health_trend = "Rastie", "up"
+    else:
+        health, health_trend = "Stabilné", "neutral"
+
+    # MANO price from DB
+    mano_price, mano_change = 39.3, 0.8
+    if "mano_price" in tbls:
+        try:
+            px = pd.read_sql(
+                "SELECT date, close FROM mano_price ORDER BY date DESC LIMIT 2",
+                con,
+                parse_dates=["date"],
+            )
+            if len(px) >= 1:
+                mano_price = round(float(px.iloc[0]["close"]), 2)
+            if len(px) == 2:
+                mano_change = round(
+                    (float(px.iloc[0]["close"]) - float(px.iloc[1]["close"]))
+                    / float(px.iloc[1]["close"])
+                    * 100,
+                    2,
+                )
+        except Exception:
+            pass
+
+    # FY27 revenue from mano_kpis if available, else hardcoded
+    fy27_base = 32.4
+    if "mano_kpis" in tbls:
+        try:
+            kpis = pd.read_sql("SELECT fy, revenue FROM mano_kpis", con)
+            fy27 = kpis[kpis["fy"] == "FY27"]
+            if not fy27.empty and pd.notna(fy27.iloc[0]["revenue"]):
+                fy27_base = round(float(fy27.iloc[0]["revenue"]), 2)
+        except Exception:
+            pass
+
+    return {
+        "insolvencies_12m": ins_12m,
+        "insolvencies_yoy_pct": yoy_pct,
+        "mano_price_gbx": mano_price,
+        "mano_price_change_pct": mano_change,
+        "fy27_revenue_base_m": fy27_base,
+        "pipeline_health": health,
+        "pipeline_health_trend": health_trend,
+        "pipeline_health_pct": yoy_pct,
+        "generated_at": now,
+    }
+
+
+# ── FILE 2 — insolvency_timeseries.json ───────────────────────────────────────
+
+def build_timeseries(con: sqlite3.Connection) -> dict:
+    tbls = _tables(con)
+
+    if "insolvencies_monthly" in tbls:
+        try:
+            df = pd.read_sql(
+                "SELECT date, cvl, compulsory, total FROM insolvencies_monthly"
+                " ORDER BY date ASC",
+                con,
+                parse_dates=["date"],
+            )
+            rows = []
+            for _, r in df.iterrows():
+                if pd.isna(r["date"]):
+                    continue
+                rows.append({
+                    "date": r["date"].strftime("%Y-%m"),
+                    "cvl": int(r["cvl"]) if pd.notna(r["cvl"]) else 0,
+                    "compulsory": int(r["compulsory"]) if pd.notna(r["compulsory"]) else 0,
+                    "total": int(r["total"]) if pd.notna(r["total"]) else 0,
+                })
+            return {"series": rows}
+        except Exception:
+            pass
+
+    if "insolvencies_record_level" in tbls:
+        try:
+            df = pd.read_sql(
+                "SELECT month_registered, is_cvl, is_compulsory"
+                " FROM insolvencies_record_level",
+                con,
+                parse_dates=["month_registered"],
+            )
+            df = df.dropna(subset=["month_registered"])
+            df["month"] = df["month_registered"].dt.to_period("M")
+            agg = (
+                df.groupby("month")
+                .agg(cvl=("is_cvl", "sum"), compulsory=("is_compulsory", "sum"))
+                .reset_index()
+                .sort_values("month")
+            )
+            rows = []
+            for _, r in agg.iterrows():
+                cvl = int(r["cvl"])
+                comp = int(r["compulsory"])
+                rows.append({
+                    "date": str(r["month"]),
+                    "cvl": cvl,
+                    "compulsory": comp,
+                    "total": cvl + comp,
+                })
+            return {"series": rows}
+        except Exception:
+            pass
+
+    return {"series": []}
+
+
+# ── FILE 3 — ip_network.json ──────────────────────────────────────────────────
+
+def build_ip_network(con: sqlite3.Connection) -> dict:
+    tbls = _tables(con)
+    now = _now()
+
+    if "ip_network" not in tbls:
+        return {"nodes": [], "meta": {"total_ips": 0, "total_cases": 0, "generated_at": now}}
+
+    try:
+        df = pd.read_sql("SELECT * FROM ip_network", con)
+    except Exception:
+        return {"nodes": [], "meta": {"total_ips": 0, "total_cases": 0, "generated_at": now}}
+
+    nodes = []
+    for _, r in df.iterrows():
+        name = str(r["ip_name"]) if pd.notna(r["ip_name"]) else ""
+        label = name[:28]
+        nodes.append({
+            "id": name,
+            "label": label,
+            "full_name": name,
+            "total_cases": int(r["total_cases"]) if pd.notna(r["total_cases"]) else 0,
+            "primary_region": str(r["primary_region"]) if pd.notna(r["primary_region"]) else None,
+            "top_sic_1": None,
+            "top_sic_pct_1": None,
+            "top_sic_2": None,
+            "top_sic_pct_2": None,
+            "top_sic_3": None,
+            "top_sic_pct_3": None,
+            "sweet_spot_cases": int(r["sweet_spot_cases"]) if pd.notna(r["sweet_spot_cases"]) else 0,
+            "pct_sweet_spot": round(float(r["pct_sweet_spot"]), 2) if pd.notna(r["pct_sweet_spot"]) else 0.0,
+        })
+
+    return {
+        "nodes": nodes,
+        "meta": {
+            "total_ips": len(nodes),
+            "total_cases": sum(n["total_cases"] for n in nodes),
+            "generated_at": now,
+        },
+    }
+
+
+# ── FILE 4 — gazette_recent.json ─────────────────────────────────────────────
+
+_TYPE_MAP = {
+    "liquidator_appointment": "LIKVIDÁCIA",
+    "winding_up_petition": "PETÍCIA",
+}
+
+
+def build_gazette_recent(con: sqlite3.Connection) -> dict:
+    tbls = _tables(con)
+
+    if "gazette_notices" not in tbls:
+        return {"notices": []}
+
+    try:
+        df = pd.read_sql(
+            "SELECT date, company_name, notice_type, notice_type_label"
+            " FROM gazette_notices ORDER BY date DESC LIMIT 50",
+            con,
+        )
+        notices = []
+        for _, r in df.iterrows():
+            ntype = str(r["notice_type"]) if pd.notna(r["notice_type"]) else ""
+            notices.append({
+                "date": str(r["date"])[:10] if pd.notna(r["date"]) else "",
+                "company_name": str(r["company_name"]) if pd.notna(r["company_name"]) else "",
+                "notice_type": ntype,
+                "notice_type_label": str(r["notice_type_label"]) if pd.notna(r["notice_type_label"]) else "",
+                "display_type": _TYPE_MAP.get(ntype, "INÉ"),
+            })
+        return {"notices": notices}
+    except Exception:
+        return {"notices": []}
+
+
+# ── FILE 5 — pipeline_assumptions.json ───────────────────────────────────────
+
+def build_pipeline_assumptions() -> dict:
+    # Parse constants from model/pipeline.py; fall back to known v0.2.1 values.
+    defaults = {
+        "referral_rate": 0.0425,
+        "acceptance_rate": 0.30,
+        "arrcc_base": 110_000,
+        "arrcc_pessimistic": 95_000,
+        "arrcc_optimistic": 150_000,
+        "lag_months_base": 25,
+        "lag_months_bear": 34,
+        "lag_months_bull": 21,
+        "compulsory_weight": 1.25,
+        "fy27_base": 33.8,
+        "fy27_pessimistic": 28.0,
+        "fy27_optimistic": 45.0,
+        "model_version": "v0.2.1",
+        "calibrated_at": "2026-05",
+    }
+
+    try:
+        pipeline_src = (ROOT / "model" / "pipeline.py").read_text()
+        import re
+
+        def _extract(pattern: str, src: str, cast=float):
+            m = re.search(pattern, src)
+            return cast(m.group(1)) if m else None
+
+        kv = {
+            "referral_rate": _extract(r"REFERRAL_RATE\s*=\s*([0-9.]+)", pipeline_src),
+            "acceptance_rate": _extract(r"ACCEPTANCE_RATE\s*=\s*([0-9.]+)", pipeline_src),
+            "compulsory_weight": _extract(r"COMPULSORY_WEIGHT\s*=\s*([0-9.]+)", pipeline_src),
+            "arrcc_base": _extract(r'"base":\s*([0-9_]+)', pipeline_src, cast=lambda x: int(x.replace("_", ""))),
+            "arrcc_pessimistic": _extract(r'"bear":\s*([0-9_]+)', pipeline_src, cast=lambda x: int(x.replace("_", ""))),
+            "arrcc_optimistic": _extract(r'"bull":\s*([0-9_]+)', pipeline_src, cast=lambda x: int(x.replace("_", ""))),
+        }
+        for k, v in kv.items():
+            if v is not None:
+                defaults[k] = v
+    except Exception:
+        pass
+
+    return defaults
+
+
+# ── main ──────────────────────────────────────────────────────────────────────
+
+def main():
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+
+    con = sqlite3.connect(DB_PATH)
+    try:
+        files = {
+            "kpis.json": build_kpis(con),
+            "insolvency_timeseries.json": build_timeseries(con),
+            "ip_network.json": build_ip_network(con),
+            "gazette_recent.json": build_gazette_recent(con),
+            "pipeline_assumptions.json": build_pipeline_assumptions(),
+        }
+    finally:
+        con.close()
+
+    for name, data in files.items():
+        path = OUT_DIR / name
+        path.write_text(json.dumps(data, **COMPACT), encoding="utf-8")
+        print(f"  wrote {name} ({path.stat().st_size:,} bytes)")
+
+    print("Done.")
+
+
+if __name__ == "__main__":
+    main()

@@ -23,6 +23,11 @@ jobs:
         working-directory: frontend
     steps:
       - uses: actions/checkout@v4
+      - name: Export frontend data
+        run: |
+          pip install pandas --quiet
+          python3 ingest/export_frontend_data.py
+        working-directory: ${{ github.workspace }}
       - uses: actions/setup-node@v4
         with:
           node-version: 20
