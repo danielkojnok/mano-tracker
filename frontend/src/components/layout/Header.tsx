@@ -1,9 +1,15 @@
 import "./Header.css";
+import { useFetch } from "../../hooks/useData";
+import type { Kpis } from "../../types/data";
 
 /** Sticky header (z-20) — DESIGN-MANUAL.md §09.
- *  Logo image TODO: assets/logo-dark.png missing from repo —
- *  typographic gold-square placeholder until the asset exists. */
+ *  Quotes share the same kpis.json source as the ticker. */
 export default function Header() {
+  const { data: kpis } = useFetch<Kpis>("kpis.json");
+
+  const px = kpis?.mano_price_change_pct ?? 0;
+  const yoy = kpis?.insolvencies_yoy_pct ?? 0;
+
   return (
     <header className="app-header">
       <div className="header-brand">
@@ -14,13 +20,24 @@ export default function Header() {
         </div>
       </div>
       <div className="header-quotes mono">
-        {/* Hardcoded — F2 replaces with live data */}
-        <span>
-          MANO.L 39.3 <span className="up">▲0.8%</span>
-        </span>
-        <span>
-          INSOLV 12M 25.7k <span className="down">▼2.3%</span>
-        </span>
+        {kpis ? (
+          <>
+            <span>
+              MANO.L {kpis.mano_price_gbx.toFixed(1)}{" "}
+              <span className={px >= 0 ? "up" : "down"}>
+                {px >= 0 ? "▲" : "▼"}{Math.abs(px).toFixed(1)}%
+              </span>
+            </span>
+            <span>
+              INSOLV 12M {kpis.insolvencies_12m.toLocaleString("en-GB")}{" "}
+              <span className={yoy >= 0 ? "up" : "down"}>
+                {yoy >= 0 ? "▲" : "▼"}{Math.abs(yoy).toFixed(1)}%
+              </span>
+            </span>
+          </>
+        ) : (
+          <span>MANO.L -- · INSOLV 12M --</span>
+        )}
       </div>
     </header>
   );

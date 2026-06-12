@@ -10,35 +10,40 @@ import type { InsolTimeseries } from "../../types/data";
 
 const LEAD_MONTHS = 25;
 
+/* "YYYY-MM" → ms timestamp — time axis needs unambiguous numeric x,
+ * string dates + LTTB sampling silently fail to render. */
+function ts(ym: string): number {
+  const [y, m] = ym.split("-").map(Number);
+  return Date.UTC(y, m - 1, 1);
+}
+
+function shiftMonths(ym: string, months: number): number {
+  const [y, m] = ym.split("-").map(Number);
+  const total = y * 12 + (m - 1) + months;
+  return Date.UTC(Math.floor(total / 12), total % 12, 1);
+}
+
 /* MANO realised revenue — fiscal year end = March. Source: MANO RNS. */
-const MANO_REVENUE: [string, number][] = [
-  ["2019-03", 27.0],
-  ["2020-03", 13.2],
-  ["2021-03", 20.7],
-  ["2022-03", 20.4],
-  ["2023-03", 26.8],
-  ["2024-03", 26.1],
-  ["2025-03", 26.7],
+const MANO_REVENUE: [number, number][] = [
+  [ts("2019-03"), 27.0],
+  [ts("2020-03"), 13.2],
+  [ts("2021-03"), 20.7],
+  [ts("2022-03"), 20.4],
+  [ts("2023-03"), 26.8],
+  [ts("2024-03"), 26.1],
+  [ts("2025-03"), 26.7],
 ];
 
 const PROJ = { base: 33.8, bear: 28.0, bull: 45.0 };
-const PROJ_RANGE = ["2025-03", "2027-03"];
+const PROJ_RANGE = [ts("2025-03"), ts("2027-03")];
 
 const RNS_EVENTS = [
-  ["2021-06", "FY21 RESULTS"],
-  ["2022-06", "FY22 RESULTS"],
-  ["2023-06", "FY23 RESULTS"],
-  ["2024-06", "FY24 RESULTS"],
-  ["2025-06", "FY25 RESULTS"],
+  [ts("2021-06"), "FY21 RESULTS"],
+  [ts("2022-06"), "FY22 RESULTS"],
+  [ts("2023-06"), "FY23 RESULTS"],
+  [ts("2024-06"), "FY24 RESULTS"],
+  [ts("2025-06"), "FY25 RESULTS"],
 ] as const;
-
-function shiftMonths(ym: string, months: number): string {
-  const [y, m] = ym.split("-").map(Number);
-  const total = y * 12 + (m - 1) + months;
-  const ny = Math.floor(total / 12);
-  const nm = (total % 12) + 1;
-  return `${ny}-${String(nm).padStart(2, "0")}`;
-}
 
 export default function HeroChart() {
   const { data, loading, error } = useFetch<InsolTimeseries>(
@@ -49,7 +54,7 @@ export default function HeroChart() {
   if (error || !data)
     return <div className="chart-error mono">CHYBA · DÁTA NEDOSTUPNÉ</div>;
 
-  const shifted: [string, number][] = data.series.map((p) => [
+  const shifted: [number, number][] = data.series.map((p) => [
     shiftMonths(p.date, LEAD_MONTHS),
     p.total,
   ]);
@@ -60,10 +65,11 @@ export default function HeroChart() {
       bottom: 0,
       data: ["Insolvencie +25m (lead)", "Skutočné tržby MANO", "Projekcia FY27"],
     },
-    grid: { top: 32, right: 56, bottom: 64, left: 56 },
+    grid: { top: 40, right: 56, bottom: 64, left: 56 },
     xAxis: {
       type: "time",
-      min: "2019-01",
+      min: ts("2019-01"),
+      max: ts("2028-06"),
       axisLabel: { hideOverlap: true }, // Law 7 — skip, never rotate
     },
     yAxis: [
@@ -86,7 +92,7 @@ export default function HeroChart() {
         data: shifted,
         smooth: false,
         symbol: "none",
-        lineStyle: { color: T.signal, width: 1.5 },
+        lineStyle: { color: T.signal, width: 2 },
         itemStyle: { color: T.signal },
         areaStyle: { color: T.signal, opacity: 0.15 },
         sampling: "lttb", // manual §07 — decimation over 500 points
@@ -102,11 +108,13 @@ export default function HeroChart() {
           symbol: "none",
           silent: true,
           lineStyle: { color: T.goldDim, type: "dashed", width: 1 },
+          // §07 + Law 1: horizontal label above line top, never rotated
           label: {
+            rotate: 0,
+            position: "end",
             fontFamily: "JetBrains Mono",
             fontSize: 10,
             color: T.goldDim,
-            position: "insideEndTop",
           },
           data: RNS_EVENTS.map(([date, label]) => ({
             xAxis: date,

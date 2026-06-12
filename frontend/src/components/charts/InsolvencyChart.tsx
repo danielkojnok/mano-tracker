@@ -8,6 +8,11 @@ import "./InsolvencyChart.css";
 
 type Mode = "cvl" | "compulsory" | "both";
 
+function ts(ym: string): number {
+  const [y, m] = ym.split("-").map(Number);
+  return Date.UTC(y, m - 1, 1);
+}
+
 const MODES: { key: Mode; label: string }[] = [
   { key: "cvl", label: "CVL" },
   { key: "compulsory", label: "COMPULSORY" },
@@ -24,9 +29,10 @@ export default function InsolvencyChart() {
   if (error || !data)
     return <div className="chart-error mono">CHYBA · DÁTA NEDOSTUPNÉ</div>;
 
-  const cvl: [string, number][] = data.series.map((p) => [p.date, p.cvl]);
-  const compulsory: [string, number][] = data.series.map((p) => [
-    p.date,
+  // ms timestamps — string "YYYY-MM" x values + LTTB sampling fail to render
+  const cvl: [number, number][] = data.series.map((p) => [ts(p.date), p.cvl]);
+  const compulsory: [number, number][] = data.series.map((p) => [
+    ts(p.date),
     p.compulsory,
   ]);
 
