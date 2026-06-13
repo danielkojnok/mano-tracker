@@ -16,7 +16,7 @@ export default function Header() {
         <img src="/mano-tracker/logo-dark.png" alt="MANO TRACKER logo" style={{ height: "40px", width: "auto" }} />
         <div>
           <div className="header-wordmark">MANO TRACKER</div>
-          <div className="header-subtitle mono">UK INSOLVENČNÝ PREDSTIH ~24 MES.</div>
+          <div className="header-subtitle mono">UK INSOLVENČNÝ PREDSTIH ~25 MES.</div>
         </div>
       </div>
       <div className="header-quotes mono">
