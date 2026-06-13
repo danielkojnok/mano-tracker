@@ -7,7 +7,17 @@ import type { Tornado } from "../../types/data";
 /* Tornado — sensitivity of base FY27 revenue to each parameter (manual §25.3).
  * Horizontal diverging bars from the base value, sorted by swing magnitude, so
  * the assumption that matters most reads at a glance. All values from
- * tornado.json (model/pipeline.py); the frontend computes nothing here. */
+ * tornado.json (model/pipeline.py); the frontend computes nothing here.
+ *
+ * Some rows (referral / acceptance / compulsory_weight) genuinely barely move
+ * the headline because the capacity cap binds — their swing is ~£1.5m on one
+ * side only. We do NOT inflate them: each leg is drawn at its true position,
+ * but a tiny/zero leg is floored to a small pixel STUB so the row stays legible,
+ * and every row carries explicit −20% / +20% value labels. A custom renderItem
+ * is used because stacked bars drop zero-width segments entirely. */
+
+const MIN_STUB_PX = 4; // a ~0 leg still paints a small, honest stub
+
 export default function TornadoChart() {
   const { data, loading, error } = useFetch<Tornado>("tornado.json");
 
@@ -21,31 +31,68 @@ export default function TornadoChart() {
   const rows = [...data.rows].reverse();
   const cats = rows.map((r) => r.label);
 
-  // Two stacked bar series anchored at `base`: the low leg (base→low, usually
-  // negative) and the high leg (base→high). Each bar starts at base.
-  const lowLeg = rows.map((r) => r.low_m - base); // ≤ 0 typically
-  const highLeg = rows.map((r) => r.high_m - base); // ≥ 0 typically
-
   const allVals = rows.flatMap((r) => [r.low_m, r.high_m, base]);
   const lo = Math.min(...allVals);
   const hi = Math.max(...allVals);
-  const padded = (v: number) => v - base;
+  // symmetric-ish padding around base, in £m relative to base
+  const axisMin = Math.min(lo, base) - base - 1.5;
+  const axisMax = Math.max(hi, base) - base + 1.5;
+
+  // One custom datum per row: [rowIndex, lowDelta, highDelta] (relative to base).
+  const customData = rows.map((r, i) => [i, r.low_m - base, r.high_m - base]);
+
+  type RenderApi = {
+    value: (i: number) => number;
+    coord: (p: [number, number]) => [number, number];
+    size: (p: [number, number]) => [number, number];
+  };
+
+  const renderItem = (_params: unknown, api: RenderApi) => {
+    const idx = api.value(0);
+    const lowDelta = api.value(1);
+    const highDelta = api.value(2);
+
+    const [xBase, y] = api.coord([0, idx]);
+    const [xLow] = api.coord([lowDelta, idx]);
+    const [xHigh] = api.coord([highDelta, idx]);
+    const bandH = api.size([0, 1])[1] * 0.55;
+
+    // Floor each leg to a minimum pixel stub so a ~0 swing is still visible,
+    // drawn on the correct side of base (left for low, right for high).
+    const legRect = (xEnd: number, color: string) => {
+      const raw = xEnd - xBase;
+      const dir = raw < 0 ? -1 : 1;
+      const w = Math.max(Math.abs(raw), raw === 0 ? 0 : MIN_STUB_PX);
+      const x = dir < 0 ? xBase - w : xBase;
+      return {
+        type: "rect" as const,
+        shape: { x, y: y - bandH / 2, width: w, height: bandH },
+        style: { fill: color, opacity: 0.85 },
+      };
+    };
+
+    const children = [];
+    if (lowDelta !== 0) children.push(legRect(xLow, T.down));
+    if (highDelta !== 0) children.push(legRect(xHigh, T.up));
+
+    return { type: "group" as const, children };
+  };
 
   const option = {
-    grid: { top: 16, right: 80, bottom: 32, left: 150 },
+    grid: { top: 16, right: 96, bottom: 32, left: 160 },
     tooltip: {
       trigger: "axis",
       axisPointer: { type: "shadow" },
       formatter: (params: { dataIndex: number }[]) => {
-        const i = params[0].dataIndex;
+        const i = params[0]?.dataIndex ?? 0;
         const r = rows[i];
         return `${r.label}<br/>−20%: £${r.low_m}m<br/>+20%: £${r.high_m}m<br/>swing: £${r.swing_m}m`;
       },
     },
     xAxis: {
       type: "value",
-      min: padded(lo) - 1.5,
-      max: padded(hi) + 1.5,
+      min: axisMin,
+      max: axisMax,
       axisLabel: {
         formatter: (v: number) => `£${(base + v).toFixed(0)}m`,
         fontSize: 11,
@@ -58,12 +105,19 @@ export default function TornadoChart() {
     },
     series: [
       {
-        name: "−20%",
-        type: "bar",
-        stack: "tornado",
-        data: lowLeg,
-        itemStyle: { color: T.down, opacity: 0.85 },
-        barWidth: "55%",
+        type: "custom",
+        renderItem,
+        encode: { x: [1, 2], y: 0 },
+        data: customData,
+        // explicit per-row value labels at both ends (always shown, even for a
+        // stub leg) via a paired scatter so labels never sit inside a 4px stub.
+        z: 2,
+      },
+      // low-value labels (left of base)
+      {
+        type: "scatter",
+        symbolSize: 0,
+        data: rows.map((r, i) => [r.low_m - base, i]),
         label: {
           show: true,
           position: "left",
@@ -72,14 +126,14 @@ export default function TornadoChart() {
           fontSize: 11,
           color: T.text2,
         },
+        tooltip: { show: false },
+        z: 3,
       },
+      // high-value labels (right of base)
       {
-        name: "+20%",
-        type: "bar",
-        stack: "tornado",
-        data: highLeg,
-        itemStyle: { color: T.up, opacity: 0.85 },
-        barWidth: "55%",
+        type: "scatter",
+        symbolSize: 0,
+        data: rows.map((r, i) => [r.high_m - base, i]),
         label: {
           show: true,
           position: "right",
@@ -88,10 +142,11 @@ export default function TornadoChart() {
           fontSize: 11,
           color: T.text2,
         },
+        tooltip: { show: false },
+        z: 3,
       },
       // base reference line
       {
-        name: "base",
         type: "line",
         data: [],
         markLine: {
@@ -121,7 +176,8 @@ export default function TornadoChart() {
       <div className="tornado-note mono">
         Zlatá os = base <b className="gold">£{base}m</b>. {data.note} ARRCC a
         capacity cap dominujú — referral/acceptance/weight narážajú na cap, takže
-        ich nárast nezvýši tržbu (asymetria je reálne správanie modelu).
+        ich nárast nezvýši tržbu (asymetria je reálne správanie modelu). Malé
+        riadky sú zámerne malé — zobrazujú reálnu hodnotu, nie nafúknutú.
       </div>
     </div>
   );
