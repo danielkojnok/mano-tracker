@@ -3,10 +3,12 @@ import "../../lib/echartsTheme";
 import { T } from "../../styles/tokens";
 import { useFetch } from "../../hooks/useData";
 import type { PriceHistory } from "../../types/data";
+import { computeDrawdown, fmtDrawdown } from "../../lib/drawdown";
 
 /* Drawdown underwater (manual §25.8) — % below the running all-time-high over
- * time, red area, showing the trough to ~−93%. Computed from price history
- * only (no model number). The running ATH is a pure transform of the series. */
+ * time, red area, showing the trough to ~−93.5%. Computed from price history
+ * only (no model number) via the shared canonical drawdown helper, so the
+ * value here matches the price chart exactly. */
 
 function toTs(d: string): number {
   return new Date(d + "T00:00:00Z").getTime();
@@ -19,13 +21,7 @@ export default function DrawdownChart() {
   if (error || !data)
     return <div className="chart-error mono">CHYBA · DÁTA NEDOSTUPNÉ</div>;
 
-  let peak = -Infinity;
-  const dd: [number, number][] = data.series.map((p) => {
-    peak = Math.max(peak, p.close);
-    const pct = ((p.close - peak) / peak) * 100; // ≤ 0
-    return [toTs(p.date), Math.round(pct * 10) / 10];
-  });
-  const trough = Math.min(...dd.map((d) => d[1]));
+  const { series: dd, deepestPct: trough } = computeDrawdown(data.series, toTs);
 
   const option = {
     tooltip: {
@@ -57,8 +53,8 @@ export default function DrawdownChart() {
     <div>
       <div className="price-stats mono">
         <span>
-          Najhlbší prepad <b className="down">{trough}%</b> pod historickým
-          maximom
+          Najhlbší prepad <b className="down">{fmtDrawdown(trough)}</b> pod
+          historickým maximom
         </span>
       </div>
       <ReactECharts option={option} theme="mano" style={{ height: 220 }} notMerge />
