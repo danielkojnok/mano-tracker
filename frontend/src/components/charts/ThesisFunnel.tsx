@@ -97,6 +97,12 @@ export default function ThesisFunnel({ values }: ThesisFunnelProps = {}) {
     if (isFinal(i + 1) && vals.investments > vals.capacity_cap) {
       return `cap ${fmtInt(vals.capacity_cap)}`;
     }
+    // First hop (INSOLVENCIE → VÁŽENÝ TRH) is the compulsory WEIGHT, not a
+    // conversion rate — show it as a multiplier "×1.25" to match the slider
+    // and assumptions table (was rendered as "125%", the lone outlier).
+    if (i === 0) {
+      return `×${(to.value / from.value).toFixed(2)}`;
+    }
     return pct(to.value, from.value);
   };
 
