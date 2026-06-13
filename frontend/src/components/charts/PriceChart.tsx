@@ -71,7 +71,9 @@ export default function PriceChart() {
 
   const option = {
     tooltip: { trigger: "axis" },
-    grid: { top: 24, right: 104, bottom: 40, left: 48 },
+    // extra top headroom so the staggered RNS labels sit above the plot
+    // instead of over the x-axis ticks (same fix as the Company PriceChart).
+    grid: { top: 40, right: 104, bottom: 40, left: 48 },
     xAxis: {
       type: "time",
       min: startTs,
@@ -132,12 +134,15 @@ export default function PriceChart() {
             anchorLine(val.nav_per_share_gbx, T.text2, `NAV ~${val.nav_per_share_gbx}p`, 1, true),
             anchorLine(val.singer_target_gbx, T.up, `SINGER ${val.singer_target_gbx}p`, 2, true),
             anchorLine(val.price_gbx, T.gold, `${val.price_gbx}p dnes`, 2, false),
-            ...onlyRecent.map((e) => ({
+            // RNS labels pinned to the TOP (position "end") and vertically
+            // staggered so they clear the x-axis ticks and each other.
+            ...onlyRecent.map((e, i) => ({
               xAxis: toTs(e.date),
               lineStyle: { color: T.goldDim, width: 1, type: "dashed" as const },
               label: {
                 formatter: e.label,
-                position: "start" as const,
+                position: "end" as const,
+                distance: i % 2 === 0 ? 4 : 16,
                 rotate: 0,
                 fontFamily: "JetBrains Mono",
                 fontSize: 10,
