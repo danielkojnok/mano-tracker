@@ -65,3 +65,11 @@
   color: var(--gold);
   font-weight: 600;
 }
+
+/* honest caption for sparsely-populated metrics (e.g. ROI disclosed from FY24) */
+.sm-sparse {
+  margin-top: 4px;
+  font-size: 10px;
+  color: var(--text-2);
+  line-height: 1.4;
+}

@@ -13,6 +13,9 @@ interface Metric {
   unit: string;
   get: (f: ManoFy) => number | null;
   fmt: (v: number) => string;
+  /** When true, show an honest caption naming the first FY that has data
+   *  (this metric is sparsely populated in the source — no fabrication). */
+  explainSparse?: boolean;
 }
 
 const METRICS: Metric[] = [
@@ -43,6 +46,10 @@ const METRICS: Metric[] = [
     unit: "%",
     get: (f) => f.roi_pct,
     fmt: (v) => `${v}%`,
+    // ROI per year is null for FY19–FY23 in the source (MANO disclosed annual
+    // realised ROI only from FY24); we show the honest empty stub + a caption,
+    // never invented numbers.
+    explainSparse: true,
   },
 ];
 
@@ -72,6 +79,14 @@ function MiniBars({ series, metric }: { series: ManoFy[]; metric: Metric }) {
     for (let i = n - 1; i >= 0; i--) if (vals[i] != null) return i;
     return -1;
   })();
+
+  // First period with a value — used for the honest "disclosed only from FYxx"
+  // caption on sparsely-populated metrics (e.g. ROI). Derived from the data.
+  const firstWithValueIdx = vals.findIndex((v) => v != null);
+  const sparseCaption =
+    metric.explainSparse && firstWithValueIdx > 0
+      ? `ROI per rok zverejnené až od ${series[firstWithValueIdx].fy}`
+      : null;
 
   return (
     <div className="sm-cell">
@@ -136,6 +151,7 @@ function MiniBars({ series, metric }: { series: ManoFy[]; metric: Metric }) {
           "—"
         )}
       </div>
+      {sparseCaption && <div className="sm-sparse mono">{sparseCaption}</div>}
     </div>
   );
 }
