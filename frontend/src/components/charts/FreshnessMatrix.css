@@ -46,7 +46,14 @@
 }
 
 .fm-nospark {
-  color: var(--border-strong);
+  color: var(--text-2);
+  font-size: 11px;
+}
+
+/* short honesty note appended to a row's DETAIL (e.g. stale-feed reason) */
+.fm-note {
+  color: var(--warn);
+  font-size: 11px;
 }
 
 .fm-status {
