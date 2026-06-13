@@ -2,9 +2,9 @@ import ReactECharts from "echarts-for-react";
 import "../../lib/echartsTheme";
 import { T } from "../../styles/tokens";
 import { useFetch } from "../../hooks/useData";
-import type { InsolTimeseries } from "../../types/data";
+import type { InsolTimeseries, ManoKpis } from "../../types/data";
 
-/* Hero chart — téza: insolvencie vedú tržby MANO o ~25 mesiacov.
+/* Hero chart — téza: insolvencie vedú realised revenue MANO o ~25 mesiacov.
  * Series semantics per manual §07: cyan = lead indicator, gold = MANO
  * actuals, green dashed = projection. */
 
@@ -23,65 +23,75 @@ function shiftMonths(ym: string, months: number): number {
   return Date.UTC(Math.floor(total / 12), total % 12, 1);
 }
 
-/* MANO realised revenue — fiscal year end = March. Source: MANO RNS. */
-const MANO_REVENUE: [number, number][] = [
-  [ts("2019-03"), 27.0],
-  [ts("2020-03"), 13.2],
-  [ts("2021-03"), 20.7],
-  [ts("2022-03"), 20.4],
-  [ts("2023-03"), 26.8],
-  [ts("2024-03"), 26.1],
-  [ts("2025-03"), 26.7],
-];
+/* FY label → fiscal year end month (March). FY19 → 2019-03. */
+function fyToTs(fy: string): number {
+  const year = 2000 + Number(fy.replace("FY", ""));
+  return ts(`${year}-03`);
+}
 
 const PROJ = { base: 33.8, bear: 28.0, bull: 45.0 };
-const PROJ_RANGE = [ts("2025-03"), ts("2027-03")];
+const PROJ_RANGE = [ts("2026-03"), ts("2027-03")];
 
-const RNS_EVENTS = [
-  [ts("2021-06"), "FY21 RESULTS"],
-  [ts("2022-06"), "FY22 RESULTS"],
-  [ts("2023-06"), "FY23 RESULTS"],
-  [ts("2024-06"), "FY24 RESULTS"],
-  [ts("2025-06"), "FY25 RESULTS"],
-] as const;
+/* Every other RNS date — horizontal labels would collide annually (Law 1). */
+const RNS_EVENTS: [number, string][] = [
+  [ts("2021-06"), "FY21"],
+  [ts("2023-06"), "FY23"],
+  [ts("2025-06"), "FY25"],
+];
 
 export default function HeroChart() {
-  const { data, loading, error } = useFetch<InsolTimeseries>(
+  const { data: insol, loading: l1, error: e1 } = useFetch<InsolTimeseries>(
     "insolvency_timeseries.json",
   );
+  const { data: mano, loading: l2, error: e2 } = useFetch<ManoKpis>(
+    "mano_kpis.json",
+  );
 
-  if (loading) return <div className="chart-skeleton" aria-hidden="true" />;
-  if (error || !data)
+  if (l1 || l2) return <div className="chart-skeleton" aria-hidden="true" />;
+  if (e1 || e2 || !insol || !mano)
     return <div className="chart-error mono">CHYBA · DÁTA NEDOSTUPNÉ</div>;
 
-  const shifted: [number, number][] = data.series.map((p) => [
+  const shifted: [number, number][] = insol.series.map((p) => [
     shiftMonths(p.date, LEAD_MONTHS),
     p.total,
   ]);
+
+  const revenue: [number, number][] = mano.fy_series.map((f) => [
+    fyToTs(f.fy),
+    f.realised_m,
+  ]);
+  const fy26 = mano.fy_series.find((f) => f.fy === "FY26");
+  const fy26Ts = fyToTs("FY26");
 
   const option = {
     tooltip: { trigger: "axis" },
     legend: {
       bottom: 0,
-      data: ["Insolvencie +25m (lead)", "Skutočné tržby MANO", "Projekcia FY27"],
+      data: [
+        "Insolvencie +25m (lead)",
+        "Realised revenue MANO",
+        "Projekcia FY27",
+      ],
     },
     grid: { top: 40, right: 56, bottom: 64, left: 56 },
     xAxis: {
       type: "time",
       min: ts("2019-01"),
       max: ts("2028-06"),
-      axisLabel: { hideOverlap: true }, // Law 7 — skip, never rotate
+      axisLabel: { hideOverlap: true, fontSize: 12 }, // Law 7 — skip, never rotate
     },
     yAxis: [
       {
         type: "value",
         name: "INSOLV / MES.",
-        nameTextStyle: { fontSize: 10, color: T.text2 },
+        nameTextStyle: { fontSize: 12, color: T.text2 },
+        axisLabel: { fontSize: 12 },
       },
       {
         type: "value",
         name: "TRŽBY £m",
-        nameTextStyle: { fontSize: 10, color: T.text2 },
+        nameTextStyle: { fontSize: 12, color: T.text2 },
+        axisLabel: { fontSize: 12 },
         splitLine: { show: false },
       },
     ],
@@ -92,18 +102,40 @@ export default function HeroChart() {
         data: shifted,
         smooth: false,
         symbol: "none",
-        lineStyle: { color: T.signal, width: 2 },
+        lineStyle: { color: T.signal, width: 3 },
         itemStyle: { color: T.signal },
         areaStyle: { color: T.signal, opacity: 0.15 },
         sampling: "lttb", // manual §07 — decimation over 500 points
       },
       {
-        name: "Skutočné tržby MANO",
+        name: "Realised revenue MANO",
         type: "bar",
         yAxisIndex: 1,
-        data: MANO_REVENUE,
-        barWidth: 18,
+        data: revenue,
+        barWidth: 22,
         itemStyle: { color: T.gold },
+        // FY26 is actual vs model — annotate the gap (manual §21)
+        markPoint: {
+          symbol: "pin",
+          symbolSize: 0,
+          silent: true,
+          data: fy26
+            ? [
+                {
+                  coord: [fy26Ts, fy26.realised_m],
+                  value: "model £33.8m",
+                  label: {
+                    formatter: "model £33.8m",
+                    fontFamily: "JetBrains Mono",
+                    fontSize: 11,
+                    color: T.up,
+                    position: "top",
+                    distance: 8,
+                  },
+                },
+              ]
+            : [],
+        },
         markLine: {
           symbol: "none",
           silent: true,
@@ -128,7 +160,7 @@ export default function HeroChart() {
         yAxisIndex: 1,
         data: PROJ_RANGE.map((d) => [d, PROJ.base]),
         symbol: "none",
-        lineStyle: { color: T.up, type: "dashed", width: 1.5 },
+        lineStyle: { color: T.up, type: "dashed", width: 2 },
         itemStyle: { color: T.up },
       },
       // bear/bull band — invisible base line + stacked fill @10% (manual §07)
@@ -156,12 +188,5 @@ export default function HeroChart() {
     ],
   };
 
-  return (
-    <ReactECharts
-      option={option}
-      theme="mano"
-      style={{ height: 420 }}
-      notMerge
-    />
-  );
+  return <ReactECharts option={option} theme="mano" style={{ height: 440 }} notMerge />;
 }

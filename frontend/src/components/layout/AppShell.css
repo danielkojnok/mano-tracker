@@ -15,4 +15,7 @@
 .app-main {
   padding: 32px 16px;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* Law 3 — panel gap; section breaks add margin on top of this */
 }

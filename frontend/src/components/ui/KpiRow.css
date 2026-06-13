@@ -2,7 +2,7 @@
 .kpi-skeleton {
   background: var(--bg-2);
   border: 1px solid var(--border);
-  height: 118px;
+  height: 126px;
   animation: kpi-pulse 1.2s ease-in-out infinite;
 }
 

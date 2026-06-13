@@ -333,6 +333,94 @@ def build_pipeline_assumptions() -> dict:
     return defaults
 
 
+# ── FILE 6 — mano_kpis.json (seed: MANO RNS FY19-FY26) ───────────────────────
+
+def build_mano_kpis() -> dict:
+    return {
+        "fy_series": [
+            {"fy": "FY19", "realised_m": 7.15, "completions": 35, "arrcc_k": 204, "roi_pct": None},
+            {"fy": "FY20", "realised_m": 7.80, "completions": 54, "arrcc_k": 144, "roi_pct": None},
+            {"fy": "FY21", "realised_m": 24.4, "completions": 135, "arrcc_k": 181, "roi_pct": None},
+            {"fy": "FY22", "realised_m": 15.2, "completions": 139, "arrcc_k": 110, "roi_pct": None},
+            {"fy": "FY23", "realised_m": 26.8, "completions": 193, "arrcc_k": 139, "roi_pct": None},
+            {"fy": "FY24", "realised_m": 24.2, "completions": 251, "arrcc_k": 96, "roi_pct": 116},
+            {"fy": "FY25", "realised_m": 29.5, "completions": 291, "arrcc_k": 110, "roi_pct": 130},
+            {"fy": "FY26", "realised_m": 28.0, "completions": 291, "arrcc_k": 96, "roi_pct": None},
+        ],
+        "source": "MANO RNS · research_02",
+    }
+
+
+# ── FILE 7 — valuation.json (seed) ───────────────────────────────────────────
+
+def build_valuation() -> dict:
+    return {
+        "price_gbx": 39.3,
+        "singer_target_gbx": 130,
+        "shares_m": 43.9,
+        "case_nav_m": 41.8,
+        "nav_per_share_gbx": 95,
+        "forward_book_m": 67,
+        "large_cases_m": 32,
+        "large_cases_pct": 48,
+        "active_investments": 282,
+        "pb_ratio": 0.4,
+        "source": "yfinance · Singer Capital Markets · MANO H1 FY26",
+    }
+
+
+# ── FILE 8 — balance_sheet.json (seed) ───────────────────────────────────────
+
+def build_balance_sheet() -> dict:
+    return {
+        "net_debt_m": 11.5,
+        "net_debt_ebitda": 3.7,
+        "cash_deployment_pct": 73,
+        "rcf_facility_m": 17.5,
+        "rcf_drawn_m": 11.5,
+        "rcf_headroom_m": 6.0,
+        "debtor_delay_exposure_m": 4.7,
+        "potential_provision_low_m": 1.5,
+        "potential_provision_high_m": 2.0,
+        "source": "MANO FY26 trading update · apríl 2026",
+    }
+
+
+# ── FILE 9 — peers.json (seed) ───────────────────────────────────────────────
+
+def build_peers() -> dict:
+    return {
+        "peers": [
+            {"name": "MANO", "market_cap": "£17m", "pb": 0.4, "roi_pct": 131, "is_mano": True},
+            {"name": "BURFORD", "market_cap": "$3.1bn", "pb": 1.2, "roi_pct": 82, "is_mano": False},
+            {"name": "LCM", "market_cap": "£89m", "pb": 0.7, "roi_pct": 78, "is_mano": False},
+            {"name": "OMNI", "market_cap": "£42m", "pb": 0.5, "roi_pct": 64, "is_mano": False},
+        ],
+        "source": "výročné správy litigation funderov · jún 2026",
+    }
+
+
+# ── FILE 10 — thesis_flow.json (model-computed funnel) ───────────────────────
+
+def build_thesis_flow(kpis: dict, assumptions: dict) -> dict:
+    insolvencies_12m = kpis["insolvencies_12m"]
+    weighted_market = round(insolvencies_12m * assumptions["compulsory_weight"])
+    referrals = round(weighted_market * assumptions["referral_rate"])
+    investments = round(referrals * assumptions["acceptance_rate"])
+    completions = investments  # 1:1 over the lag horizon
+    revenue_m = round(completions * assumptions["arrcc_base"] / 1_000_000, 2)
+    return {
+        "stages": [
+            {"name": "VÁŽENÝ TRH", "value": weighted_market},
+            {"name": "DOPYTY", "value": referrals},
+            {"name": "INVESTÍCIE", "value": investments},
+            {"name": "UKONČENIA", "value": completions},
+            {"name": "TRŽBY £m", "value": revenue_m},
+        ],
+        "source": "model/pipeline.py",
+    }
+
+
 # ── main ──────────────────────────────────────────────────────────────────────
 
 def main():
@@ -340,12 +428,19 @@ def main():
 
     con = sqlite3.connect(DB_PATH)
     try:
+        kpis = build_kpis(con)
+        assumptions = build_pipeline_assumptions()
         files = {
-            "kpis.json": build_kpis(con),
+            "kpis.json": kpis,
             "insolvency_timeseries.json": build_timeseries(con),
             "ip_network.json": build_ip_network(con),
             "gazette_recent.json": build_gazette_recent(con),
-            "pipeline_assumptions.json": build_pipeline_assumptions(),
+            "pipeline_assumptions.json": assumptions,
+            "mano_kpis.json": build_mano_kpis(),
+            "valuation.json": build_valuation(),
+            "balance_sheet.json": build_balance_sheet(),
+            "peers.json": build_peers(),
+            "thesis_flow.json": build_thesis_flow(kpis, assumptions),
         }
     finally:
         con.close()

@@ -56,6 +56,69 @@ export interface GazetteRecent {
   notices: GazetteNotice[];
 }
 
+export interface ManoFy {
+  fy: string;
+  realised_m: number;
+  completions: number;
+  arrcc_k: number;
+  roi_pct: number | null;
+}
+
+export interface ManoKpis {
+  fy_series: ManoFy[];
+  source: string;
+}
+
+export interface Valuation {
+  price_gbx: number;
+  singer_target_gbx: number;
+  shares_m: number;
+  case_nav_m: number;
+  nav_per_share_gbx: number;
+  forward_book_m: number;
+  large_cases_m: number;
+  large_cases_pct: number;
+  active_investments: number;
+  pb_ratio: number;
+  source: string;
+}
+
+export interface BalanceSheet {
+  net_debt_m: number;
+  net_debt_ebitda: number;
+  cash_deployment_pct: number;
+  rcf_facility_m: number;
+  rcf_drawn_m: number;
+  rcf_headroom_m: number;
+  debtor_delay_exposure_m: number;
+  potential_provision_low_m: number;
+  potential_provision_high_m: number;
+  source: string;
+}
+
+export interface Peer {
+  name: string;
+  market_cap: string;
+  pb: number;
+  roi_pct: number;
+  is_mano: boolean;
+}
+
+export interface Peers {
+  peers: Peer[];
+  source: string;
+}
+
+export interface ThesisStage {
+  name: string;
+  value: number;
+}
+
+export interface ThesisFlow {
+  stages: ThesisStage[];
+  source: string;
+}
+
 export interface PipelineAssumptions {
   referral_rate: number;
   acceptance_rate: number;

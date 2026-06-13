@@ -74,14 +74,14 @@ textarea {
   font-weight: 400;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  margin-bottom: 32px;
 }
 
-/* Page subtitle — Archivo 14px below Michroma title */
+/* Page subtitle — Archivo 14px below Michroma title.
+ * Negative top pulls it tight under the title against the flex gap. */
 .page-subtitle {
   font-size: 14px;
   color: var(--text-2);
-  margin: -24px 0 32px;
+  margin-top: -8px;
 }
 
 /* Chart loading / error states — manual §23 */
@@ -132,10 +132,22 @@ textarea {
   .two-col { grid-template-columns: 1fr; }
 }
 
+/* 7/5 split of the 12-col grid — Law 3: 16px gap */
+.grid-7-5 {
+  display: grid;
+  grid-template-columns: 7fr 5fr;
+  gap: 16px;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .grid-7-5 { grid-template-columns: 1fr; }
+}
+
 /* KPI row — law 5: max 4 cards */
 .kpi-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 16px;
-  margin-bottom: 32px;
+  margin-bottom: 16px; /* + flex gap = 32px section break before first panel */
 }
