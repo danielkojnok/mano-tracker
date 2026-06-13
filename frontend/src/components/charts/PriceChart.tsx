@@ -5,12 +5,22 @@ import { useFetch } from "../../hooks/useData";
 import type { PriceHistory, Valuation } from "../../types/data";
 import "./PriceChart.css";
 
-/* MANO.L price history vs valuation anchors (NAV, Singer target, current).
- * RNS events as vertical markLines. Manual §18. */
+/* MANO.L price vs valuation anchors — the scale-sanity test (manual §18).
+ *
+ * The entire investment thesis lives in the 39–130p range, so the y-axis is
+ * scaled to ~0–150p, NOT padded to the irrelevant 2020 spike (~560p). We
+ * window the price line to the period it has actually traded inside the
+ * thesis range (2024-06 onward); earlier history sat at 200–560p and would
+ * dictate a scale that crushes the very gap we want to show. The upside gap
+ * to the Singer target is shaded so "deeply discounted" reads at a glance. */
 
 function toTs(d: string): number {
   return new Date(d + "T00:00:00Z").getTime();
 }
+
+// Window start: the price has traded within the thesis range since ~2024-06.
+const WINDOW_START = "2024-06-01";
+const Y_MAX = 150; // thesis range ceiling — 39/95/130 sit clearly separated
 
 export default function PriceChart() {
   const { data: hist, loading: l1, error: e1 } = useFetch<PriceHistory>(
@@ -24,18 +34,18 @@ export default function PriceChart() {
   if (e1 || e2 || !hist || !val)
     return <div className="chart-error mono">CHYBA · DÁTA NEDOSTUPNÉ</div>;
 
-  const priceData: [number, number][] = hist.series.map((p) => [
-    toTs(p.date),
-    p.close,
-  ]);
+  const startTs = toTs(WINDOW_START);
+  const windowed = hist.series.filter((p) => toTs(p.date) >= startTs);
+  const priceData: [number, number][] = windowed.map((p) => [toTs(p.date), p.close]);
 
-  const singerUpside =
-    ((val.singer_target_gbx - val.price_gbx) / val.price_gbx) * 100;
+  const peak = Math.max(...hist.series.map((p) => p.close)); // all-time, for drawdown
+  const drawdown = Math.round(((peak - val.price_gbx) / peak) * 100);
+  const navUpside = Math.round(((val.nav_per_share_gbx - val.price_gbx) / val.price_gbx) * 100);
+  const singerUpside = Math.round(((val.singer_target_gbx - val.price_gbx) / val.price_gbx) * 100);
   const navDiscount = Math.round(
     ((val.nav_per_share_gbx - val.price_gbx) / val.nav_per_share_gbx) * 100,
   );
 
-  // horizontal anchor lines
   const anchorLine = (
     yVal: number,
     color: string,
@@ -44,14 +54,10 @@ export default function PriceChart() {
     dashed: boolean,
   ) => ({
     yAxis: yVal,
-    lineStyle: {
-      color,
-      width,
-      type: dashed ? "dashed" : "solid",
-    },
+    lineStyle: { color, width, type: dashed ? ("dashed" as const) : ("solid" as const) },
     label: {
       formatter: label,
-      position: "end",
+      position: "end" as const,
       rotate: 0,
       fontFamily: "JetBrains Mono",
       fontSize: 11,
@@ -59,44 +65,77 @@ export default function PriceChart() {
     },
   });
 
+  const onlyRecent = hist.rns_events.filter((e) => toTs(e.date) >= startTs);
+
   const option = {
     tooltip: { trigger: "axis" },
-    grid: { top: 32, right: 96, bottom: 40, left: 56 },
+    grid: { top: 24, right: 104, bottom: 40, left: 48 },
     xAxis: {
       type: "time",
-      min: toTs("2019-01-01"),
+      min: startTs,
       axisLabel: { hideOverlap: true, fontSize: 12 }, // Law 7
     },
     yAxis: {
       type: "value",
       min: 0,
-      max: 600,
+      max: Y_MAX,
+      interval: 30,
       axisLabel: { fontSize: 12, formatter: "{value}p" },
     },
     series: [
+      // Shaded upside gap: a transparent baseline at the price floor + a band
+      // up to the Singer target, so the "discount" space is visible.
+      {
+        name: "gap-base",
+        type: "line",
+        data: [
+          [startTs, val.price_gbx],
+          [toTs(windowed[windowed.length - 1].date), val.price_gbx],
+        ],
+        symbol: "none",
+        lineStyle: { opacity: 0 },
+        stack: "gap",
+        tooltip: { show: false },
+        silent: true,
+        z: 1,
+      },
+      {
+        name: "gap-span",
+        type: "line",
+        data: [
+          [startTs, val.singer_target_gbx - val.price_gbx],
+          [toTs(windowed[windowed.length - 1].date), val.singer_target_gbx - val.price_gbx],
+        ],
+        symbol: "none",
+        lineStyle: { opacity: 0 },
+        areaStyle: { color: T.up, opacity: 0.07 },
+        stack: "gap",
+        tooltip: { show: false },
+        silent: true,
+        z: 1,
+      },
       {
         name: "MANO.L",
         type: "line",
         data: priceData,
         symbol: "none",
         smooth: false,
-        lineStyle: { color: T.signal, width: 2 },
+        lineStyle: { color: T.signal, width: 2.5 },
         itemStyle: { color: T.signal },
-        sampling: "lttb",
-        // valuation anchors + RNS verticals all hang off this series
+        z: 3,
         markLine: {
           symbol: "none",
           silent: true,
           data: [
             anchorLine(val.nav_per_share_gbx, T.text2, `NAV ~${val.nav_per_share_gbx}p`, 1, true),
             anchorLine(val.singer_target_gbx, T.up, `SINGER ${val.singer_target_gbx}p`, 2, true),
-            anchorLine(val.price_gbx, T.gold, `${val.price_gbx}p (dnes)`, 2, false),
-            ...hist.rns_events.map((e) => ({
+            anchorLine(val.price_gbx, T.gold, `${val.price_gbx}p dnes`, 2, false),
+            ...onlyRecent.map((e) => ({
               xAxis: toTs(e.date),
               lineStyle: { color: T.goldDim, width: 1, type: "dashed" as const },
               label: {
                 formatter: e.label,
-                position: "start",
+                position: "start" as const,
                 rotate: 0,
                 fontFamily: "JetBrains Mono",
                 fontSize: 10,
@@ -111,35 +150,41 @@ export default function PriceChart() {
 
   return (
     <div>
-      <ReactECharts option={option} theme="mano" style={{ height: 360 }} notMerge />
+      {/* compact stat line — drawdown / upside, all computed from anchors */}
+      <div className="price-stats mono">
+        <span>
+          Drawdown z peaku <b className="down">−{drawdown}%</b>
+        </span>
+        <span className="price-stats-sep">·</span>
+        <span>
+          Upside k NAV <b className="up">+{navUpside}%</b>
+        </span>
+        <span className="price-stats-sep">·</span>
+        <span>
+          Upside k Singer <b className="gold">+{singerUpside}%</b>
+        </span>
+      </div>
+
+      <ReactECharts option={option} theme="mano" style={{ height: 340 }} notMerge />
 
       <div className="price-explainer">
         <div className="price-col">
-          <h3 className="price-col-head">NAV (Net Asset Value) ~95p</h3>
+          <h3 className="price-col-head">NAV (Net Asset Value) ~{val.nav_per_share_gbx}p</h3>
           <p className="price-col-body">
-            NAV = účtovná hodnota MANO portfólia delená počtom akcií. Tvorí
-            fair-value MANO existujúcich prípadov (£42m forward book) plus
-            ostatné aktíva mínus dlhy. Cena pod NAV znamená, že trh diskontuje
-            fair-value markmi — typické pre celý sektor po Muddy Waters short
-            reporte (2019).
+            NAV = účtovná hodnota MANO portfólia (£{val.case_nav_m}m fair-value
+            prípadov + ostatné aktíva − dlhy) delená počtom akcií. Cena ~
+            {navDiscount}% pod NAV znamená, že trh diskontuje fair-value markmi —
+            sektorovo rozšírený diskont od Muddy Waters short reportu (2019).
           </p>
-          <div className="price-stat mono">
-            Aktuálne: {val.price_gbx}p vs {val.nav_per_share_gbx}p NAV = trh
-            diskontuje fair value o {navDiscount}%
-          </div>
         </div>
         <div className="price-col">
-          <h3 className="price-col-head">Singer target 130p</h3>
+          <h3 className="price-col-head">Singer target {val.singer_target_gbx}p</h3>
           <p className="price-col-body">
-            Singer Capital Markets je jediný broker s coverage na MANO. Cieľ
-            130p stojí na ~13× forward P/E pre projektované FY28 zisky.
-            Single-analyst coverage znamená nízku konsenzus váhu — treba brať
-            ako referenčný, nie konsenzus.
+            Singer Capital Markets je jediný broker s coverage na MANO →
+            single-analyst znamená nízku konsenzus váhu, ber ako referenčný, nie
+            konsenzus. Zároveň je to etablovaný AIM broker, takže cieľ nie je
+            bezvýznamný. Upside k cieľu: <b className="gold">+{singerUpside}%</b>.
           </p>
-          <div className="price-stat mono">
-            Implikovaný upside: {val.price_gbx}p → {val.singer_target_gbx}p = +
-            {singerUpside.toFixed(0)}%
-          </div>
         </div>
       </div>
     </div>

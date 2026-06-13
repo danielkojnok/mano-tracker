@@ -109,13 +109,34 @@ export interface Peers {
   source: string;
 }
 
-export interface ThesisStage {
-  name: string;
-  value: number;
-}
-
-export interface ThesisFlow {
-  stages: ThesisStage[];
+/** Single source of truth for every model number on the Overview page.
+ *  Produced by model/pipeline.py get_overview(); the frontend computes none
+ *  of these — it reads them. Every figure is hand-reproducible from the one
+ *  before it (see pipeline.py chain). */
+export interface PipelineOverview {
+  insolvencies_12m: number;
+  compulsory_weight: number;
+  weighted_market: number;
+  referral_rate: number;
+  referrals: number;
+  acceptance_rate: number;
+  investments: number;
+  capacity_cap: number;
+  completions_uncapped: number;
+  completions_capped: number;
+  arrcc_base_gbp: number;
+  arrcc_bear_gbp: number;
+  arrcc_bull_gbp: number;
+  revenue_uncapped_m: number;
+  /** HEADLINE — base-scenario model revenue. Use this everywhere. */
+  revenue_capped_m: number;
+  scenarios: { bear: number; base: number; bull: number };
+  fy26_realised_m: number;
+  /** (realised − capped) / capped × 100 — negative = realised below model. */
+  model_vs_real_pct: number;
+  lag_total_months: number;
+  lag_case_months: number;
+  lag_cash_months: number;
   source: string;
 }
 

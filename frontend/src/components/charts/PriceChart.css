@@ -21,10 +21,30 @@
   margin-bottom: 10px;
 }
 
-.price-stat {
-  font-size: 11px;
-  color: var(--text);
+/* compact stat line above the chart */
+.price-stats {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: var(--text-2);
 }
+
+.price-stats b {
+  font-weight: 600;
+}
+
+.price-stats .down { color: var(--down); }
+.price-stats .up { color: var(--up); }
+.price-stats .gold { color: var(--gold); }
+
+.price-stats-sep {
+  color: var(--border-strong);
+}
+
+.price-col-body .gold { color: var(--gold); }
 
 @media (max-width: 768px) {
   .price-explainer {

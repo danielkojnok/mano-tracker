@@ -1,8 +1,13 @@
-/* Weighted thesis scorecard — Overview verdict block (R1.1 issue 4).
+/* Weighted thesis scorecard — Overview verdict block (R1.2).
  *
  * Weights are SUBJECTIVE editorial judgements, deliberately explicit and
  * editable here in one place rather than buried in JSX. Each carries a WHY.
- * Score range: net position clamped to ±10. Verdict thresholds below. */
+ * Score range: net position clamped to ±10. Verdict thresholds below.
+ *
+ * Where a factor's evidence is a MODEL number (e.g. the model-vs-real gap),
+ * the value comes from pipeline_overview.json at render time — never hardcode
+ * a figure the single source of truth already provides. Such factors carry a
+ * `dynamic` key the VerdictBlock fills in. */
 
 export interface ScoreFactor {
   /** ◆ for support, ▼ for risk */
@@ -10,6 +15,8 @@ export interface ScoreFactor {
   label: string;
   evidence: string;
   score: number; // signed; support > 0, risk < 0
+  /** Identifies a factor whose evidence is filled from pipeline_overview. */
+  dynamic?: "model_miss" | "singer_upside";
 }
 
 // ── PODPORUJE (support) ──────────────────────────────────────────────────────
@@ -29,7 +36,7 @@ export const SUPPORT_FACTORS: ScoreFactor[] = [
   { marker: "◆", label: "Forward book ▲37%", evidence: "£67m", score: W_FORWARD_BOOK },
   { marker: "◆", label: "Nové signings ▲23%", evidence: "£32m", score: W_NEW_SIGNINGS },
   { marker: "◆", label: "Veľké prípady mix", evidence: "48% knihy", score: W_LARGE_CASE_MIX },
-  { marker: "◆", label: "Cena vs Singer target", evidence: "+231%", score: W_PRICE_VS_TARGET },
+  { marker: "◆", label: "Cena vs Singer target", evidence: "+231%", score: W_PRICE_VS_TARGET, dynamic: "singer_upside" },
   { marker: "◆", label: "P/B vs case NAV", evidence: "0.4× / £42m", score: W_PB_VS_NAV },
 ];
 
@@ -37,12 +44,17 @@ export const RISK_FACTORS: ScoreFactor[] = [
   { marker: "▼", label: "Debtor delays", evidence: "£4.7m exp.", score: W_DEBTOR_DELAYS },
   { marker: "▼", label: "Net debt/EBITDA", evidence: "3.7×", score: W_NET_DEBT },
   { marker: "▼", label: "ARRCC mix shift", evidence: "£96k vs £204k", score: W_ARRCC_SHIFT },
-  { marker: "▼", label: "Model nadhodnotil FY26", evidence: "−17% miss", score: W_MODEL_MISS },
+  { marker: "▼", label: "Model nadhodnotil FY26", evidence: "miss vs model", score: W_MODEL_MISS, dynamic: "model_miss" },
 ];
 
 export const SUPPORT_SUM = SUPPORT_FACTORS.reduce((a, f) => a + f.score, 0); // +9.0
 export const RISK_SUM = RISK_FACTORS.reduce((a, f) => a + f.score, 0); // -4.8
 export const NET_SCORE = SUPPORT_SUM + RISK_SUM; // +4.2
+
+/** Largest single |weight| — used to scale per-factor weight bars. */
+export const MAX_WEIGHT = Math.max(
+  ...[...SUPPORT_FACTORS, ...RISK_FACTORS].map((f) => Math.abs(f.score)),
+);
 
 export type Verdict = "TÉZA DRŽÍ" | "TÉZA NEUTRÁLNA" | "TÉZA SLABNE";
 

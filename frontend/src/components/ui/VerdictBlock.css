@@ -3,40 +3,77 @@
   margin: -16px;
 }
 
-/* ZONE 1 — verdict header */
+/* ZONE 1 — verdict header + gauge */
 .verdict-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 80px;
-  padding: 0 24px;
+  gap: 32px;
+  min-height: 88px;
+  padding: 16px 24px;
   background: var(--bg-2);
   border-top: 2px solid var(--gold);
 }
 
 .verdict-headline {
   font-family: var(--font-display);
-  font-size: 32px;
+  font-size: 30px;
   font-weight: 400;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--gold);
+  white-space: nowrap;
 }
 
-.verdict-score-box {
-  text-align: right;
+/* score gauge — −10…+10 axis with a marker at the net score */
+.verdict-gauge {
+  flex: 1;
+  max-width: 360px;
 }
 
-.verdict-score-num {
-  font-size: 24px;
-  font-weight: 600;
-  color: var(--text);
+.verdict-gauge-track {
+  position: relative;
+  height: 8px;
+  background: linear-gradient(
+    to right,
+    var(--down) 0%,
+    var(--border) 50%,
+    var(--up) 100%
+  );
+  opacity: 0.5;
 }
 
-.verdict-score-cap {
+.verdict-gauge-zero {
+  position: absolute;
+  left: 50%;
+  top: -3px;
+  width: 1px;
+  height: 14px;
+  background: var(--border-strong);
+}
+
+.verdict-gauge-marker {
+  position: absolute;
+  top: -4px;
+  width: 14px;
+  height: 16px;
+  background: var(--gold);
+  transform: translateX(-50%);
+}
+
+.verdict-gauge-scale {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
   font-size: 11px;
   color: var(--text-2);
-  margin-top: 2px;
+}
+
+.verdict-gauge-net {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
 }
 
 /* ZONE 2 — scorecard */
@@ -55,17 +92,25 @@
 }
 
 .verdict-col-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
   font-size: 13px;
   font-weight: 600;
   margin-bottom: 12px;
 }
 
+.verdict-col-sum {
+  font-size: 14px;
+}
+
+.up { color: var(--up); }
+.down { color: var(--down); }
+
+/* two-line factor row — top: label + score, bottom: evidence + weight bar.
+   Nothing wraps or overlaps (prior single-line cram broke). */
 .verdict-factor {
-  display: grid;
-  grid-template-columns: 16px 1fr auto auto;
-  align-items: center;
-  gap: 10px;
-  height: 32px;
+  padding: 8px 0;
   border-bottom: 1px solid var(--row-line);
 }
 
@@ -73,41 +118,57 @@
   background: var(--bg-2);
 }
 
+.verdict-factor-top {
+  display: grid;
+  grid-template-columns: 16px 1fr auto;
+  align-items: baseline;
+  gap: 8px;
+}
+
 .verdict-marker {
   font-size: 12px;
 }
 
-.verdict-marker.gold-dim {
-  color: var(--gold-dim);
-}
+.verdict-marker.gold-dim { color: var(--gold-dim); }
 
 .verdict-flabel {
   font-size: 14px;
   color: var(--text);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.verdict-evidence {
-  font-size: 13px;
-  color: var(--text-2);
-  text-align: right;
 }
 
 .verdict-score {
   font-size: 13px;
+  font-weight: 600;
   text-align: right;
-  min-width: 48px;
 }
 
-.verdict-sum {
-  margin-top: 12px;
-  text-align: right;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text);
+.verdict-factor-bot {
+  display: grid;
+  grid-template-columns: 1fr 88px;
+  align-items: center;
+  gap: 12px;
+  margin-top: 3px;
+  padding-left: 24px;
 }
+
+.verdict-evidence {
+  font-size: 12px;
+  color: var(--text-2);
+}
+
+.verdict-wbar {
+  display: block;
+  height: 4px;
+  background: var(--border);
+}
+
+.verdict-wbar-fill {
+  display: block;
+  height: 100%;
+}
+
+.verdict-wbar-fill.support { background: var(--up); }
+.verdict-wbar-fill.risk { background: var(--down); }
 
 /* ZONE 3 — summary strip */
 .verdict-summary {
@@ -124,9 +185,7 @@
   line-height: 1.6;
 }
 
-.gold {
-  color: var(--gold);
-}
+.gold { color: var(--gold); }
 
 @media (max-width: 768px) {
   .verdict-cols {
@@ -135,5 +194,14 @@
   .verdict-col-right {
     border-left: none;
     border-top: 1px solid var(--border);
+  }
+  .verdict-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .verdict-gauge {
+    max-width: none;
+    width: 100%;
   }
 }

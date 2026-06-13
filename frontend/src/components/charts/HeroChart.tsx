@@ -1,18 +1,21 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import ReactECharts from "echarts-for-react";
 import "../../lib/echartsTheme";
 import { T } from "../../styles/tokens";
 import { useFetch } from "../../hooks/useData";
-import type { InsolTimeseries, ManoKpis } from "../../types/data";
+import type { InsolTimeseries, ManoKpis, PipelineOverview } from "../../types/data";
 import "./HeroChart.css";
 
 /* Hero chart — téza: insolvencie vedú realised revenue MANO o ~25 mesiacov.
- * Default view shows insolvencies at REAL dates; a lag-shift slider lets the
- * reader discover the ~25m lead by sliding the cyan area forward in time.
- * Series semantics per manual §07: cyan = lead indicator, gold = MANO
- * actuals, green dashed = projection (only shown once shift > 0). */
-
-const THESIS_LAG = 25;
+ *
+ * Two y-axes (manual §07): the insolvency LINE lives on its own left axis
+ * (hundreds/mo) so it can never fly off-screen against the £m revenue axis
+ * on the right. A two-state toggle (REÁLNY ČAS | POSUN +25 MES.) lets the
+ * reader discover the lead-lag alignment; shifted view reveals the FY27
+ * projection band (bear/base/bull from pipeline_overview.scenarios).
+ *
+ * ALL model numbers come from pipeline_overview.json. The frontend computes
+ * none of them. */
 
 function ts(ym: string): number {
   const [y, m] = ym.split("-").map(Number);
@@ -32,17 +35,7 @@ function fyToTs(fy: string): number {
   return ts(`${year}-03`);
 }
 
-const PROJ = { base: 33.8, bear: 28.0, bull: 45.0 };
-const PROJ_RANGE = [ts("2026-03"), ts("2027-03")];
-
-/* Every other RNS date — horizontal labels would collide annually (Law 1). */
-const RNS_EVENTS: [number, string][] = [
-  [ts("2021-06"), "FY21"],
-  [ts("2023-06"), "FY23"],
-  [ts("2025-06"), "FY25"],
-];
-
-const MODEL_FY26 = 33.8;
+const PROJ_RANGE = [ts("2026-09"), ts("2027-03")]; // FY27 horizon
 
 export default function HeroChart() {
   const { data: insol, loading: l1, error: e1 } = useFetch<InsolTimeseries>(
@@ -51,27 +44,17 @@ export default function HeroChart() {
   const { data: mano, loading: l2, error: e2 } = useFetch<ManoKpis>(
     "mano_kpis.json",
   );
+  const { data: ov, loading: l3, error: e3 } = useFetch<PipelineOverview>(
+    "pipeline_overview.json",
+  );
 
-  const [shift, setShift] = useState(0);
-  const [flash, setFlash] = useState(false);
-  const timer = useRef<number | undefined>(undefined);
-  useEffect(() => () => window.clearTimeout(timer.current), []);
+  const [shifted, setShifted] = useState(false);
 
-  const onShift = (v: number) => {
-    setShift(v);
-    if (v === THESIS_LAG) {
-      setFlash(true);
-      window.clearTimeout(timer.current);
-      timer.current = window.setTimeout(() => setFlash(false), 600);
-    }
-  };
-
-  if (l1 || l2) return <div className="chart-skeleton" aria-hidden="true" />;
-  if (e1 || e2 || !insol || !mano)
+  if (l1 || l2 || l3) return <div className="chart-skeleton" aria-hidden="true" />;
+  if (e1 || e2 || e3 || !insol || !mano || !ov)
     return <div className="chart-error mono">CHYBA · DÁTA NEDOSTUPNÉ</div>;
 
-  const isThesis = shift === THESIS_LAG;
-  const showProjection = shift > 0;
+  const shift = shifted ? ov.lag_total_months : 0;
 
   const cyan: [number, number][] = insol.series.map((p) => [
     shiftMonths(p.date, shift),
@@ -84,73 +67,134 @@ export default function HeroChart() {
   ]);
   const fy26 = mano.fy_series.find((f) => f.fy === "FY26");
   const fy26Ts = fyToTs("FY26");
-  const fy26Delta = fy26
-    ? Math.round(((fy26.realised_m - MODEL_FY26) / MODEL_FY26) * 100)
-    : 0;
 
-  const cyanName =
-    shift === 0 ? "Insolvencie (reálny čas)" : `Insolvencie +${shift}m`;
+  const cyanName = shifted
+    ? `Insolvencie +${shift}m (posunuté)`
+    : "Insolvencie (reálny čas)";
 
-  const projectionSeries = showProjection
+  // FY27 projection band (bear..bull) — only when shifted, drawn on revenue axis.
+  const projectionSeries = shifted
     ? [
         {
-          name: "Projekcia FY27",
+          name: "Projekcia FY27 (base)",
           type: "line",
           yAxisIndex: 1,
-          data: PROJ_RANGE.map((d) => [d, PROJ.base]),
-          symbol: "none",
-          lineStyle: { color: T.up, type: "dashed", width: 2 },
+          data: PROJ_RANGE.map((d) => [d, ov.scenarios.base]),
+          symbol: "circle",
+          symbolSize: 6,
+          lineStyle: { color: T.up, type: "dashed" as const, width: 2 },
           itemStyle: { color: T.up },
+          z: 5,
         },
         {
           name: "band-low",
           type: "line",
           yAxisIndex: 1,
           stack: "band",
-          data: PROJ_RANGE.map((d) => [d, PROJ.bear]),
+          data: PROJ_RANGE.map((d) => [d, ov.scenarios.bear]),
           symbol: "none",
           lineStyle: { opacity: 0 },
           tooltip: { show: false },
+          silent: true,
         },
         {
           name: "band-span",
           type: "line",
           yAxisIndex: 1,
           stack: "band",
-          data: PROJ_RANGE.map((d) => [d, PROJ.bull - PROJ.bear]),
+          data: PROJ_RANGE.map((d) => [d, ov.scenarios.bull - ov.scenarios.bear]),
           symbol: "none",
           lineStyle: { opacity: 0 },
           areaStyle: { color: T.up, opacity: 0.1 },
           tooltip: { show: false },
+          silent: true,
         },
       ]
     : [];
 
   const legendData = [cyanName, "Realised revenue MANO"];
-  if (showProjection) legendData.push("Projekcia FY27");
+  if (shifted) legendData.push("Projekcia FY27 (base)");
+
+  // FY26 model-vs-real callout — a fixed graphic block in the top-right of the
+  // grid, so it can never collide with the x-axis (markPoint did before).
+  const fy26Block = fy26
+    ? {
+        type: "group",
+        right: 72,
+        top: 48,
+        children: [
+          {
+            type: "rect",
+            shape: { x: 0, y: 0, width: 168, height: 58 },
+            style: { fill: T.bg2, stroke: T.borderStrong, lineWidth: 1 },
+          },
+          {
+            type: "text",
+            left: 10,
+            top: 8,
+            style: {
+              text: `FY26  MODEL £${ov.revenue_capped_m}m`,
+              fill: T.text2,
+              fontFamily: "JetBrains Mono",
+              fontSize: 11,
+            },
+          },
+          {
+            type: "text",
+            left: 10,
+            top: 24,
+            style: {
+              text: `      REAL  £${ov.fy26_realised_m}m`,
+              fill: T.text,
+              fontFamily: "JetBrains Mono",
+              fontSize: 11,
+            },
+          },
+          {
+            type: "text",
+            left: 10,
+            top: 40,
+            style: {
+              text: `      ▼ ${ov.model_vs_real_pct}%`,
+              fill: T.down,
+              fontFamily: "JetBrains Mono",
+              fontSize: 11,
+            },
+          },
+        ],
+      }
+    : null;
 
   const option = {
     tooltip: { trigger: "axis" },
     legend: { bottom: 0, data: legendData },
-    grid: { top: 40, right: 56, bottom: 64, left: 56 },
+    grid: { top: 44, right: 64, bottom: 56, left: 56 },
+    graphic: fy26Block ? [fy26Block] : [],
     xAxis: {
       type: "time",
       min: ts("2019-01"),
-      max: ts("2028-06"),
+      max: ts("2028-03"),
       axisLabel: { hideOverlap: true, fontSize: 12 }, // Law 7 — skip, never rotate
     },
     yAxis: [
       {
+        // LEFT — insolvency line. Its own scale (hundreds–thousands/mo) so it
+        // is always visible regardless of the £m revenue magnitude.
         type: "value",
         name: "INSOLV / MES.",
-        nameTextStyle: { fontSize: 12, color: T.text2 },
-        axisLabel: { fontSize: 12 },
+        position: "left",
+        nameTextStyle: { fontSize: 11, color: T.text2 },
+        axisLabel: { fontSize: 11, color: T.text2 },
+        splitLine: { show: true },
       },
       {
+        // RIGHT — MANO revenue £m.
         type: "value",
         name: "TRŽBY £m",
-        nameTextStyle: { fontSize: 12, color: T.text2 },
-        axisLabel: { fontSize: 12 },
+        position: "right",
+        max: 50,
+        nameTextStyle: { fontSize: 11, color: T.text2 },
+        axisLabel: { fontSize: 11, color: T.text2 },
         splitLine: { show: false },
       },
     ],
@@ -158,89 +202,54 @@ export default function HeroChart() {
       {
         name: cyanName,
         type: "line",
+        yAxisIndex: 0, // ← bound to the insolvency axis (prior bug: was on £m)
         data: cyan,
         smooth: false,
         symbol: "none",
         lineStyle: { color: T.signal, width: 3 },
         itemStyle: { color: T.signal },
-        areaStyle: { color: T.signal, opacity: 0.15 },
+        areaStyle: { color: T.signal, opacity: 0.12 },
         sampling: "lttb",
-        animationDuration: 200, // §19 — shift transition
+        z: 3,
       },
       {
         name: "Realised revenue MANO",
         type: "bar",
         yAxisIndex: 1,
         data: revenue,
-        barWidth: 22,
+        barWidth: 20,
         itemStyle: { color: T.gold },
-        // FY26 model-vs-real annotation block, below the bar (issue 5B)
-        markPoint: {
-          symbol: "rect",
-          symbolSize: 0,
-          silent: true,
-          data: fy26
-            ? [
-                {
-                  coord: [fy26Ts, fy26.realised_m],
-                  label: {
-                    formatter: `MODEL  £${MODEL_FY26}m\nREAL   £${fy26.realised_m}m\n▼ ${fy26Delta}%`,
-                    lineHeight: 15,
-                    fontFamily: "JetBrains Mono",
-                    fontSize: 11,
-                    color: T.text2,
-                    rich: {},
-                    position: "bottom",
-                    distance: 12,
-                    align: "left",
-                  },
-                },
-              ]
-            : [],
-        },
+        z: 4,
         markLine: {
           symbol: "none",
           silent: true,
           lineStyle: { color: T.goldDim, type: "dashed", width: 1 },
-          label: {
-            rotate: 0,
-            position: "end",
-            fontFamily: "JetBrains Mono",
-            fontSize: 10,
-            color: T.goldDim,
-          },
-          data: RNS_EVENTS.map(([date, label]) => ({
-            xAxis: date,
-            label: { formatter: label },
-          })),
+          label: { show: false },
+          data: [{ xAxis: fy26Ts }],
         },
       },
       ...projectionSeries,
     ],
   };
 
-  const pct = (shift / 36) * 100;
-
   return (
     <div>
-      <div className={`lag-control${flash ? " lag-flash" : ""}`}>
-        <span className="mono lag-label">
-          Posun insolvencií (mes.):{" "}
-          <span className="lag-value">{shift}</span>
-          {isThesis && <span className="lag-thesis-badge">✓ TÉZA</span>}
-        </span>
-        <input
-          type="range"
-          min={0}
-          max={36}
-          step={1}
-          value={shift}
-          onChange={(e) => onShift(Number(e.target.value))}
-          className={isThesis ? "lag-slider-thesis" : ""}
-          style={{
-            background: `linear-gradient(to right, var(--gold) ${pct}%, var(--border) ${pct}%)`,
-          }}
-        />
+      <div className={`hero-toggle${shifted ? " is-shifted" : ""}`}>
+        <button
+          type="button"
+          className={`hero-toggle-btn${!shifted ? " active" : ""}`}
+          onClick={() => setShifted(false)}
+        >
+          REÁLNY ČAS
+        </button>
+        <button
+          type="button"
+          className={`hero-toggle-btn${shifted ? " active" : ""}`}
+          onClick={() => setShifted(true)}
+        >
+          POSUN +{ov.lag_total_months} MES.
+        </button>
+        {shifted && <span className="hero-thesis-cue mono">✓ TÉZA · zarovnané</span>}
       </div>
 
       <ReactECharts option={option} theme="mano" style={{ height: 420 }} notMerge />
@@ -248,15 +257,17 @@ export default function HeroChart() {
       <div className="hero-explainer">
         <div className="hero-explainer-text">
           Téza: insolvencie sú leading indikátor MANO tržieb. Firma kupuje
-          insolvenčné nároky, vyhrá súd, inkasuje. Tento cyklus trvá ~25
-          mesiacov.
+          insolvenčné nároky, vyhrá súd, inkasuje — cyklus trvá ~
+          {ov.lag_total_months} mesiacov. Prepni na <b>POSUN +{ov.lag_total_months}{" "}
+          MES.</b> a cyan krivka sa zarovná s tržbami: vrchol insolvencií
+          predchádza vrcholu tržieb o tento lag.
         </div>
         <div className="hero-explainer-breakdown mono">
-          <div className="hero-breakdown-head">ROZKLAD LAGU 25 MES.</div>
-          <div>13 mes. · vedenie sporu (žaloba → rozsudok)</div>
-          <div>12 mes. · inkaso (rozsudok → cash)</div>
+          <div className="hero-breakdown-head">ROZKLAD LAGU {ov.lag_total_months} MES.</div>
+          <div>{ov.lag_case_months} mes. · vedenie sporu (žaloba → rozsudok)</div>
+          <div>{ov.lag_cash_months} mes. · inkaso (rozsudok → cash)</div>
           <div className="hero-breakdown-source">
-            Zdroj: MANO outcome statistics FY19-25 · research_02
+            Zdroj: model/pipeline.py · MANO outcome statistics FY19–25
           </div>
         </div>
       </div>

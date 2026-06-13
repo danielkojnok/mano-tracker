@@ -8,6 +8,7 @@ deps: pandas, sqlite3, json, pathlib (all already in project)
 
 import json
 import sqlite3
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -16,6 +17,10 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parent.parent
 DB_PATH = ROOT / "data" / "tracker.db"
 OUT_DIR = ROOT / "frontend" / "public" / "data"
+
+# pipeline.py is the ONLY place model numbers are computed (R1.2).
+sys.path.insert(0, str(ROOT / "model"))
+from pipeline import get_overview, print_overview_chain  # noqa: E402
 
 COMPACT = {"ensure_ascii": False, "separators": (",", ":")}
 
@@ -31,7 +36,7 @@ def _now() -> str:
 
 # ── FILE 1 — kpis.json ────────────────────────────────────────────────────────
 
-def build_kpis(con: sqlite3.Connection) -> dict:
+def build_kpis(con: sqlite3.Connection, insolvencies_12m_override: int | None = None) -> dict:
     tbls = _tables(con)
     now = _now()
 
@@ -88,6 +93,12 @@ def build_kpis(con: sqlite3.Connection) -> dict:
 
     if ins_12m is None:
         ins_12m, ins_prev_12m = 25_600, 25_000
+
+    # Single source of truth: if pipeline.get_overview() computed the trailing
+    # 12-month figure, use exactly that so ticker / KPI card / funnel all show
+    # ONE insolvency number. yoy still uses the locally-computed prior window.
+    if insolvencies_12m_override is not None:
+        ins_12m = insolvencies_12m_override
 
     yoy_pct = (
         round((ins_12m - ins_prev_12m) / ins_prev_12m * 100, 2)
@@ -400,25 +411,9 @@ def build_peers() -> dict:
     }
 
 
-# ── FILE 10 — thesis_flow.json (model-computed funnel) ───────────────────────
-
-def build_thesis_flow(kpis: dict, assumptions: dict) -> dict:
-    insolvencies_12m = kpis["insolvencies_12m"]
-    weighted_market = round(insolvencies_12m * assumptions["compulsory_weight"])
-    referrals = round(weighted_market * assumptions["referral_rate"])
-    investments = round(referrals * assumptions["acceptance_rate"])
-    completions = investments  # 1:1 over the lag horizon
-    revenue_m = round(completions * assumptions["arrcc_base"] / 1_000_000, 2)
-    return {
-        "stages": [
-            {"name": "VÁŽENÝ TRH", "value": weighted_market},
-            {"name": "DOPYTY", "value": referrals},
-            {"name": "INVESTÍCIE", "value": investments},
-            {"name": "UKONČENIA", "value": completions},
-            {"name": "TRŽBY £m", "value": revenue_m},
-        ],
-        "source": "model/pipeline.py",
-    }
+# ── FILE 10 — pipeline_overview.json (single source of truth) ────────────────
+# NOTE: this is just get_overview() + a source tag. ALL model numbers on the
+# Overview page come from here; the funnel, hero and verdict read these fields.
 
 
 # ── FILE 11 — mano_price_history.json ────────────────────────────────────────
@@ -465,9 +460,24 @@ def build_price_history(con: sqlite3.Connection) -> dict:
 def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
+    # tracker.db is gitignored and is NOT present in CI (CLAUDE.md). The
+    # committed frontend/public/data/*.json files are the real shipping
+    # artifact. If the DB is missing we keep those committed files untouched
+    # rather than crash the Pages build — running this locally (where the DB
+    # exists) is what refreshes them.
+    if not DB_PATH.exists():
+        print(f"  tracker.db not found at {DB_PATH} — keeping committed JSON.")
+        print("  (run locally with the DB present to regenerate data files)")
+        return
+
+    # Compute the model overview FIRST — it is the single source of truth and
+    # also supplies the authoritative trailing-12m insolvency figure to kpis.
+    overview = get_overview(DB_PATH)
+    overview_out = {**overview, "source": "model/pipeline.py"}
+
     con = sqlite3.connect(DB_PATH)
     try:
-        kpis = build_kpis(con)
+        kpis = build_kpis(con, insolvencies_12m_override=overview["insolvencies_12m"])
         assumptions = build_pipeline_assumptions()
         files = {
             "kpis.json": kpis,
@@ -479,7 +489,7 @@ def main():
             "valuation.json": build_valuation(),
             "balance_sheet.json": build_balance_sheet(),
             "peers.json": build_peers(),
-            "thesis_flow.json": build_thesis_flow(kpis, assumptions),
+            "pipeline_overview.json": overview_out,
             "mano_price_history.json": build_price_history(con),
         }
     finally:
@@ -490,7 +500,9 @@ def main():
         path.write_text(json.dumps(data, **COMPACT), encoding="utf-8")
         print(f"  wrote {name} ({path.stat().st_size:,} bytes)")
 
-    print("Done.")
+    # Print the chain so it can be confirmed by hand (HARD CONSTRAINT 1).
+    print_overview_chain(overview)
+    print("\nDone.")
 
 
 if __name__ == "__main__":

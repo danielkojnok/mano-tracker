@@ -25,7 +25,10 @@ export default function Overview() {
         <HeroChart />
       </Panel>
 
-      <Panel title="Téza ako lievik · 12m anualizované" source="model/pipeline.py · MANO RNS FY26">
+      <Panel
+        title="Konverzný lievik · počet prípadov (12m)"
+        source="model/pipeline.py · MANO RNS FY26"
+      >
         <ThesisFunnel />
       </Panel>
 

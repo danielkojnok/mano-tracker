@@ -207,6 +207,120 @@ def run(scenario: str = DEFAULT_SCENARIO) -> tuple[pd.DataFrame, pd.DataFrame]:
     return pipeline, fy_proj
 
 
+# ── single source of truth for the frontend Overview ───────────────────────
+# Everything the Overview page shows as a "model number" is computed HERE and
+# nowhere else. The frontend reads these figures; it computes none of them.
+#
+# The chain below is deliberately TRANSPARENT — every figure is reproducible
+# by hand from the one before it, with no hidden maths:
+#
+#   insolvencies_12m  : trailing-12-month CVL+compulsory sum (computed from DB)
+#   weighted_market   = insolvencies_12m × COMPULSORY_WEIGHT
+#   referrals         = weighted_market  × REFERRAL_RATE
+#   investments       = referrals        × ACCEPTANCE_RATE
+#   completions       = min(investments, capacity_cap)   ← the cap bites here
+#   revenue_capped_m  = completions × ARRCC_base / 1e6    ← HEADLINE
+#
+# NOTE on the capacity cap: build_pipeline() applies the cap *monthly*; here
+# we cap the *annualised* investment count directly, because get_overview()
+# works on a single trailing-12-month aggregate rather than a monthly series.
+# FY25/FY26 actual completions were 291, so 291 is the empirical annual
+# ceiling and is used as the cap (CLAUDE.md FY26: 291 completions).
+
+CAPACITY_CAP_ANNUAL = 291   # FY25/FY26 actual completions — empirical ceiling
+
+
+def trailing_12m_insolvencies(db_path: Path = DB_PATH) -> int:
+    """Sum of CVL+compulsory over the most recent 12 reported months."""
+    raw = load_insolvencies(db_path)
+    raw = raw.dropna(subset=["date"]).sort_values("date")
+    total = raw["cvl"].fillna(0) + raw["compulsory"].fillna(0)
+    raw = raw.assign(_t=total)
+    cutoff = raw["date"].max() - pd.DateOffset(months=12)
+    return int(raw[raw["date"] > cutoff]["_t"].sum())
+
+
+def get_overview(
+    db_path: Path = DB_PATH,
+    *,
+    fy26_realised_m: float = 28.0,
+) -> dict:
+    """Full base-scenario chain as a flat dict — the ONE source of model
+    numbers for the frontend Overview. Every value is hand-reproducible."""
+    insolvencies_12m = trailing_12m_insolvencies(db_path)
+
+    # Each stage is rounded to a whole case count BEFORE the next multiply, so
+    # every figure the frontend shows is exactly hand-reproducible from the one
+    # before it (no penny drift between the displayed count and the £m it implies).
+    weighted_market = round(insolvencies_12m * COMPULSORY_WEIGHT)
+    referrals       = round(weighted_market * REFERRAL_RATE)
+    investments     = round(referrals * ACCEPTANCE_RATE)
+
+    capacity_cap         = CAPACITY_CAP_ANNUAL
+    completions_uncapped = investments
+    completions_capped   = min(investments, capacity_cap)
+
+    arrcc = REV_PER_CASE_SCENARIOS
+    arrcc_base = arrcc["base"]
+
+    revenue_uncapped_m = completions_uncapped * arrcc_base / 1e6
+    revenue_capped_m   = completions_capped   * arrcc_base / 1e6   # HEADLINE
+
+    # FY27 projection band — capped completions at each ARRCC scenario.
+    scenarios = {
+        name: round(completions_capped * v / 1e6, 2)
+        for name, v in arrcc.items()
+    }
+
+    model_vs_real_pct = round(
+        (fy26_realised_m - revenue_capped_m) / revenue_capped_m * 100, 1
+    )
+
+    return {
+        "insolvencies_12m":     insolvencies_12m,
+        "compulsory_weight":    COMPULSORY_WEIGHT,
+        "weighted_market":      round(weighted_market),
+        "referral_rate":        REFERRAL_RATE,
+        "referrals":            round(referrals),
+        "acceptance_rate":      ACCEPTANCE_RATE,
+        "investments":          round(investments),
+        "capacity_cap":         capacity_cap,
+        "completions_uncapped": round(completions_uncapped),
+        "completions_capped":   round(completions_capped),
+        "arrcc_base_gbp":       arrcc_base,
+        "arrcc_bear_gbp":       arrcc["bear"],
+        "arrcc_bull_gbp":       arrcc["bull"],
+        "revenue_uncapped_m":   round(revenue_uncapped_m, 2),
+        "revenue_capped_m":     round(revenue_capped_m, 2),   # HEADLINE
+        "scenarios":            scenarios,                    # {bear, base, bull}
+        "fy26_realised_m":      fy26_realised_m,
+        "model_vs_real_pct":    model_vs_real_pct,
+        "lag_total_months":     CASE_LAG_MONTHS + CASH_LAG_MONTHS,
+        "lag_case_months":      CASE_LAG_MONTHS,
+        "lag_cash_months":      CASH_LAG_MONTHS,
+    }
+
+
+def print_overview_chain(ov: dict) -> None:
+    """Print the chain so a human can confirm it reconciles by hand."""
+    print("\n── Overview chain (single source of truth) ──")
+    print(f"  insolvencies_12m      {ov['insolvencies_12m']:>10,}")
+    print(f"  × compulsory_weight   {ov['compulsory_weight']:>10}")
+    print(f"  = weighted_market     {ov['weighted_market']:>10,}")
+    print(f"  × referral_rate       {ov['referral_rate']:>10}")
+    print(f"  = referrals           {ov['referrals']:>10,}")
+    print(f"  × acceptance_rate     {ov['acceptance_rate']:>10}")
+    print(f"  = investments         {ov['investments']:>10,}")
+    print(f"  capacity_cap          {ov['capacity_cap']:>10,}")
+    print(f"  = completions (capped){ov['completions_capped']:>10,}")
+    print(f"  × ARRCC base £{ov['arrcc_base_gbp']:,}")
+    print(f"  = revenue_capped_m   £{ov['revenue_capped_m']:>8}m   ← HEADLINE")
+    print(f"    revenue_uncapped_m £{ov['revenue_uncapped_m']:>8}m   (no cap)")
+    print(f"    scenarios          {ov['scenarios']}")
+    print(f"    FY26 realised      £{ov['fy26_realised_m']}m"
+          f"  ({ov['model_vs_real_pct']:+}% vs model)")
+
+
 if __name__ == "__main__":
     pipeline, fy_proj = run()
     print(f"\n── Scenario: {DEFAULT_SCENARIO} "
@@ -218,3 +332,5 @@ if __name__ == "__main__":
     ].to_string(index=False))
     print("\n── Projected FY Revenue (central + low/high lag band) ──")
     print(fy_proj.tail(5).to_string(index=False))
+
+    print_overview_chain(get_overview())

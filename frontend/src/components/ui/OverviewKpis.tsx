@@ -1,17 +1,19 @@
 import KpiCard from "./KpiCard";
 import { useFetch } from "../../hooks/useData";
-import type { Kpis, Valuation, ManoKpis } from "../../types/data";
+import type { Kpis, Valuation, ManoKpis, PipelineOverview } from "../../types/data";
 
 const fmt = (n: number) => n.toLocaleString("en-GB");
 const arrow = (pct: number) => (pct >= 0 ? "▲" : "▼");
 
-/** Overview KPI row — combines kpis.json + valuation.json + mano_kpis.json. */
+/** Overview KPI row — combines kpis.json + valuation.json + mano_kpis.json
+ *  + pipeline_overview.json (single source of truth for model numbers). */
 export default function OverviewKpis() {
   const { data: kpis, loading: l1 } = useFetch<Kpis>("kpis.json");
   const { data: val, loading: l2 } = useFetch<Valuation>("valuation.json");
   const { data: mano, loading: l3 } = useFetch<ManoKpis>("mano_kpis.json");
+  const { data: ov, loading: l4 } = useFetch<PipelineOverview>("pipeline_overview.json");
 
-  if (l1 || l2 || l3) {
+  if (l1 || l2 || l3 || l4) {
     return (
       <div className="kpi-row">
         {[0, 1, 2, 3].map((i) => (
@@ -23,6 +25,7 @@ export default function OverviewKpis() {
 
   const fy26 = mano?.fy_series.find((f) => f.fy === "FY26");
   const yoy = kpis?.insolvencies_yoy_pct ?? 0;
+  const arrccK = ov ? Math.round(ov.arrcc_base_gbp / 1000) : 110;
 
   return (
     <div className="kpi-row">
@@ -35,8 +38,12 @@ export default function OverviewKpis() {
       <KpiCard
         label="REALISED REVENUE FY26"
         value={fy26 ? `£${fy26.realised_m.toFixed(1)}m` : "--"}
-        sub="model: £33.8m"
-        subTooltip="Model £33.8m = pipeline projekcia z 25-mes lagu × ARRCC base £110k. Realised £28.0m = skutočne inkasované FY26 (MANO RNS). Rozdiel = capacity cap + debtor delays."
+        sub={ov ? `model: £${ov.revenue_capped_m}m` : "model: --"}
+        subTooltip={
+          ov
+            ? `Model £${ov.revenue_capped_m}m = ${ov.completions_capped} ukončení (capacity cap) × ARRCC base £${arrccK}k. Realised £${ov.fy26_realised_m}m = skutočne inkasované FY26 (MANO RNS). Rozdiel ${ov.model_vs_real_pct}% = debtor delays + timing.`
+            : undefined
+        }
       />
       <KpiCard
         label="FORWARD BOOK"

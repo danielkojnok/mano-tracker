@@ -1,71 +1,42 @@
-/* Lag-shift control — slider styling per §06 */
-.lag-control {
+/* Two-state toggle — REÁLNY ČAS | POSUN +25 MES. (sharp segmented control) */
+.hero-toggle {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 8px;
-  margin-bottom: 8px;
-  transition: background-color 120ms ease-out;
+  gap: 0;
+  margin-bottom: 12px;
 }
 
-.lag-flash {
-  background: var(--gold-tint);
-}
-
-.lag-label {
+.hero-toggle-btn {
+  font-family: var(--font-mono);
   font-size: 12px;
+  letter-spacing: 0.04em;
   color: var(--text-2);
-  flex-shrink: 0;
+  background: var(--bg-1);
+  border: 1px solid var(--border-strong);
+  border-radius: 0;
+  padding: 7px 16px;
+  cursor: pointer;
+  transition: color 120ms ease-out, background-color 120ms ease-out;
 }
 
-.lag-value {
+.hero-toggle-btn + .hero-toggle-btn {
+  border-left: none;
+}
+
+.hero-toggle-btn:hover {
+  color: var(--text);
+}
+
+.hero-toggle-btn.active {
   color: var(--gold);
-  font-weight: 600;
+  background: var(--gold-tint);
+  border-color: var(--gold);
 }
 
-.lag-thesis-badge {
-  margin-left: 10px;
+.hero-thesis-cue {
+  margin-left: 14px;
   font-size: 11px;
-  color: var(--gold);
-}
-
-.lag-control input[type="range"] {
-  -webkit-appearance: none;
-  appearance: none;
-  flex: 1;
-  max-width: 320px;
-  height: 4px;
-  border-radius: 0;
-  outline-offset: 4px;
-}
-
-.lag-control input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 14px;
-  height: 14px;
-  background: var(--bg-1);
-  border: 2px solid var(--gold);
-  border-radius: 0;
-  cursor: pointer;
-}
-
-.lag-control input[type="range"]::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
-  background: var(--bg-1);
-  border: 2px solid var(--gold);
-  border-radius: 0;
-  cursor: pointer;
-}
-
-/* thesis lag — thumb glows with gold-tint ring */
-.lag-slider-thesis::-webkit-slider-thumb {
-  background: var(--gold-tint);
-  box-shadow: 0 0 0 3px var(--gold-tint);
-}
-.lag-slider-thesis::-moz-range-thumb {
-  background: var(--gold-tint);
+  color: var(--up);
 }
 
 /* Explainer below chart — two-column, 1px border above */

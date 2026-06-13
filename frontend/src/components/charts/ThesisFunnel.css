@@ -22,6 +22,38 @@
   fill: var(--text-2);
 }
 
+/* MONEY step — separate from the funnel; reads the same fields as the last
+   stage so it cannot disagree. Reads as an equation. */
+.funnel-money {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: var(--bg-1);
+  border: 1px solid var(--border-strong);
+  font-size: 15px;
+  color: var(--text-2);
+}
+
+.funnel-money .fm-step b {
+  color: var(--text);
+}
+
+.funnel-money .fm-op {
+  color: var(--text-2);
+}
+
+.funnel-money .fm-result {
+  margin-left: auto;
+  color: var(--text-2);
+}
+
+.funnel-money .fm-result b {
+  font-size: 18px;
+}
+
 .funnel-explainer {
   font-size: 13px;
   color: var(--text-2);
@@ -64,4 +96,20 @@
 /* FY26 actual — 1px gold top border */
 .fn-actual td {
   border-top: 1px solid var(--gold);
+}
+
+.funnel-numbers .gold,
+.funnel-money .gold {
+  color: var(--gold);
+}
+
+.funnel-gap-note {
+  margin-top: 12px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-2);
+}
+
+.funnel-gap-note b {
+  color: var(--text);
 }
