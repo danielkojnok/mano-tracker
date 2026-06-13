@@ -1,4 +1,6 @@
 import { useEffect } from "react";
+import { useFetch } from "../../hooks/useData";
+import type { ChainConstants } from "../../types/data";
 import "./TruthDrawer.css";
 
 /* "Celá pravda" drawer (manual §26) — 480px from the right, overlay, Esc
@@ -13,6 +15,10 @@ export default function TruthDrawer({
   open: boolean;
   onClose: () => void;
 }) {
+  // capacity cap read from JSON (single source) — never hardcoded.
+  const { data: cc } = useFetch<ChainConstants>("chain_constants.json");
+  const capacityCap = cc?.capacity_cap ?? 291;
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -53,7 +59,8 @@ export default function TruthDrawer({
             Honest backtest dáva <b className="gold">MAPE 24.4%</b> (cieľ &lt;30%)
             — a v Covid-skreslených rokoch (FY22/FY23) sa mýli o 44–48%, lebo
             potlačené insolvencie 2020 lagované o 25 mesiacov deformujú výstup.
-            Capacity cap (291) a ARRCC sú dominantné páky (viď tornado).
+            Capacity cap ({capacityCap} = auditované FY25 ukončenia, ročný strop
+            priepustnosti) a ARRCC sú dominantné páky (viď tornado).
           </p>
 
           <h3 className="truth-h3">Trh tézu zatiaľ necení</h3>

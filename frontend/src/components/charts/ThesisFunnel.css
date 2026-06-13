@@ -63,6 +63,19 @@
   border-top: 1px solid var(--border);
 }
 
+/* disambiguation line for the three case-count numbers */
+.funnel-defs {
+  display: block;
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--text-2);
+}
+
+.funnel-defs b {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
 /* 3-number reconciliation table */
 .funnel-numbers {
   width: 100%;

@@ -72,7 +72,9 @@ export default function ThesisFunnel({ values }: ThesisFunnelProps = {}) {
     { name: "INSOLVENCIE 12M", value: vals.insolvencies_12m },
     { name: "VÁŽENÝ TRH", value: vals.weighted_market },
     { name: "DOPYTY", value: vals.referrals },
-    { name: "INVESTÍCIE", value: vals.investments },
+    // 346 = uncapped demand (theoretical investments before the cap bites) —
+    // distinct from 282 live active investments and 291 capacity cap.
+    { name: "INVESTÍCIE (dopyt)", value: vals.investments },
     { name: "UKONČENIA (cap)", value: vals.completions_capped },
   ];
   const n = stages.length;
@@ -186,6 +188,14 @@ export default function ThesisFunnel({ values }: ThesisFunnelProps = {}) {
         Lievik ukazuje len <b>počty prípadov</b> — z UK insolvenčného trhu cez
         konverzné stupne po ukončené prípady. Tržba je samostatný krok vyššie:
         ukončenia × priemerná realizovaná tržba na prípad (ARRCC).
+        <br />
+        <span className="funnel-defs">
+          Pozor na tri rôzne čísla: <b>{fmtInt(vals.investments)}</b> =
+          nezastropovaný dopyt (teoretické investície pred capom) ·{" "}
+          <b>{fmtInt(vals.capacity_cap)}</b> = capacity cap (auditované FY25
+          ukončenia, ročný strop priepustnosti) · aktívne investície dnes (live
+          forward book) sú samostatné číslo na stránke Spoločnosť.
+        </span>
       </div>
 
       {/* 3-row reconciliation — the three numbers as one coherent story. */}

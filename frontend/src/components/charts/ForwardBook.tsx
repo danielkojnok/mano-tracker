@@ -98,7 +98,7 @@ export default function ForwardBook() {
           MALÉ <b>£{small}m</b> ({smallPct}%)
         </div>
         <div className="fbook-row fbook-active">
-          {data.active_investments} aktívnych investícií · +37% YoY
+          {data.active_investments} aktívnych investícií (live portfólio) · +37% YoY
         </div>
       </div>
     </div>
