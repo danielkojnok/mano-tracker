@@ -2,6 +2,9 @@
   width: 100%;
   height: auto;
   display: block;
+  /* Let edge labels paint just outside the viewBox box rather than clip
+     (defensive — labels are also position-anchored to stay in bounds). */
+  overflow: visible;
 }
 
 .cohort-tick {

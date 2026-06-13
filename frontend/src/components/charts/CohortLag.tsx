@@ -66,12 +66,22 @@ export default function CohortLag() {
     },
     {
       m: cashLag,
-      title: "CASH = TRŽBA",
+      title: "CASH = TRŽBY",
       value: `£${chain.revenue_capped_m}m`,
       unit: `${cashLag}m: + cash lag`,
       color: T.gold,
     },
   ];
+
+  // Anchor labels by horizontal position so long Slovak strings never overflow
+  // the viewBox edges (the real cause of the "ÍCIE PODPÍSANÉ" / "CASH = TRŽB"
+  // clipping was middle-anchored text spilling past the left/right edges).
+  const EDGE = 12;
+  const anchorFor = (x: number): "start" | "middle" | "end" => {
+    if (x <= PAD_L + EDGE) return "start";
+    if (x >= VB_W - PAD_R - EDGE) return "end";
+    return "middle";
+  };
 
   return (
     <div>
@@ -119,23 +129,24 @@ export default function CohortLag() {
           const x = monthX(s.m);
           const baseY = AXIS_Y - 28;
           const labelY = 26 + (s.offsetY ? 56 : 0);
+          const anchor = anchorFor(x);
           return (
             <g key={`stop-${i}`}>
               <line x1={x} y1={labelY + 44} x2={x} y2={baseY} stroke={T.border} strokeWidth={1} strokeDasharray="2 3" />
               <rect x={x - 5} y={baseY - 5} width={10} height={10} fill={s.color} />
-              <text x={x} y={labelY} className="cohort-stop-title" textAnchor={i === 0 ? "start" : "middle"}>
+              <text x={x} y={labelY} className="cohort-stop-title" textAnchor={anchor}>
                 {s.title}
               </text>
               <text
                 x={x}
                 y={labelY + 22}
                 className="cohort-stop-value mono"
-                textAnchor={i === 0 ? "start" : "middle"}
+                textAnchor={anchor}
                 fill={s.color}
               >
                 {s.value}
               </text>
-              <text x={x} y={labelY + 38} className="cohort-stop-unit mono" textAnchor={i === 0 ? "start" : "middle"}>
+              <text x={x} y={labelY + 38} className="cohort-stop-unit mono" textAnchor={anchor}>
                 {s.unit}
               </text>
             </g>
