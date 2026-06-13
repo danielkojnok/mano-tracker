@@ -119,6 +119,22 @@ export interface ThesisFlow {
   source: string;
 }
 
+export interface PricePoint {
+  date: string; // "YYYY-MM-DD"
+  close: number; // GBX
+}
+
+export interface RnsEvent {
+  date: string;
+  label: string;
+}
+
+export interface PriceHistory {
+  series: PricePoint[];
+  rns_events: RnsEvent[];
+  source: string;
+}
+
 export interface PipelineAssumptions {
   referral_rate: number;
   acceptance_rate: number;

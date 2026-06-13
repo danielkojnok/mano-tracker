@@ -1,10 +1,10 @@
 import Panel from "../components/ui/Panel";
 import OverviewKpis from "../components/ui/OverviewKpis";
 import ScrambleText from "../components/ui/ScrambleText";
-import ThesisScorecard from "../components/ui/ThesisScorecard";
+import VerdictBlock from "../components/ui/VerdictBlock";
 import HeroChart from "../components/charts/HeroChart";
-import SankeyFunnel from "../components/charts/SankeyFunnel";
-import ValuationGap from "../components/charts/ValuationGap";
+import ThesisFunnel from "../components/charts/ThesisFunnel";
+import PriceChart from "../components/charts/PriceChart";
 
 export default function Overview() {
   return (
@@ -25,20 +25,22 @@ export default function Overview() {
         <HeroChart />
       </Panel>
 
-      <div className="grid-7-5">
-        <Panel title="Téza ako lievik · 12m anualizované" source="model/pipeline.py">
-          <SankeyFunnel />
-        </Panel>
-        <Panel title="Oceňovacia medzera" source="yfinance · Singer · MANO H1 FY26">
-          <ValuationGap />
-        </Panel>
-      </div>
+      <Panel title="Téza ako lievik · 12m anualizované" source="model/pipeline.py · MANO RNS FY26">
+        <ThesisFunnel />
+      </Panel>
+
+      <Panel
+        title="Cena MANO.L vs oceňovacie kotvy"
+        source="yfinance · Singer Capital Markets note · MANO H1 FY26"
+      >
+        <PriceChart />
+      </Panel>
 
       <Panel
         title="Verdikt tézy"
-        source="MANO FY26 update · model/pipeline.py · jún 2026"
+        source="MANO FY26 update · model/pipeline.py · weighted scoring framework · jún 2026"
       >
-        <ThesisScorecard />
+        <VerdictBlock />
       </Panel>
     </>
   );

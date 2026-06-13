@@ -1,0 +1,139 @@
+/* negative margins pull zones to panel-body edges (panel has 16px padding) */
+.verdict-block {
+  margin: -16px;
+}
+
+/* ZONE 1 — verdict header */
+.verdict-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 80px;
+  padding: 0 24px;
+  background: var(--bg-2);
+  border-top: 2px solid var(--gold);
+}
+
+.verdict-headline {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--gold);
+}
+
+.verdict-score-box {
+  text-align: right;
+}
+
+.verdict-score-num {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.verdict-score-cap {
+  font-size: 11px;
+  color: var(--text-2);
+  margin-top: 2px;
+}
+
+/* ZONE 2 — scorecard */
+.verdict-cols {
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr;
+  gap: 0;
+}
+
+.verdict-col {
+  padding: 16px 24px;
+}
+
+.verdict-col-right {
+  border-left: 1px solid var(--border);
+}
+
+.verdict-col-head {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.verdict-factor {
+  display: grid;
+  grid-template-columns: 16px 1fr auto auto;
+  align-items: center;
+  gap: 10px;
+  height: 32px;
+  border-bottom: 1px solid var(--row-line);
+}
+
+.verdict-factor:hover {
+  background: var(--bg-2);
+}
+
+.verdict-marker {
+  font-size: 12px;
+}
+
+.verdict-marker.gold-dim {
+  color: var(--gold-dim);
+}
+
+.verdict-flabel {
+  font-size: 14px;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.verdict-evidence {
+  font-size: 13px;
+  color: var(--text-2);
+  text-align: right;
+}
+
+.verdict-score {
+  font-size: 13px;
+  text-align: right;
+  min-width: 48px;
+}
+
+.verdict-sum {
+  margin-top: 12px;
+  text-align: right;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* ZONE 3 — summary strip */
+.verdict-summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 64px;
+  padding: 12px 24px;
+  background: var(--bg-1);
+  border-top: 1px solid var(--border);
+  font-size: 14px;
+  color: var(--text);
+  text-align: center;
+  line-height: 1.6;
+}
+
+.gold {
+  color: var(--gold);
+}
+
+@media (max-width: 768px) {
+  .verdict-cols {
+    grid-template-columns: 1fr;
+  }
+  .verdict-col-right {
+    border-left: none;
+    border-top: 1px solid var(--border);
+  }
+}

@@ -35,7 +35,8 @@ export default function OverviewKpis() {
       <KpiCard
         label="REALISED REVENUE FY26"
         value={fy26 ? `£${fy26.realised_m.toFixed(1)}m` : "--"}
-        sub="vs model £33.8m"
+        sub="model: £33.8m"
+        subTooltip="Model £33.8m = pipeline projekcia z 25-mes lagu × ARRCC base £110k. Realised £28.0m = skutočne inkasované FY26 (MANO RNS). Rozdiel = capacity cap + debtor delays."
       />
       <KpiCard
         label="FORWARD BOOK"

@@ -9,6 +9,8 @@ interface KpiCardProps {
   isKeyMetric?: boolean;
   /** Set true when value is a word-state (e.g. "Klesá") — value then takes semantic trend color. */
   wordState?: boolean;
+  /** When set, appends an ⓘ to the sub-line with this text as a native tooltip. */
+  subTooltip?: string;
 }
 
 /** KPI card — DESIGN-MANUAL.md §06: 4 visual states. */
@@ -20,6 +22,7 @@ export default function KpiCard({
   trend = null,
   isKeyMetric = false,
   wordState = false,
+  subTooltip,
 }: KpiCardProps) {
   const valueClass = [
     "kpi-value",
@@ -38,7 +41,14 @@ export default function KpiCard({
         {unit && <span className="kpi-unit">{unit}</span>}
       </div>
       {sub && (
-        <div className={`kpi-sub mono${trend ? ` kpi-sub-${trend}` : ""}`}>{sub}</div>
+        <div className={`kpi-sub mono${trend ? ` kpi-sub-${trend}` : ""}`}>
+          {sub}
+          {subTooltip && (
+            <span className="kpi-info" title={subTooltip} aria-label={subTooltip}>
+              {" "}ⓘ
+            </span>
+          )}
+        </div>
       )}
     </div>
   );

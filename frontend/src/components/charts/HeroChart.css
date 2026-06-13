@@ -1,0 +1,108 @@
+/* Lag-shift control — slider styling per §06 */
+.lag-control {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px;
+  margin-bottom: 8px;
+  transition: background-color 120ms ease-out;
+}
+
+.lag-flash {
+  background: var(--gold-tint);
+}
+
+.lag-label {
+  font-size: 12px;
+  color: var(--text-2);
+  flex-shrink: 0;
+}
+
+.lag-value {
+  color: var(--gold);
+  font-weight: 600;
+}
+
+.lag-thesis-badge {
+  margin-left: 10px;
+  font-size: 11px;
+  color: var(--gold);
+}
+
+.lag-control input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  flex: 1;
+  max-width: 320px;
+  height: 4px;
+  border-radius: 0;
+  outline-offset: 4px;
+}
+
+.lag-control input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background: var(--bg-1);
+  border: 2px solid var(--gold);
+  border-radius: 0;
+  cursor: pointer;
+}
+
+.lag-control input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: var(--bg-1);
+  border: 2px solid var(--gold);
+  border-radius: 0;
+  cursor: pointer;
+}
+
+/* thesis lag — thumb glows with gold-tint ring */
+.lag-slider-thesis::-webkit-slider-thumb {
+  background: var(--gold-tint);
+  box-shadow: 0 0 0 3px var(--gold-tint);
+}
+.lag-slider-thesis::-moz-range-thumb {
+  background: var(--gold-tint);
+}
+
+/* Explainer below chart — two-column, 1px border above */
+.hero-explainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.hero-explainer-text {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.6;
+}
+
+.hero-explainer-breakdown {
+  font-size: 11px;
+  color: var(--text-2);
+  line-height: 1.7;
+}
+
+.hero-breakdown-head {
+  color: var(--text);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.hero-breakdown-source {
+  margin-top: 8px;
+  color: var(--text-2);
+}
+
+@media (max-width: 768px) {
+  .hero-explainer {
+    grid-template-columns: 1fr;
+  }
+}

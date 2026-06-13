@@ -1,0 +1,67 @@
+.funnel-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.funnel-stage {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  fill: var(--text);
+}
+
+.funnel-value {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.funnel-rate {
+  font-size: 10px;
+  fill: var(--text-2);
+}
+
+.funnel-explainer {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.6;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+/* 3-number reconciliation table */
+.funnel-numbers {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+  font-size: 13px;
+}
+
+.funnel-numbers td {
+  padding: 8px 8px;
+  border-bottom: 1px solid var(--row-line);
+}
+
+.fn-label {
+  color: var(--text-2);
+}
+
+.fn-value {
+  color: var(--text);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.fn-desc {
+  color: var(--text-2);
+  text-align: right;
+  font-size: 11px;
+}
+
+/* FY26 actual — 1px gold top border */
+.fn-actual td {
+  border-top: 1px solid var(--gold);
+}

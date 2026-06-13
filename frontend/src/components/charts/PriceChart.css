@@ -1,0 +1,33 @@
+.price-explainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.price-col-head {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.price-col-body {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+.price-stat {
+  font-size: 11px;
+  color: var(--text);
+}
+
+@media (max-width: 768px) {
+  .price-explainer {
+    grid-template-columns: 1fr;
+  }
+}

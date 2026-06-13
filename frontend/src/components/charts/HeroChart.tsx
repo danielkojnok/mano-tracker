@@ -1,22 +1,25 @@
+import { useEffect, useRef, useState } from "react";
 import ReactECharts from "echarts-for-react";
 import "../../lib/echartsTheme";
 import { T } from "../../styles/tokens";
 import { useFetch } from "../../hooks/useData";
 import type { InsolTimeseries, ManoKpis } from "../../types/data";
+import "./HeroChart.css";
 
 /* Hero chart — téza: insolvencie vedú realised revenue MANO o ~25 mesiacov.
+ * Default view shows insolvencies at REAL dates; a lag-shift slider lets the
+ * reader discover the ~25m lead by sliding the cyan area forward in time.
  * Series semantics per manual §07: cyan = lead indicator, gold = MANO
- * actuals, green dashed = projection. */
+ * actuals, green dashed = projection (only shown once shift > 0). */
 
-const LEAD_MONTHS = 25;
+const THESIS_LAG = 25;
 
-/* "YYYY-MM" → ms timestamp — time axis needs unambiguous numeric x,
- * string dates + LTTB sampling silently fail to render. */
 function ts(ym: string): number {
   const [y, m] = ym.split("-").map(Number);
   return Date.UTC(y, m - 1, 1);
 }
 
+/* shift a "YYYY-MM" by N months → ms timestamp (numeric x for time axis) */
 function shiftMonths(ym: string, months: number): number {
   const [y, m] = ym.split("-").map(Number);
   const total = y * 12 + (m - 1) + months;
@@ -39,6 +42,8 @@ const RNS_EVENTS: [number, string][] = [
   [ts("2025-06"), "FY25"],
 ];
 
+const MODEL_FY26 = 33.8;
+
 export default function HeroChart() {
   const { data: insol, loading: l1, error: e1 } = useFetch<InsolTimeseries>(
     "insolvency_timeseries.json",
@@ -47,12 +52,29 @@ export default function HeroChart() {
     "mano_kpis.json",
   );
 
+  const [shift, setShift] = useState(0);
+  const [flash, setFlash] = useState(false);
+  const timer = useRef<number | undefined>(undefined);
+  useEffect(() => () => window.clearTimeout(timer.current), []);
+
+  const onShift = (v: number) => {
+    setShift(v);
+    if (v === THESIS_LAG) {
+      setFlash(true);
+      window.clearTimeout(timer.current);
+      timer.current = window.setTimeout(() => setFlash(false), 600);
+    }
+  };
+
   if (l1 || l2) return <div className="chart-skeleton" aria-hidden="true" />;
   if (e1 || e2 || !insol || !mano)
     return <div className="chart-error mono">CHYBA · DÁTA NEDOSTUPNÉ</div>;
 
-  const shifted: [number, number][] = insol.series.map((p) => [
-    shiftMonths(p.date, LEAD_MONTHS),
+  const isThesis = shift === THESIS_LAG;
+  const showProjection = shift > 0;
+
+  const cyan: [number, number][] = insol.series.map((p) => [
+    shiftMonths(p.date, shift),
     p.total,
   ]);
 
@@ -62,17 +84,54 @@ export default function HeroChart() {
   ]);
   const fy26 = mano.fy_series.find((f) => f.fy === "FY26");
   const fy26Ts = fyToTs("FY26");
+  const fy26Delta = fy26
+    ? Math.round(((fy26.realised_m - MODEL_FY26) / MODEL_FY26) * 100)
+    : 0;
+
+  const cyanName =
+    shift === 0 ? "Insolvencie (reálny čas)" : `Insolvencie +${shift}m`;
+
+  const projectionSeries = showProjection
+    ? [
+        {
+          name: "Projekcia FY27",
+          type: "line",
+          yAxisIndex: 1,
+          data: PROJ_RANGE.map((d) => [d, PROJ.base]),
+          symbol: "none",
+          lineStyle: { color: T.up, type: "dashed", width: 2 },
+          itemStyle: { color: T.up },
+        },
+        {
+          name: "band-low",
+          type: "line",
+          yAxisIndex: 1,
+          stack: "band",
+          data: PROJ_RANGE.map((d) => [d, PROJ.bear]),
+          symbol: "none",
+          lineStyle: { opacity: 0 },
+          tooltip: { show: false },
+        },
+        {
+          name: "band-span",
+          type: "line",
+          yAxisIndex: 1,
+          stack: "band",
+          data: PROJ_RANGE.map((d) => [d, PROJ.bull - PROJ.bear]),
+          symbol: "none",
+          lineStyle: { opacity: 0 },
+          areaStyle: { color: T.up, opacity: 0.1 },
+          tooltip: { show: false },
+        },
+      ]
+    : [];
+
+  const legendData = [cyanName, "Realised revenue MANO"];
+  if (showProjection) legendData.push("Projekcia FY27");
 
   const option = {
     tooltip: { trigger: "axis" },
-    legend: {
-      bottom: 0,
-      data: [
-        "Insolvencie +25m (lead)",
-        "Realised revenue MANO",
-        "Projekcia FY27",
-      ],
-    },
+    legend: { bottom: 0, data: legendData },
     grid: { top: 40, right: 56, bottom: 64, left: 56 },
     xAxis: {
       type: "time",
@@ -97,15 +156,16 @@ export default function HeroChart() {
     ],
     series: [
       {
-        name: "Insolvencie +25m (lead)",
+        name: cyanName,
         type: "line",
-        data: shifted,
+        data: cyan,
         smooth: false,
         symbol: "none",
         lineStyle: { color: T.signal, width: 3 },
         itemStyle: { color: T.signal },
         areaStyle: { color: T.signal, opacity: 0.15 },
-        sampling: "lttb", // manual §07 — decimation over 500 points
+        sampling: "lttb",
+        animationDuration: 200, // §19 — shift transition
       },
       {
         name: "Realised revenue MANO",
@@ -114,23 +174,25 @@ export default function HeroChart() {
         data: revenue,
         barWidth: 22,
         itemStyle: { color: T.gold },
-        // FY26 is actual vs model — annotate the gap (manual §21)
+        // FY26 model-vs-real annotation block, below the bar (issue 5B)
         markPoint: {
-          symbol: "pin",
+          symbol: "rect",
           symbolSize: 0,
           silent: true,
           data: fy26
             ? [
                 {
                   coord: [fy26Ts, fy26.realised_m],
-                  value: "model £33.8m",
                   label: {
-                    formatter: "model £33.8m",
+                    formatter: `MODEL  £${MODEL_FY26}m\nREAL   £${fy26.realised_m}m\n▼ ${fy26Delta}%`,
+                    lineHeight: 15,
                     fontFamily: "JetBrains Mono",
                     fontSize: 11,
-                    color: T.up,
-                    position: "top",
-                    distance: 8,
+                    color: T.text2,
+                    rich: {},
+                    position: "bottom",
+                    distance: 12,
+                    align: "left",
                   },
                 },
               ]
@@ -140,7 +202,6 @@ export default function HeroChart() {
           symbol: "none",
           silent: true,
           lineStyle: { color: T.goldDim, type: "dashed", width: 1 },
-          // §07 + Law 1: horizontal label above line top, never rotated
           label: {
             rotate: 0,
             position: "end",
@@ -154,39 +215,51 @@ export default function HeroChart() {
           })),
         },
       },
-      {
-        name: "Projekcia FY27",
-        type: "line",
-        yAxisIndex: 1,
-        data: PROJ_RANGE.map((d) => [d, PROJ.base]),
-        symbol: "none",
-        lineStyle: { color: T.up, type: "dashed", width: 2 },
-        itemStyle: { color: T.up },
-      },
-      // bear/bull band — invisible base line + stacked fill @10% (manual §07)
-      {
-        name: "band-low",
-        type: "line",
-        yAxisIndex: 1,
-        stack: "band",
-        data: PROJ_RANGE.map((d) => [d, PROJ.bear]),
-        symbol: "none",
-        lineStyle: { opacity: 0 },
-        tooltip: { show: false },
-      },
-      {
-        name: "band-span",
-        type: "line",
-        yAxisIndex: 1,
-        stack: "band",
-        data: PROJ_RANGE.map((d) => [d, PROJ.bull - PROJ.bear]),
-        symbol: "none",
-        lineStyle: { opacity: 0 },
-        areaStyle: { color: T.up, opacity: 0.1 },
-        tooltip: { show: false },
-      },
+      ...projectionSeries,
     ],
   };
 
-  return <ReactECharts option={option} theme="mano" style={{ height: 440 }} notMerge />;
+  const pct = (shift / 36) * 100;
+
+  return (
+    <div>
+      <div className={`lag-control${flash ? " lag-flash" : ""}`}>
+        <span className="mono lag-label">
+          Posun insolvencií (mes.):{" "}
+          <span className="lag-value">{shift}</span>
+          {isThesis && <span className="lag-thesis-badge">✓ TÉZA</span>}
+        </span>
+        <input
+          type="range"
+          min={0}
+          max={36}
+          step={1}
+          value={shift}
+          onChange={(e) => onShift(Number(e.target.value))}
+          className={isThesis ? "lag-slider-thesis" : ""}
+          style={{
+            background: `linear-gradient(to right, var(--gold) ${pct}%, var(--border) ${pct}%)`,
+          }}
+        />
+      </div>
+
+      <ReactECharts option={option} theme="mano" style={{ height: 420 }} notMerge />
+
+      <div className="hero-explainer">
+        <div className="hero-explainer-text">
+          Téza: insolvencie sú leading indikátor MANO tržieb. Firma kupuje
+          insolvenčné nároky, vyhrá súd, inkasuje. Tento cyklus trvá ~25
+          mesiacov.
+        </div>
+        <div className="hero-explainer-breakdown mono">
+          <div className="hero-breakdown-head">ROZKLAD LAGU 25 MES.</div>
+          <div>13 mes. · vedenie sporu (žaloba → rozsudok)</div>
+          <div>12 mes. · inkaso (rozsudok → cash)</div>
+          <div className="hero-breakdown-source">
+            Zdroj: MANO outcome statistics FY19-25 · research_02
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }

@@ -46,3 +46,8 @@
 
 .kpi-sub-up { color: var(--up); }
 .kpi-sub-down { color: var(--down); }
+
+.kpi-info {
+  color: var(--gold-dim);
+  cursor: help;
+}

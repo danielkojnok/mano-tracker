@@ -421,6 +421,45 @@ def build_thesis_flow(kpis: dict, assumptions: dict) -> dict:
     }
 
 
+# ── FILE 11 — mano_price_history.json ────────────────────────────────────────
+
+# RNS announcement dates — seed (exact dates not derivable from price data).
+_RNS_EVENTS = [
+    {"date": "2021-06-30", "label": "FY21 RESULTS"},
+    {"date": "2022-09-15", "label": "PROFIT WARNING"},
+    {"date": "2023-06-30", "label": "FY23 RESULTS"},
+    {"date": "2024-09-03", "label": "FY24 RESULTS"},
+    {"date": "2025-06-30", "label": "FY25 RESULTS"},
+    {"date": "2026-04-24", "label": "FY26 TRADING UPDATE"},
+]
+
+
+def build_price_history(con: sqlite3.Connection) -> dict:
+    tbls = _tables(con)
+    series: list[dict] = []
+    if "mano_price" in tbls:
+        try:
+            df = pd.read_sql(
+                "SELECT date, close FROM mano_price ORDER BY date ASC",
+                con,
+                parse_dates=["date"],
+            )
+            df = df.dropna(subset=["date", "close"])
+            # weekly downsample (last close per ISO week) — 1889 daily → ~390 pts
+            df = df.set_index("date").resample("W").last().dropna(subset=["close"])
+            for dt, row in df.iterrows():
+                series.append(
+                    {"date": dt.strftime("%Y-%m-%d"), "close": round(float(row["close"]), 1)}
+                )
+        except Exception:
+            series = []
+    return {
+        "series": series,
+        "rns_events": _RNS_EVENTS,
+        "source": "yfinance · MANO RNS announcements",
+    }
+
+
 # ── main ──────────────────────────────────────────────────────────────────────
 
 def main():
@@ -441,6 +480,7 @@ def main():
             "balance_sheet.json": build_balance_sheet(),
             "peers.json": build_peers(),
             "thesis_flow.json": build_thesis_flow(kpis, assumptions),
+            "mano_price_history.json": build_price_history(con),
         }
     finally:
         con.close()
