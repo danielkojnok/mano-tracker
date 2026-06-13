@@ -188,3 +188,12 @@
 }
 
 .tornado-note .gold { color: var(--gold); }
+
+/* Assumptions table (Diagnostics) — reuses .backtest-table */
+.assumptions-table { width: 100%; }
+.assumptions-table .gold { color: var(--gold); font-weight: 600; }
+.assumptions-src {
+  color: var(--text-2);
+  font-size: 11px;
+  line-height: 1.5;
+}

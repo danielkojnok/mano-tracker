@@ -1,0 +1,128 @@
+.ge-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.ge-input,
+.ge-select,
+.ge-date {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--text);
+  font-size: 12px;
+  padding: 6px 8px;
+  outline-offset: 2px;
+}
+
+.ge-input {
+  flex: 1;
+  min-width: 200px;
+}
+
+.ge-input:focus,
+.ge-select:focus,
+.ge-date:focus {
+  outline: 1px solid var(--gold);
+}
+
+.ge-date {
+  color-scheme: dark;
+}
+
+.ge-count {
+  font-size: 11px;
+  color: var(--text-2);
+  margin-bottom: 8px;
+}
+
+.ge-count b {
+  color: var(--text);
+}
+
+.ge-head {
+  display: flex;
+  align-items: center;
+  font-size: 10px;
+  color: var(--text-2);
+  padding: 0 8px 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.ge-c-date {
+  width: 96px;
+  flex-shrink: 0;
+}
+
+.ge-c-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-right: 8px;
+}
+
+.ge-c-type {
+  width: 110px;
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.ge-viewport {
+  overflow-y: auto;
+  overflow-x: hidden;
+  border: 1px solid var(--border);
+  border-top: none;
+}
+
+.ge-row {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  border-bottom: 1px solid var(--row-line);
+  font-size: 12px;
+  color: var(--text);
+}
+
+.ge-row:hover {
+  background: var(--bg-2);
+}
+
+.ge-row .ge-c-date {
+  color: var(--text-2);
+  font-size: 11px;
+}
+
+.ge-tag {
+  font-size: 10px;
+  text-transform: uppercase;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 2px 6px;
+}
+
+.ge-tag-gold {
+  color: var(--gold);
+  border-color: var(--gold-dim);
+}
+
+.ge-tag-signal {
+  color: var(--signal);
+  border-color: var(--signal);
+}
+
+.ge-tag-neutral {
+  color: var(--text-2);
+}
+
+.ge-empty {
+  padding: 32px;
+  text-align: center;
+  color: var(--text-2);
+  font-size: 12px;
+}

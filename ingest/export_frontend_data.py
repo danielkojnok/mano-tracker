@@ -270,39 +270,9 @@ def build_ip_network(con: sqlite3.Connection) -> dict:
     }
 
 
-# ── FILE 4 — gazette_recent.json ─────────────────────────────────────────────
-
-_TYPE_MAP = {
-    "liquidator_appointment": "LIKVIDÁCIA",
-    "winding_up_petition": "PETÍCIA",
-}
-
-
-def build_gazette_recent(con: sqlite3.Connection) -> dict:
-    tbls = _tables(con)
-
-    if "gazette_notices" not in tbls:
-        return {"notices": []}
-
-    try:
-        df = pd.read_sql(
-            "SELECT date, company_name, notice_type, notice_type_label"
-            " FROM gazette_notices ORDER BY date DESC LIMIT 50",
-            con,
-        )
-        notices = []
-        for _, r in df.iterrows():
-            ntype = str(r["notice_type"]) if pd.notna(r["notice_type"]) else ""
-            notices.append({
-                "date": str(r["date"])[:10] if pd.notna(r["date"]) else "",
-                "company_name": str(r["company_name"]) if pd.notna(r["company_name"]) else "",
-                "notice_type": ntype,
-                "notice_type_label": str(r["notice_type_label"]) if pd.notna(r["notice_type_label"]) else "",
-                "display_type": _TYPE_MAP.get(ntype, "INÉ"),
-            })
-        return {"notices": notices}
-    except Exception:
-        return {"notices": []}
+# ── FILE 4 — gazette_recent.json (FIXED in R4 builder below) ─────────────────
+# The real builder lives further down (build_gazette_recent), keyed off the
+# correct notice_type_label, not the numeric notice_type code.
 
 
 # ── FILE 5 — pipeline_assumptions.json ───────────────────────────────────────
@@ -436,6 +406,380 @@ _RNS_EVENTS = [
 ]
 
 
+# ── R4/R5 — Market & Diagnostics builders ────────────────────────────────────
+
+# notice_type CODE → (label, display) — gazette stores a numeric code in
+# notice_type; the human label lives in notice_type_label. The OLD feed mapped
+# the code through a label-keyed dict and got "INÉ" for everything. We key off
+# the real label (or fall back to the code mapping).
+_GAZETTE_DISPLAY = {
+    "liquidator_appointment": "LIKVIDÁCIA",
+    "winding_up_petition": "PETÍCIA",
+}
+
+
+def _gazette_display(label: str) -> str:
+    return _GAZETTE_DISPLAY.get(label, "INÉ")
+
+
+def build_gazette_recent(con: sqlite3.Connection) -> dict:
+    """FIXED gazette feed — real notice_type_label → display, real company_name
+    (company_number is bugged: it holds free-text, never use it)."""
+    if "gazette_notices" not in _tables(con):
+        return {"notices": []}
+    try:
+        df = pd.read_sql(
+            "SELECT date, company_name, notice_type, notice_type_label"
+            " FROM gazette_notices ORDER BY date DESC LIMIT 60",
+            con,
+        )
+        notices = []
+        for _, r in df.iterrows():
+            label = str(r["notice_type_label"]) if pd.notna(r["notice_type_label"]) else ""
+            notices.append({
+                "date": str(r["date"])[:10] if pd.notna(r["date"]) else "",
+                "company_name": str(r["company_name"]) if pd.notna(r["company_name"]) else "",
+                "notice_type": str(r["notice_type"]) if pd.notna(r["notice_type"]) else "",
+                "notice_type_label": label,
+                "display_type": _gazette_display(label),
+            })
+        return {"notices": notices}
+    except Exception:
+        return {"notices": []}
+
+
+# FILE — seasonal.json (month × year matrix of insolvencies)
+def build_seasonal(con: sqlite3.Connection) -> dict:
+    if "insolvencies_monthly" not in _tables(con):
+        return {"years": [], "cells": [], "source": "Insolvency Service"}
+    try:
+        df = pd.read_sql(
+            "SELECT date, cvl, compulsory FROM insolvencies_monthly ORDER BY date",
+            con, parse_dates=["date"],
+        ).dropna(subset=["date"])
+        df["total"] = df["cvl"].fillna(0) + df["compulsory"].fillna(0)
+        df["year"] = df["date"].dt.year
+        df["month"] = df["date"].dt.month
+        # Keep the recent decade for a legible heatmap (older history is noisy).
+        recent = df[df["year"] >= df["year"].max() - 11]
+        years = sorted(recent["year"].unique().tolist())
+        cells = [
+            {"year": int(r["year"]), "month": int(r["month"]), "value": int(r["total"])}
+            for _, r in recent.iterrows()
+        ]
+        return {
+            "years": years,
+            "cells": cells,
+            "source": "Insolvency Service · monthly CVL+compulsory",
+        }
+    except Exception:
+        return {"years": [], "cells": [], "source": "Insolvency Service"}
+
+
+# FILE — leadlag.json (HONEST Pearson corr: insolvencies(t) vs price(t+lag))
+def build_leadlag(con: sqlite3.Connection) -> dict:
+    tbls = _tables(con)
+    if "insolvencies_monthly" not in tbls or "mano_price" not in tbls:
+        return {"points": [], "source": "Insolvency Service · yfinance"}
+    try:
+        ins = pd.read_sql(
+            "SELECT date, cvl, compulsory FROM insolvencies_monthly ORDER BY date",
+            con, parse_dates=["date"],
+        )
+        px = pd.read_sql(
+            "SELECT date, close FROM mano_price ORDER BY date",
+            con, parse_dates=["date"],
+        )
+        ins["total"] = ins["cvl"].fillna(0) + ins["compulsory"].fillna(0)
+        ins_m = ins.set_index("date")["total"].resample("MS").sum()
+        px_m = px.set_index("date")["close"].resample("MS").last()
+        merged = pd.DataFrame({"ins": ins_m, "px": px_m}).dropna()
+
+        points = []
+        for lag in range(0, 37):
+            sub = pd.DataFrame(
+                {"a": merged["ins"], "b": merged["px"].shift(-lag)}
+            ).dropna()
+            corr = float(sub["a"].corr(sub["b"])) if len(sub) > 3 else None
+            points.append({
+                "lag": lag,
+                "corr": round(corr, 3) if corr is not None else None,
+                "n": int(len(sub)),
+            })
+        model_lag = 25
+        at_model = next((p for p in points if p["lag"] == model_lag), None)
+        return {
+            "points": points,
+            "model_lag": model_lag,
+            "corr_at_model_lag": at_model["corr"] if at_model else None,
+            "overlap_months": int(len(merged)),
+            "source": "Insolvency Service (mesačné) · yfinance MANO.L (resampled MS)",
+            "caveat": (
+                "Korelácia je naprieč všetkými lagmi ZÁPORNÁ — rastúce insolvencie "
+                "zatiaľ sprevádza KLESAJÚCA cena. To je konzistentné s tézou o "
+                "podcenení: trh číta insolvencie ako recesný signál a ešte "
+                "necení ~25m revenue predstih MANO. Dôkaz o revenue-lagu je v "
+                "Pipeline backteste (n pre revenue je malé; cena je dátovo bohatá)."
+            ),
+        }
+    except Exception:
+        return {"points": [], "source": "Insolvency Service · yfinance"}
+
+
+# UK postcode-area prefix → region. Areas use 1–2 leading letters of the
+# postcode; we map the AREA (not the inward district) to a UK region.
+_PC_AREA_REGION = {
+    # London
+    "E": "Londýn", "EC": "Londýn", "WC": "Londýn", "N": "Londýn", "NW": "Londýn",
+    "SE": "Londýn", "SW": "Londýn", "W": "Londýn",
+    # South East
+    "BN": "Juhovýchod", "RH": "Juhovýchod", "GU": "Juhovýchod", "ME": "Juhovýchod",
+    "CT": "Juhovýchod", "TN": "Juhovýchod", "RG": "Juhovýchod", "OX": "Juhovýchod",
+    "SL": "Juhovýchod", "MK": "Juhovýchod", "PO": "Juhovýchod", "SO": "Juhovýchod",
+    "HP": "Juhovýchod", "AL": "Juhovýchod",
+    # East of England
+    "NR": "Východ", "IP": "Východ", "CB": "Východ", "CO": "Východ", "CM": "Východ",
+    "SS": "Východ", "SG": "Východ", "PE": "Východ", "LU": "Východ", "EN": "Východ",
+    "IG": "Východ", "RM": "Východ", "SS9": "Východ",
+    # South West
+    "BS": "Juhozápad", "BA": "Juhozápad", "GL": "Juhozápad", "EX": "Juhozápad",
+    "PL": "Juhozápad", "TQ": "Juhozápad", "TR": "Juhozápad", "TA": "Juhozápad",
+    "DT": "Juhozápad", "SN": "Juhozápad", "SP": "Juhozápad", "BH": "Juhozápad",
+    "TR1": "Juhozápad",
+    # West Midlands
+    "B": "West Midlands", "CV": "West Midlands", "DY": "West Midlands",
+    "WV": "West Midlands", "WS": "West Midlands", "ST": "West Midlands",
+    "TF": "West Midlands", "WR": "West Midlands", "HR": "West Midlands",
+    # East Midlands
+    "NG": "East Midlands", "LE": "East Midlands", "DE": "East Midlands",
+    "NN": "East Midlands", "LN": "East Midlands",
+    # North West
+    "M": "Severozápad", "PR": "Severozápad", "L": "Severozápad", "WA": "Severozápad",
+    "WN": "Severozápad", "BL": "Severozápad", "BB": "Severozápad", "OL": "Severozápad",
+    "SK": "Severozápad", "CW": "Severozápad", "CH": "Severozápad", "FY": "Severozápad",
+    "LA": "Severozápad", "CA": "Severozápad",
+    # Yorkshire & Humber
+    "LS": "Yorkshire", "S": "Yorkshire", "BD": "Yorkshire", "HD": "Yorkshire",
+    "HX": "Yorkshire", "WF": "Yorkshire", "HU": "Yorkshire", "YO": "Yorkshire",
+    "DN": "Yorkshire", "HG": "Yorkshire",
+    # North East
+    "NE": "Severovýchod", "SR": "Severovýchod", "DH": "Severovýchod",
+    "DL": "Severovýchod", "TS": "Severovýchod",
+    # Scotland
+    "G": "Škótsko", "EH": "Škótsko", "AB": "Škótsko", "DD": "Škótsko",
+    "FK": "Škótsko", "KY": "Škótsko", "PA": "Škótsko", "ML": "Škótsko",
+    "IV": "Škótsko", "PH": "Škótsko", "KA": "Škótsko", "DG": "Škótsko",
+    # Wales
+    "CF": "Wales", "SA": "Wales", "NP": "Wales", "LL": "Wales", "LD": "Wales",
+    "SY": "Wales", "CF1": "Wales",
+    # Northern Ireland
+    "BT": "Severné Írsko",
+}
+
+
+def _postcode_region(pc: str) -> str | None:
+    if not pc:
+        return None
+    pc = pc.strip().upper()
+    if not pc:
+        return None
+    # Outward code = chars before the space; area = leading letters of outward.
+    outward = pc.split(" ")[0]
+    area = ""
+    for ch in outward:
+        if ch.isalpha():
+            area += ch
+        else:
+            break
+    # try 2-letter area, then 1-letter
+    if area[:2] in _PC_AREA_REGION:
+        return _PC_AREA_REGION[area[:2]]
+    if area[:1] in _PC_AREA_REGION:
+        return _PC_AREA_REGION[area[:1]]
+    return None
+
+
+# FILE — regional.json (firms by UK region from real ip_postal_code prefixes)
+def build_regional(con: sqlite3.Connection) -> dict:
+    if "ch_insolvency_enrichment" not in _tables(con):
+        return {"regions": [], "source": "Companies House enrichment"}
+    try:
+        df = pd.read_sql(
+            "SELECT ip_postal_code FROM ch_insolvency_enrichment", con
+        )
+        total = len(df)
+        df["region"] = df["ip_postal_code"].apply(
+            lambda x: _postcode_region(x) if isinstance(x, str) else None
+        )
+        mapped = df["region"].notna().sum()
+        agg = (
+            df.dropna(subset=["region"]).groupby("region").size()
+            .sort_values(ascending=False)
+        )
+        regions = [{"region": k, "count": int(v)} for k, v in agg.items()]
+        return {
+            "regions": regions,
+            "total_firms": int(total),
+            "mapped_firms": int(mapped),
+            "coverage_pct": round(100 * mapped / total, 1) if total else 0.0,
+            "source": "Companies House enrichment · IP poštové smerovacie čísla → región",
+        }
+    except Exception:
+        return {"regions": [], "source": "Companies House enrichment"}
+
+
+# FILE — gazette_explorer.json (compact columnar; recent N, honest total)
+def build_gazette_explorer(con: sqlite3.Connection, max_rows: int = 30_000) -> dict:
+    if "gazette_notices" not in _tables(con):
+        return {"rows": [], "total": 0, "shown": 0, "source": "The Gazette"}
+    try:
+        total = int(con.execute("SELECT COUNT(*) FROM gazette_notices").fetchone()[0])
+        df = pd.read_sql(
+            "SELECT date, company_name, notice_type_label"
+            " FROM gazette_notices ORDER BY date DESC LIMIT ?",
+            con, params=(max_rows,),
+        )
+        # compact columnar: parallel arrays + a type code 0/1/2 to shrink size.
+        type_code = {"liquidator_appointment": 0, "winding_up_petition": 1}
+        dates, names, types = [], [], []
+        for _, r in df.iterrows():
+            dates.append(str(r["date"])[:10] if pd.notna(r["date"]) else "")
+            names.append(str(r["company_name"]) if pd.notna(r["company_name"]) else "")
+            label = str(r["notice_type_label"]) if pd.notna(r["notice_type_label"]) else ""
+            types.append(type_code.get(label, 2))
+        return {
+            "columns": {"date": dates, "name": names, "type": types},
+            "type_labels": ["LIKVIDÁCIA", "PETÍCIA", "INÉ"],
+            "total": total,
+            "shown": len(dates),
+            "source": "The Gazette · gazette_notices (company_name; company_number je bugnutý)",
+        }
+    except Exception:
+        return {"rows": [], "total": 0, "shown": 0, "source": "The Gazette"}
+
+
+# FILE — petitions_cvl.json (winding-up petitions vs liquidator appointments,
+# monthly from gazette — petitions are an EARLIER sub-signal than appointments)
+def build_petitions_cvl(con: sqlite3.Connection) -> dict:
+    if "gazette_notices" not in _tables(con):
+        return {"series": [], "source": "The Gazette"}
+    try:
+        df = pd.read_sql(
+            "SELECT date, notice_type_label FROM gazette_notices",
+            con, parse_dates=["date"],
+        ).dropna(subset=["date"])
+        df["month"] = df["date"].dt.to_period("M")
+        piv = (
+            df.groupby(["month", "notice_type_label"]).size().unstack(fill_value=0)
+        )
+        appt_col = "liquidator_appointment"
+        pet_col = "winding_up_petition"
+        rows = []
+        for m, r in piv.iterrows():
+            rows.append({
+                "date": str(m),
+                "appointments": int(r.get(appt_col, 0)),
+                "petitions": int(r.get(pet_col, 0)),
+            })
+        rows.sort(key=lambda x: x["date"])
+        # gazette backfill is dense from ~2020; trim the sparse tail head.
+        rows = [r for r in rows if r["date"] >= "2020-01"]
+        return {
+            "series": rows,
+            "total_appointments": int(piv.get(appt_col, pd.Series(dtype=int)).sum()),
+            "total_petitions": int(piv.get(pet_col, pd.Series(dtype=int)).sum()),
+            "source": "The Gazette · liquidator_appointment vs winding_up_petition",
+        }
+    except Exception:
+        return {"series": [], "source": "The Gazette"}
+
+
+# FILE — freshness.json (data-source health: last update, rows, sparkline)
+def build_freshness(con: sqlite3.Connection) -> dict:
+    tbls = _tables(con)
+
+    def _count(t: str) -> int:
+        try:
+            return int(con.execute(f"SELECT COUNT(*) FROM {t}").fetchone()[0])
+        except Exception:
+            return 0
+
+    def _max_date(t: str, col: str) -> str | None:
+        try:
+            v = con.execute(f"SELECT MAX({col}) FROM {t}").fetchone()[0]
+            return str(v)[:10] if v else None
+        except Exception:
+            return None
+
+    def _monthly_spark(t: str, datecol: str, months: int = 12) -> list[int]:
+        try:
+            df = pd.read_sql(
+                f"SELECT {datecol} AS d FROM {t}", con, parse_dates=["d"]
+            ).dropna(subset=["d"])
+            s = df.set_index("d").resample("MS").size().tail(months)
+            return [int(x) for x in s.tolist()]
+        except Exception:
+            return []
+
+    sources = []
+
+    if "insolvencies_monthly" in tbls:
+        sources.append({
+            "name": "Insolvency Service",
+            "detail": "mesačné CVL + compulsory",
+            "rows": _count("insolvencies_monthly"),
+            "last": _max_date("insolvencies_monthly", "date"),
+            "status": "ok",
+            "spark": _monthly_spark("insolvencies_monthly", "date"),
+        })
+    if "gazette_notices" in tbls:
+        sources.append({
+            "name": "The Gazette",
+            "detail": "likvidácie + petície",
+            "rows": _count("gazette_notices"),
+            "last": _max_date("gazette_notices", "date"),
+            "status": "ok",
+            "spark": _monthly_spark("gazette_notices", "date"),
+        })
+    if "ch_insolvency_enrichment" in tbls:
+        sources.append({
+            "name": "Companies House enrichment",
+            "detail": "IP meno, PSČ, vek firmy",
+            "rows": _count("ch_insolvency_enrichment"),
+            "last": _max_date("ch_insolvency_enrichment", "enriched_at"),
+            "status": "ok",
+            "spark": [],
+        })
+    if "mano_price" in tbls:
+        sources.append({
+            "name": "yfinance MANO.L",
+            "detail": "denný close",
+            "rows": _count("mano_price"),
+            "last": _max_date("mano_price", "date"),
+            "status": "ok",
+            "spark": _monthly_spark("mano_price", "date"),
+        })
+    if "mano_kpis" in tbls:
+        sources.append({
+            "name": "MANO RNS",
+            "detail": "realised revenue, completions, ROI (FY19–26)",
+            "rows": _count("mano_kpis"),
+            "last": "2026-04-24",
+            "status": "ok",
+            "spark": [],
+        })
+    sources.append({
+        "name": "pipeline.py",
+        "detail": "model v0.2 · single source of truth",
+        "rows": None,
+        "last": _now()[:10],
+        "status": "ok",
+        "spark": [],
+    })
+
+    return {"sources": sources, "source": "tracker.db metadata · row counts"}
+
+
 def build_price_history(con: sqlite3.Connection) -> dict:
     tbls = _tables(con)
     series: list[dict] = []
@@ -510,6 +854,13 @@ def main():
             "backtest.json": backtest,
             "tornado.json": tornado,
             "valuation_bridge.json": valuation_bridge,
+            # R4/R5 — Market & Diagnostics
+            "seasonal.json": build_seasonal(con),
+            "leadlag.json": build_leadlag(con),
+            "regional.json": build_regional(con),
+            "petitions_cvl.json": build_petitions_cvl(con),
+            "gazette_explorer.json": build_gazette_explorer(con),
+            "freshness.json": build_freshness(con),
         }
     finally:
         con.close()
@@ -555,6 +906,36 @@ def main():
     print(f"  sanity: base@20% {vb['rows'][1]['base']['price_p']}p vs Singer "
           f"{vb['singer_target_p']}p · base@10% {vb['rows'][1]['low']['price_p']}p "
           f"vs current {vb['current_price_p']}p")
+
+    # R4/R5 — print new Market/Diagnostics files for inspection.
+    ll = files["leadlag.json"]
+    if ll.get("points"):
+        print("\n── lead-lag (HONEST): insolvencies(t) vs price(t+lag) ──")
+        for lag in (0, 12, 24, 25, 36):
+            p = next((x for x in ll["points"] if x["lag"] == lag), None)
+            if p:
+                print(f"  lag {lag:>2}m  corr {p['corr']:+.3f}  (n={p['n']})")
+        print(f"  → corr @ model lag {ll['model_lag']}m = {ll['corr_at_model_lag']}"
+              f"  (overlap {ll['overlap_months']}m)")
+        print("  CAVEAT:", ll["caveat"][:80], "...")
+
+    reg = files["regional.json"]
+    if reg.get("regions"):
+        print(f"\n── regional ({reg['coverage_pct']}% postcode coverage) ──")
+        for r in reg["regions"][:6]:
+            print(f"  {r['region']:<16} {r['count']:>6,}")
+
+    sea = files["seasonal.json"]
+    print(f"\n── seasonal: {len(sea.get('years', []))} years × 12 months, "
+          f"{len(sea.get('cells', []))} cells ──")
+
+    ge = files["gazette_explorer.json"]
+    print(f"\n── gazette explorer: shown {ge.get('shown', 0):,} z {ge.get('total', 0):,} ──")
+
+    fr = files["freshness.json"]
+    print(f"\n── freshness: {len(fr.get('sources', []))} zdrojov ──")
+    for s in fr.get("sources", []):
+        print(f"  {s['name']:<28} rows {str(s['rows']):>8}  last {s['last']}")
 
     print("\nDone.")
 

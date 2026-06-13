@@ -1,14 +1,17 @@
 import KpiCard from "./KpiCard";
 import { useFetch } from "../../hooks/useData";
-import type { Kpis } from "../../types/data";
+import type { Kpis, PipelineOverview } from "../../types/data";
 import "./KpiRow.css";
 
 const fmt = (n: number) => n.toLocaleString("en-GB");
 const arrow = (pct: number) => (pct >= 0 ? "▲" : "▼");
 
-/** Live KPI row — 4 cards from kpis.json. Skeleton while loading, "--" on error. */
+/** Live KPI row — 4 cards from kpis.json. Skeleton while loading, "--" on error.
+ *  The model headline (IMPLIK. TRŽBY FY27) reads pipeline_overview.json — the
+ *  single source — so it can never show the stale kpis.fy27_revenue_base_m. */
 export default function KpiRow() {
   const { data, loading, error } = useFetch<Kpis>("kpis.json");
+  const { data: ov } = useFetch<PipelineOverview>("pipeline_overview.json");
 
   if (loading) {
     return (
@@ -46,7 +49,7 @@ export default function KpiRow() {
       />
       <KpiCard
         label="IMPLIK. TRŽBY FY27"
-        value={`£${data.fy27_revenue_base_m.toFixed(1)}m`}
+        value={ov ? `£${ov.revenue_capped_m}m` : `£${data.fy27_revenue_base_m.toFixed(1)}m`}
         sub="model · základný scenár"
         isKeyMetric
       />

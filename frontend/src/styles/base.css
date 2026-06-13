@@ -109,6 +109,21 @@ textarea {
   font-size: 11px;
 }
 
+/* Shared chart footnote (caveats, source notes under a chart) */
+.chart-footnote {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text-2);
+  line-height: 1.6;
+}
+
+.chart-footnote b { color: var(--text); }
+.chart-footnote .gold { color: var(--gold); }
+.chart-footnote .down { color: var(--down); }
+.chart-footnote .signal { color: var(--signal); }
+
 /* Semantic helpers */
 .up { color: var(--up); }
 .down { color: var(--down); }

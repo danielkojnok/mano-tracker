@@ -1,14 +1,14 @@
 import "./SicTable.css";
 
-/* Static for now — F4 pulls live SIC aggregates from DB via JSON. */
+/* Static SIC aggregates — sorted DESC by 12M value (largest sector first). */
 const ROWS = [
   { sic: "41", name: "Výstavba", n12m: 4118, yoy: -10 },
   { sic: "56", name: "Pohostinstvo", n12m: 3346, yoy: -3 },
-  { sic: "47", name: "Maloobchod", n12m: 2034, yoy: 4 },
   { sic: "43", name: "Šp. stavebníctvo", n12m: 2257, yoy: -10 },
-  { sic: "68", name: "Reality", n12m: 960, yoy: 22 },
+  { sic: "47", name: "Maloobchod", n12m: 2034, yoy: 4 },
   { sic: "49", name: "Doprava", n12m: 1847, yoy: -1 },
-];
+  { sic: "68", name: "Reality", n12m: 960, yoy: 22 },
+].sort((a, b) => b.n12m - a.n12m);
 
 const MAX = Math.max(...ROWS.map((r) => r.n12m));
 

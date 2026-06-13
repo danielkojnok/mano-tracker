@@ -266,6 +266,83 @@ export interface FunnelValues {
   model_vs_real_pct: number;
 }
 
+/* ── R4/R5 Market & Diagnostics JSON shapes ──────────────────────────────── */
+
+export interface SeasonalCell {
+  year: number;
+  month: number;
+  value: number;
+}
+
+export interface Seasonal {
+  years: number[];
+  cells: SeasonalCell[];
+  source: string;
+}
+
+export interface LeadLagPoint {
+  lag: number;
+  corr: number | null;
+  n: number;
+}
+
+export interface LeadLag {
+  points: LeadLagPoint[];
+  model_lag: number;
+  corr_at_model_lag: number | null;
+  overlap_months: number;
+  source: string;
+  caveat: string;
+}
+
+export interface RegionCount {
+  region: string;
+  count: number;
+}
+
+export interface Regional {
+  regions: RegionCount[];
+  total_firms: number;
+  mapped_firms: number;
+  coverage_pct: number;
+  source: string;
+}
+
+export interface PetitionsCvlPoint {
+  date: string; // YYYY-MM
+  appointments: number;
+  petitions: number;
+}
+
+export interface PetitionsCvl {
+  series: PetitionsCvlPoint[];
+  total_appointments: number;
+  total_petitions: number;
+  source: string;
+}
+
+export interface GazetteExplorer {
+  columns: { date: string[]; name: string[]; type: number[] };
+  type_labels: string[];
+  total: number;
+  shown: number;
+  source: string;
+}
+
+export interface FreshnessSource {
+  name: string;
+  detail: string;
+  rows: number | null;
+  last: string | null;
+  status: string;
+  spark: number[];
+}
+
+export interface Freshness {
+  sources: FreshnessSource[];
+  source: string;
+}
+
 export interface PipelineAssumptions {
   referral_rate: number;
   acceptance_rate: number;
