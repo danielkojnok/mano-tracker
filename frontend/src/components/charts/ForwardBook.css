@@ -1,0 +1,33 @@
+.fbook-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-2);
+}
+
+.fbook-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fbook-row b {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.fbook-sq {
+  width: 10px;
+  height: 10px;
+  display: inline-block;
+}
+
+.fbook-active {
+  color: var(--text-2);
+  font-size: 11px;
+  margin-top: 4px;
+}

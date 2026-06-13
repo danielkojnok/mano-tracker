@@ -1,0 +1,79 @@
+.peer-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.peer-table th {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-2);
+  text-align: left;
+  padding: 0 8px 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.peer-table th.peer-mcap,
+.peer-table td.peer-mcap {
+  text-align: right;
+}
+
+.peer-table td {
+  height: 40px;
+  padding: 0 8px;
+  border-bottom: 1px solid var(--row-line);
+}
+
+.peer-table .num {
+  font-variant-numeric: tabular-nums;
+}
+
+.peer-name {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.peer-mano {
+  background: var(--gold-tint);
+}
+
+.peer-mano .peer-name {
+  color: var(--gold);
+}
+
+.peer-metric {
+  min-width: 160px;
+}
+
+.peer-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.peer-bar-track {
+  flex: 1;
+  height: 8px;
+  background: var(--bg-2);
+}
+
+.peer-bar-fill {
+  height: 100%;
+}
+
+.peer-val {
+  min-width: 44px;
+  text-align: right;
+  color: var(--text);
+}
+
+.peer-note {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text-2);
+  line-height: 1.6;
+}
+
+.peer-note b { color: var(--text); }

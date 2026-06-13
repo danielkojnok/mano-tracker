@@ -1,0 +1,38 @@
+.cohort-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.cohort-tick {
+  font-size: 10px;
+  fill: var(--text-2);
+}
+
+.cohort-stop-title {
+  font-size: 10px;
+  font-weight: 600;
+  fill: var(--text);
+  letter-spacing: 0.02em;
+}
+
+.cohort-stop-value {
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.cohort-stop-unit {
+  font-size: 10px;
+  fill: var(--text-2);
+}
+
+.cohort-note {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text-2);
+  line-height: 1.6;
+}
+
+.cohort-note .gold { color: var(--gold); }

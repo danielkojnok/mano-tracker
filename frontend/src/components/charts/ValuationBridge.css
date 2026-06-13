@@ -1,0 +1,80 @@
+.bridge-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  margin-bottom: 16px;
+}
+
+.bridge-table th {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-2);
+  text-align: left;
+  padding: 0 8px 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.bridge-table th.num,
+.bridge-table td.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.bridge-table td {
+  height: 36px;
+  padding: 0 8px;
+  border-bottom: 1px solid var(--row-line);
+}
+
+.bridge-table tbody tr:hover {
+  background: var(--bg-2);
+}
+
+.bridge-table .bridge-base {
+  background: var(--gold-tint);
+}
+
+.bridge-table .gold { color: var(--gold); font-weight: 600; }
+.bridge-table .up { color: var(--up); }
+.bridge-table .down { color: var(--down); }
+
+.bridge-caption {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.bridge-caption p {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+
+.bridge-caption b { color: var(--text); font-weight: 600; }
+.bridge-caption .gold { color: var(--gold); }
+.bridge-caption .up { color: var(--up); }
+
+.bridge-assumptions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+}
+
+.ba-tag {
+  font-size: 10px;
+  color: var(--gold-dim);
+  text-transform: uppercase;
+}
+
+.ba-item {
+  font-size: 11px;
+  color: var(--text-2);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 3px 8px;
+  cursor: help;
+}
+
+.ba-item b { color: var(--text); }

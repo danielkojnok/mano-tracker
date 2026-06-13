@@ -1,0 +1,87 @@
+.bsh-gauge-block {
+  margin-bottom: 20px;
+}
+
+.bsh-gauge-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.bsh-gauge-title {
+  font-size: 11px;
+  color: var(--text-2);
+}
+
+.bsh-gauge-value {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.bsh-badge {
+  font-size: 10px;
+  text-transform: uppercase;
+  border-radius: 2px;
+  padding: 3px 8px;
+  border: 1px solid;
+}
+
+.bsh-badge-ok {
+  color: var(--up);
+  border-color: var(--up);
+}
+
+.bsh-badge-warn {
+  color: var(--gold);
+  border-color: var(--gold);
+  background: var(--gold-tint);
+}
+
+.bsh-gauge-svg {
+  width: 100%;
+  height: 56px;
+  display: block;
+}
+
+.bsh-tick {
+  font-size: 9px;
+  fill: var(--text-2);
+}
+
+.bsh-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 768px) {
+  .bsh-metrics { grid-template-columns: repeat(2, 1fr); }
+}
+
+.bsh-metric {
+  border: 1px solid var(--border);
+  padding: 12px;
+}
+
+.bsh-m-label {
+  font-size: 10px;
+  color: var(--text-2);
+  margin-bottom: 6px;
+}
+
+.bsh-m-value {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.bsh-m-value.warn {
+  color: var(--warn);
+}
+
+.bsh-m-sub {
+  font-size: 10px;
+  color: var(--text-2);
+  margin-top: 4px;
+}

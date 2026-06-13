@@ -150,3 +150,41 @@
   color: var(--text-2);
   font-size: 11px;
 }
+
+.mape-row .up { color: var(--up); }
+.mape-row .down { color: var(--down); }
+
+.backtest-note {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text-2);
+  line-height: 1.6;
+}
+
+.backtest-table .up { color: var(--up); }
+.backtest-table .warn { color: var(--warn); }
+.backtest-table .down { color: var(--down); }
+
+.whatif-note {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text-2);
+  line-height: 1.6;
+}
+
+.whatif-note b { color: var(--gold); }
+
+.tornado-note {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text-2);
+  line-height: 1.6;
+}
+
+.tornado-note .gold { color: var(--gold); }

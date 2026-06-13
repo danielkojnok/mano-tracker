@@ -190,3 +190,122 @@ export default function PriceChart() {
     </div>
   );
 }
+
+/* ── PriceChartFull — FULL-history variant for the Company page (R3) ─────────
+ *
+ * Overview's windowed PriceChart above is UNTOUCHED. This is a separate
+ * component so the two can never break each other.
+ *
+ * Full history 2019→today spans ~30p to ~560p (the 2020 spike). A linear axis
+ * would crush the whole thesis range (39/95/130p) into the bottom ~25% and
+ * waste the rest on the one-off spike. The value range is genuinely ~18×, so a
+ * LOG y-axis is justified (manual §07): it keeps every era — the 560p peak, the
+ * −93% collapse, and the 39p present — readable at once. RNS markers and the
+ * three valuation anchors are kept. */
+export function PriceChartFull() {
+  const { data: hist, loading: l1, error: e1 } = useFetch<PriceHistory>(
+    "mano_price_history.json",
+  );
+  const { data: val, loading: l2, error: e2 } = useFetch<Valuation>(
+    "valuation.json",
+  );
+
+  if (l1 || l2) return <div className="chart-skeleton" style={{ height: 380 }} />;
+  if (e1 || e2 || !hist || !val)
+    return <div className="chart-error mono">CHYBA · DÁTA NEDOSTUPNÉ</div>;
+
+  const priceData: [number, number][] = hist.series.map((p) => [toTs(p.date), p.close]);
+  const peak = Math.max(...hist.series.map((p) => p.close));
+  const trough = Math.min(...hist.series.map((p) => p.close));
+  const drawdown = Math.round(((peak - val.price_gbx) / peak) * 100);
+
+  const anchor = (yVal: number, color: string, label: string, dashed: boolean) => ({
+    yAxis: yVal,
+    lineStyle: { color, width: dashed ? 1 : 2, type: dashed ? ("dashed" as const) : ("solid" as const) },
+    label: {
+      formatter: label,
+      position: "end" as const,
+      rotate: 0,
+      fontFamily: "JetBrains Mono",
+      fontSize: 11,
+      color,
+    },
+  });
+
+  const option = {
+    tooltip: { trigger: "axis" },
+    grid: { top: 24, right: 96, bottom: 40, left: 52 },
+    xAxis: {
+      type: "time",
+      axisLabel: { hideOverlap: true, fontSize: 12 },
+    },
+    yAxis: {
+      type: "log",
+      // log axis — value range ~30→560p genuinely demands it (manual §07).
+      min: 20,
+      max: 600,
+      axisLabel: { fontSize: 12, formatter: "{value}p" },
+    },
+    series: [
+      {
+        name: "MANO.L",
+        type: "line",
+        data: priceData,
+        symbol: "none",
+        smooth: false,
+        lineStyle: { color: T.signal, width: 2 },
+        itemStyle: { color: T.signal },
+        z: 3,
+        markLine: {
+          symbol: "none",
+          silent: true,
+          data: [
+            anchor(val.singer_target_gbx, T.up, `SINGER ${val.singer_target_gbx}p`, true),
+            anchor(val.nav_per_share_gbx, T.text2, `NAV ~${val.nav_per_share_gbx}p`, true),
+            anchor(val.price_gbx, T.gold, `${val.price_gbx}p dnes`, false),
+            ...hist.rns_events.map((e) => ({
+              xAxis: toTs(e.date),
+              lineStyle: { color: T.goldDim, width: 1, type: "dashed" as const },
+              label: {
+                formatter: e.label,
+                position: "start" as const,
+                rotate: 0,
+                fontFamily: "JetBrains Mono",
+                fontSize: 10,
+                color: T.goldDim,
+              },
+            })),
+          ],
+        },
+      },
+    ],
+  };
+
+  return (
+    <div>
+      <div className="price-stats mono">
+        <span>
+          Peak <b className="mono">{Math.round(peak)}p</b> (2020)
+        </span>
+        <span className="price-stats-sep">·</span>
+        <span>
+          Dno <b className="mono">{Math.round(trough)}p</b>
+        </span>
+        <span className="price-stats-sep">·</span>
+        <span>
+          Dnes <b className="gold">{val.price_gbx}p</b>
+        </span>
+        <span className="price-stats-sep">·</span>
+        <span>
+          Drawdown z peaku <b className="down">−{drawdown}%</b>
+        </span>
+      </div>
+      <ReactECharts option={option} theme="mano" style={{ height: 360 }} notMerge />
+      <div className="price-fullnote mono">
+        Logaritmická os — celá história 2019→dnes pokrýva ~18× rozsah (30p–560p);
+        lineárna os by stlačila tézový rozsah 39/95/130p do dolnej štvrtiny.
+        Zvislé čiarkované = RNS udalosti.
+      </div>
+    </div>
+  );
+}

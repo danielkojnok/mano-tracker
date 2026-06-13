@@ -156,6 +156,116 @@ export interface PriceHistory {
   source: string;
 }
 
+/* ── R2 Pipeline page — single-source JSON shapes (model/pipeline.py) ──────── */
+
+export interface SliderRange {
+  min: number;
+  max: number;
+  step: number;
+}
+
+/** Every knob the live slider what-if needs to reproduce the chain exactly.
+ *  The frontend recompute multiplies these in the SAME order as
+ *  pipeline.py::chain_revenue_m and lands on the same headline at defaults. */
+export interface ChainConstants {
+  insolvencies_12m: number;
+  referral_rate: number;
+  acceptance_rate: number;
+  compulsory_weight: number;
+  capacity_cap: number;
+  lag_months: number;
+  arrcc: { bear: number; base: number; bull: number };
+  ranges: {
+    referral_rate: SliderRange;
+    acceptance_rate: SliderRange;
+    compulsory_weight: SliderRange;
+    arrcc: SliderRange;
+  };
+  source: string;
+}
+
+export interface BacktestRow {
+  fy: string;
+  model_m: number;
+  actual_m: number;
+  error_pct: number;
+  capped: boolean;
+}
+
+export interface Backtest {
+  rows: BacktestRow[];
+  mape_pct: number;
+  target_mape_pct: number;
+  lag_months: number;
+  arrcc_base_gbp: number;
+  note: string;
+  source: string;
+}
+
+export interface TornadoRow {
+  param: string;
+  label: string;
+  low_m: number;
+  high_m: number;
+  swing_m: number;
+}
+
+export interface Tornado {
+  base_m: number;
+  delta_pct: number;
+  rows: TornadoRow[];
+  note: string;
+  source: string;
+}
+
+export interface BridgeLeg {
+  pbt_m: number;
+  net_m: number;
+  eps_p: number;
+  price_p: number;
+  upside_pct: number;
+}
+
+export interface BridgeRow {
+  scenario: "bear" | "base" | "bull";
+  revenue_m: number;
+  base: BridgeLeg;
+  low: BridgeLeg;
+  high: BridgeLeg;
+}
+
+export interface ValuationBridge {
+  rows: BridgeRow[];
+  assumptions: {
+    pbt_margin_base: number;
+    pbt_margin_low: number;
+    pbt_margin_high: number;
+    tax_rate: number;
+    pe_multiple: number;
+    shares_m: number;
+  };
+  current_price_p: number;
+  singer_target_p: number;
+  source: string;
+}
+
+/** Optional values for ThesisFunnel (Pipeline what-if). When omitted the
+ *  funnel reads pipeline_overview.json (Overview's static base). */
+export interface FunnelValues {
+  insolvencies_12m: number;
+  weighted_market: number;
+  referrals: number;
+  investments: number;
+  completions_capped: number;
+  completions_uncapped: number;
+  capacity_cap: number;
+  arrcc_base_gbp: number;
+  revenue_capped_m: number;
+  revenue_uncapped_m: number;
+  fy26_realised_m: number;
+  model_vs_real_pct: number;
+}
+
 export interface PipelineAssumptions {
   referral_rate: number;
   acceptance_rate: number;

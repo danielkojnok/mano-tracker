@@ -1,5 +1,5 @@
 import { useFetch } from "../../hooks/useData";
-import type { PipelineOverview } from "../../types/data";
+import type { PipelineOverview, FunnelValues } from "../../types/data";
 import { T } from "../../styles/tokens";
 import "./ThesisFunnel.css";
 
@@ -10,7 +10,10 @@ import "./ThesisFunnel.css";
  *   - money is a SEPARATE explicit step below, reading the SAME fields as the
  *     funnel's last stage, so the two cannot disagree.
  *
- * All values come from pipeline_overview.json (single source of truth). */
+ * By default (no `values` prop) it reads pipeline_overview.json — the single
+ * source of truth — and Overview renders exactly as before. The Pipeline page
+ * passes a `values` prop (computed by the SAME chain via lib/chain.ts) so the
+ * funnel reacts live to the sliders; the structure is identical either way. */
 
 const fmtInt = (n: number) => Math.round(n).toLocaleString("en-GB");
 const pct = (a: number, b: number) => {
@@ -31,20 +34,46 @@ interface Stage {
   value: number;
 }
 
-export default function ThesisFunnel() {
+interface ThesisFunnelProps {
+  /** When supplied (Pipeline what-if), the funnel renders these instead of
+   *  fetching. When omitted (Overview), it reads pipeline_overview.json. */
+  values?: FunnelValues;
+}
+
+export default function ThesisFunnel({ values }: ThesisFunnelProps = {}) {
   const { data, loading, error } = useFetch<PipelineOverview>("pipeline_overview.json");
 
-  if (loading) return <div className="chart-skeleton" style={{ height: 320 }} />;
-  if (error || !data)
-    return <div className="chart-error mono">CHYBA · DÁTA NEDOSTUPNÉ</div>;
+  // The what-if path skips the loading/error gates — it always has values.
+  if (!values) {
+    if (loading) return <div className="chart-skeleton" style={{ height: 320 }} />;
+    if (error || !data)
+      return <div className="chart-error mono">CHYBA · DÁTA NEDOSTUPNÉ</div>;
+  }
+
+  // One source of fields: the prop (what-if) or the fetched JSON (Overview).
+  // `data` is guaranteed non-null here when `values` is undefined (gated above).
+  const vals: FunnelValues = values ?? {
+    insolvencies_12m: data!.insolvencies_12m,
+    weighted_market: data!.weighted_market,
+    referrals: data!.referrals,
+    investments: data!.investments,
+    completions_capped: data!.completions_capped,
+    completions_uncapped: data!.completions_uncapped,
+    capacity_cap: data!.capacity_cap,
+    arrcc_base_gbp: data!.arrcc_base_gbp,
+    revenue_capped_m: data!.revenue_capped_m,
+    revenue_uncapped_m: data!.revenue_uncapped_m,
+    fy26_realised_m: data!.fy26_realised_m,
+    model_vs_real_pct: data!.model_vs_real_pct,
+  };
 
   // COUNTS only — every stage in "počet prípadov". No money in this picture.
   const stages: Stage[] = [
-    { name: "INSOLVENCIE 12M", value: data.insolvencies_12m },
-    { name: "VÁŽENÝ TRH", value: data.weighted_market },
-    { name: "DOPYTY", value: data.referrals },
-    { name: "INVESTÍCIE", value: data.investments },
-    { name: "UKONČENIA (cap)", value: data.completions_capped },
+    { name: "INSOLVENCIE 12M", value: vals.insolvencies_12m },
+    { name: "VÁŽENÝ TRH", value: vals.weighted_market },
+    { name: "DOPYTY", value: vals.referrals },
+    { name: "INVESTÍCIE", value: vals.investments },
+    { name: "UKONČENIA (cap)", value: vals.completions_capped },
   ];
   const n = stages.length;
   const maxVal = Math.max(...stages.map((s) => s.value));
@@ -63,8 +92,8 @@ export default function ThesisFunnel() {
 
   // connector annotation: conversion rate, plus the cap note on the last hop.
   const connectorNote = (i: number, from: Stage, to: Stage) => {
-    if (isFinal(i + 1) && data.investments > data.capacity_cap) {
-      return `cap ${fmtInt(data.capacity_cap)}`;
+    if (isFinal(i + 1) && vals.investments > vals.capacity_cap) {
+      return `cap ${fmtInt(vals.capacity_cap)}`;
     }
     return pct(to.value, from.value);
   };
@@ -141,15 +170,15 @@ export default function ThesisFunnel() {
           funnel's last stage and ARRCC, so it cannot disagree with it. */}
       <div className="funnel-money mono">
         <span className="fm-step">
-          UKONČENIA <b>{fmtInt(data.completions_capped)}</b>
+          UKONČENIA <b>{fmtInt(vals.completions_capped)}</b>
         </span>
         <span className="fm-op">×</span>
         <span className="fm-step">
-          ARRCC <b>£{Math.round(data.arrcc_base_gbp / 1000)}k</b>
+          ARRCC <b>£{Math.round(vals.arrcc_base_gbp / 1000)}k</b>
         </span>
         <span className="fm-op">=</span>
         <span className="fm-result">
-          TRŽBY <b className="gold">£{data.revenue_capped_m}m</b>
+          TRŽBY <b className="gold">£{vals.revenue_capped_m}m</b>
         </span>
       </div>
 
@@ -164,26 +193,26 @@ export default function ThesisFunnel() {
         <tbody>
           <tr>
             <td className="fn-label">Model bez capacity cap</td>
-            <td className="fn-value">£{data.revenue_uncapped_m}m</td>
-            <td className="fn-desc">teoretický strop trhu ({fmtInt(data.investments)} inv.)</td>
+            <td className="fn-value">£{vals.revenue_uncapped_m}m</td>
+            <td className="fn-desc">teoretický strop trhu ({fmtInt(vals.investments)} inv.)</td>
           </tr>
           <tr>
             <td className="fn-label">Model s capacity cap</td>
-            <td className="fn-value gold">£{data.revenue_capped_m}m</td>
-            <td className="fn-desc">base scenár ({fmtInt(data.completions_capped)} prípadov)</td>
+            <td className="fn-value gold">£{vals.revenue_capped_m}m</td>
+            <td className="fn-desc">base scenár ({fmtInt(vals.completions_capped)} prípadov)</td>
           </tr>
           <tr className="fn-actual">
             <td className="fn-label">FY26 realised actual</td>
-            <td className="fn-value">£{data.fy26_realised_m}m</td>
+            <td className="fn-value">£{vals.fy26_realised_m}m</td>
             <td className="fn-desc">MANO RNS apríl 2026</td>
           </tr>
         </tbody>
       </table>
       <div className="funnel-gap-note mono">
-        Dve medzery: <b>capacity cap</b> (£{data.revenue_uncapped_m}m → £
-        {data.revenue_capped_m}m, MANO podpíše max ~{fmtInt(data.capacity_cap)}{" "}
-        prípadov/rok) a <b>debtor delays + timing</b> (£{data.revenue_capped_m}m →
-        £{data.fy26_realised_m}m, {data.model_vs_real_pct}% pod modelom).
+        Dve medzery: <b>capacity cap</b> (£{vals.revenue_uncapped_m}m → £
+        {vals.revenue_capped_m}m, MANO podpíše max ~{fmtInt(vals.capacity_cap)}{" "}
+        prípadov/rok) a <b>debtor delays + timing</b> (£{vals.revenue_capped_m}m →
+        £{vals.fy26_realised_m}m, {vals.model_vs_real_pct}% pod modelom).
       </div>
     </div>
   );

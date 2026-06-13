@@ -46,6 +46,16 @@
 
 .price-col-body .gold { color: var(--gold); }
 
+/* full-history variant footnote */
+.price-fullnote {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text-2);
+  line-height: 1.6;
+}
+
 @media (max-width: 768px) {
   .price-explainer {
     grid-template-columns: 1fr;

@@ -1,10 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import Panel from "../components/ui/Panel";
-import KpiRow from "../components/ui/KpiRow";
+import KpiCard from "../components/ui/KpiCard";
 import ScrambleText from "../components/ui/ScrambleText";
 import Tag from "../components/ui/Tag";
+import ThesisFunnel from "../components/charts/ThesisFunnel";
+import TornadoChart from "../components/charts/TornadoChart";
+import CohortLag from "../components/charts/CohortLag";
+import BacktestTable from "../components/charts/BacktestTable";
+import ValuationBridge from "../components/charts/ValuationBridge";
 import { useFetch } from "../hooks/useData";
-import type { Kpis, PipelineAssumptions } from "../types/data";
+import type { ChainConstants, Backtest, FunnelValues } from "../types/data";
+import { chainRevenue } from "../lib/chain";
 import "./PipelineModel.css";
 
 type Scenario = "base" | "bear" | "bull";
@@ -15,20 +21,7 @@ const SCENARIO_TABS: { key: Scenario; label: string }[] = [
   { key: "bull", label: "OPTIMISTICKÝ" },
 ];
 
-/* Backtest — known MANO actuals vs model. Source: MANO RNS. */
-const BACKTEST = [
-  { fy: "FY21", model: 18.2, actual: 20.7, err: 12 },
-  { fy: "FY22", model: 24.1, actual: 20.4, err: 18 },
-  { fy: "FY23", model: 19.6, actual: 26.8, err: 27 },
-  { fy: "FY24", model: 14.3, actual: 26.1, err: 45 },
-  { fy: "FY25", model: 22.8, actual: 26.7, err: 15 },
-];
-
-function errClass(err: number): string {
-  if (err < 15) return "up";
-  if (err <= 40) return "warn";
-  return "down";
-}
+const FY26_REALISED_M = 28.0; // pipeline_overview.json fy26_realised_m
 
 interface SliderRowProps {
   label: string;
@@ -77,69 +70,117 @@ function SliderRow({ label, value, min, max, step, format, onChange }: SliderRow
 }
 
 export default function PipelineModel() {
-  const { data: kpis } = useFetch<Kpis>("kpis.json");
-  const { data: assumptions } = useFetch<PipelineAssumptions>(
-    "pipeline_assumptions.json",
-  );
+  const { data: cc } = useFetch<ChainConstants>("chain_constants.json");
+  const { data: backtest } = useFetch<Backtest>("backtest.json");
 
   const [scenario, setScenario] = useState<Scenario>("base");
   const [referral, setReferral] = useState(0.0425);
   const [acceptance, setAcceptance] = useState(0.3);
+  const [weight, setWeight] = useState(1.25);
   const [arrcc, setArrcc] = useState(110_000);
-  const [lag, setLag] = useState(25);
+  const [applyCap, setApplyCap] = useState(true);
   const seeded = useRef(false);
 
-  // seed sliders from pipeline_assumptions.json once
+  // seed sliders from chain_constants.json once (single source of defaults).
   useEffect(() => {
-    if (!assumptions || seeded.current) return;
+    if (!cc || seeded.current) return;
     seeded.current = true;
-    setReferral(assumptions.referral_rate);
-    setAcceptance(assumptions.acceptance_rate);
-    setArrcc(assumptions.arrcc_base);
-    setLag(assumptions.lag_months_base);
-  }, [assumptions]);
+    setReferral(cc.referral_rate);
+    setAcceptance(cc.acceptance_rate);
+    setWeight(cc.compulsory_weight);
+    setArrcc(cc.arrcc.base);
+  }, [cc]);
 
   const applyScenario = (s: Scenario) => {
     setScenario(s);
-    if (!assumptions) return;
-    setReferral(assumptions.referral_rate);
-    setAcceptance(assumptions.acceptance_rate);
-    if (s === "base") {
-      setArrcc(assumptions.arrcc_base);
-      setLag(assumptions.lag_months_base);
-    } else if (s === "bear") {
-      setArrcc(assumptions.arrcc_pessimistic);
-      setLag(assumptions.lag_months_bear);
-    } else {
-      setArrcc(assumptions.arrcc_optimistic);
-      setLag(assumptions.lag_months_bull);
-    }
+    if (!cc) return;
+    setReferral(cc.referral_rate);
+    setAcceptance(cc.acceptance_rate);
+    setWeight(cc.compulsory_weight);
+    setArrcc(cc.arrcc[s]); // scenario only changes ARRCC (bear/base/bull)
+    setApplyCap(true);
   };
 
-  const insol12m = kpis?.insolvencies_12m ?? 21_716;
-  const weight = assumptions?.compulsory_weight ?? 1.25;
-  // compulsory ≈ 18% of pool (CH enrichment) — blend the weight, do not
-  // apply it to the whole market
-  const weightedMarket = insol12m * (1 + 0.18 * (weight - 1));
+  // ── THE single-source what-if. Identical chain to pipeline.py. At default
+  //    inputs this reproduces get_overview() exactly (1154/346/291/£32.01m). ──
+  const insol = cc?.insolvencies_12m ?? 21_716;
+  const cap = cc?.capacity_cap ?? 291;
+  const chain = chainRevenue({
+    insolvencies: insol,
+    referralRate: referral,
+    acceptanceRate: acceptance,
+    compulsoryWeight: weight,
+    arrcc,
+    capacityCap: cap,
+    applyCap,
+  });
 
-  const revenueFor = (ref: number, acc: number, arr: number) =>
-    (weightedMarket * ref * acc * arr) / 1_000_000;
+  const funnelValues: FunnelValues = {
+    insolvencies_12m: chain.insolvencies,
+    weighted_market: chain.weighted_market,
+    referrals: chain.referrals,
+    investments: chain.investments,
+    completions_capped: chain.completions_capped,
+    completions_uncapped: chain.completions_uncapped,
+    capacity_cap: chain.capacity_cap,
+    arrcc_base_gbp: chain.arrcc_base_gbp,
+    revenue_capped_m: chain.revenue_capped_m,
+    revenue_uncapped_m: chain.revenue_uncapped_m,
+    fy26_realised_m: FY26_REALISED_M,
+    model_vs_real_pct:
+      Math.round(((FY26_REALISED_M - chain.revenue_capped_m) / chain.revenue_capped_m) * 1000) / 10,
+  };
 
-  const revenue = revenueFor(referral, acceptance, arrcc);
-  const baseRev = assumptions?.fy27_base ?? 33.8;
-  const bearRev = assumptions?.fy27_pessimistic ?? 28.0;
-  const bullRev = assumptions?.fy27_optimistic ?? 45.0;
+  const utilisation = chain.investments > 0
+    ? Math.round((chain.completions_capped / chain.investments) * 100)
+    : 100;
 
-  const mape =
-    BACKTEST.reduce((acc, r) => acc + r.err, 0) / BACKTEST.length;
+  // scenario range bear↔bull at default knobs (ARRCC swapped) for the KPI.
+  const bearRev = cc ? chainRevenue({ insolvencies: insol, referralRate: cc.referral_rate, acceptanceRate: cc.acceptance_rate, compulsoryWeight: cc.compulsory_weight, arrcc: cc.arrcc.bear, capacityCap: cap }).revenue_capped_m : 27.64;
+  const bullRev = cc ? chainRevenue({ insolvencies: insol, referralRate: cc.referral_rate, acceptanceRate: cc.acceptance_rate, compulsoryWeight: cc.compulsory_weight, arrcc: cc.arrcc.bull, capacityCap: cap }).revenue_capped_m : 43.65;
+  const baseRev = cc ? chainRevenue({ insolvencies: insol, referralRate: cc.referral_rate, acceptanceRate: cc.acceptance_rate, compulsoryWeight: cc.compulsory_weight, arrcc: cc.arrcc.base, capacityCap: cap }).revenue_capped_m : 32.01;
+
+  const fmtPct = (v: number) => `${(v * 100).toFixed(2)}%`;
 
   return (
     <>
       <h1 className="page-title">
         <ScrambleText text="PIPELINE MODEL" />
       </h1>
-      <KpiRow />
+      <p className="page-subtitle">
+        Ako sa insolvenčný trh mení na tržby MANO — a čo tie tržby znamenajú pre
+        cenu akcie.
+      </p>
 
+      {/* ── Model KPI row (4) — all from the single-source chain ── */}
+      <div className="kpi-row">
+        <KpiCard
+          label="PROJEKCIA FY27"
+          value={`£${baseRev}m`}
+          sub="base scenár · model"
+          isKeyMetric
+        />
+        <KpiCard
+          label="ROZSAH BEAR–BULL"
+          value={`£${bearRev}–${bullRev}m`}
+          sub="ARRCC scenáre · capacity cap"
+        />
+        <KpiCard
+          label="KAPACITNÁ VYUŽITOSŤ"
+          value={`${utilisation}%`}
+          sub={`${chain.completions_capped} z ${chain.investments} inv. (cap ${cap})`}
+          trend={utilisation >= 100 ? null : "down"}
+        />
+        <KpiCard
+          label="MODEL MAPE"
+          value={backtest ? `${backtest.mape_pct}%` : "--"}
+          sub={backtest ? `cieľ <${backtest.target_mape_pct}% · backtest FY21–25` : "—"}
+          trend={backtest && backtest.mape_pct < backtest.target_mape_pct ? "up" : "down"}
+          wordState
+        />
+      </div>
+
+      {/* ── Interactive controls + live funnel ── */}
       <div className="scenario-tabs">
         {SCENARIO_TABS.map((t) => (
           <button
@@ -150,106 +191,95 @@ export default function PipelineModel() {
             <Tag variant={scenario === t.key ? "gold" : "neutral"}>{t.label}</Tag>
           </button>
         ))}
+        <button
+          className="scenario-tab-btn"
+          onClick={() => setApplyCap((v) => !v)}
+          title="Zapnúť/vypnúť capacity cap"
+        >
+          <Tag variant={applyCap ? "gold" : "neutral"}>
+            {applyCap ? "CAP ZAP" : "CAP VYP"}
+          </Tag>
+        </button>
       </div>
 
       <div className="pipeline-grid">
-        <Panel
-          title="Parametre modelu"
-          source={`model/pipeline.py ${assumptions?.model_version ?? "v0.2.1"}`}
-        >
+        <Panel title="Parametre modelu · what-if" source="model/pipeline.py · chain_constants.json">
           <SliderRow
             label="REFERRAL RATE"
             value={referral}
-            min={0.02}
-            max={0.08}
-            step={0.0025}
-            format={(v) => `${(v * 100).toFixed(2)}%`}
+            min={cc?.ranges.referral_rate.min ?? 0.02}
+            max={cc?.ranges.referral_rate.max ?? 0.08}
+            step={cc?.ranges.referral_rate.step ?? 0.0025}
+            format={fmtPct}
             onChange={setReferral}
           />
           <SliderRow
             label="ACCEPTANCE RATE"
             value={acceptance}
-            min={0.15}
-            max={0.5}
-            step={0.01}
+            min={cc?.ranges.acceptance_rate.min ?? 0.15}
+            max={cc?.ranges.acceptance_rate.max ?? 0.5}
+            step={cc?.ranges.acceptance_rate.step ?? 0.01}
             format={(v) => `${(v * 100).toFixed(0)}%`}
             onChange={setAcceptance}
           />
           <SliderRow
-            label="ARRCC (£)"
+            label="COMPULSORY WEIGHT"
+            value={weight}
+            min={cc?.ranges.compulsory_weight.min ?? 1.0}
+            max={cc?.ranges.compulsory_weight.max ?? 1.6}
+            step={cc?.ranges.compulsory_weight.step ?? 0.05}
+            format={(v) => `${v.toFixed(2)}×`}
+            onChange={setWeight}
+          />
+          <SliderRow
+            label="ARRCC (£/prípad)"
             value={arrcc}
-            min={60_000}
-            max={200_000}
-            step={5_000}
+            min={cc?.ranges.arrcc.min ?? 60_000}
+            max={cc?.ranges.arrcc.max ?? 200_000}
+            step={cc?.ranges.arrcc.step ?? 5_000}
             format={(v) => `£${(v / 1000).toFixed(0)}k`}
             onChange={setArrcc}
           />
-          <SliderRow
-            label="LAG (MESIACE)"
-            value={lag}
-            min={18}
-            max={36}
-            step={1}
-            format={(v) => `${v}m`}
-            onChange={setLag}
-          />
+          <div className="whatif-note mono">
+            Posuvníky prepočítavajú <b>identický</b> reťazec ako model. Pri
+            defaultných hodnotách reprodukujú headline £32.01m presne.
+          </div>
         </Panel>
 
-        <Panel title="Implikované tržby FY27" source="model · prepočet naživo">
-          <div className="revenue-display mono">£{revenue.toFixed(1)}m</div>
-          <div className="scenario-compare">
-            {(
-              [
-                ["ZÁKLADNÝ", baseRev],
-                ["PESIMISTICKÝ", bearRev],
-                ["OPTIMISTICKÝ", bullRev],
-              ] as const
-            ).map(([label, val]) => {
-              const delta = val - baseRev;
-              return (
-                <div className="scenario-cell" key={label}>
-                  <div className="mono scenario-cell-label">{label}</div>
-                  <div className="mono scenario-cell-value">£{val.toFixed(1)}m</div>
-                  <div
-                    className={`mono scenario-cell-delta ${delta >= 0 ? "up" : "down"}`}
-                  >
-                    {delta === 0
-                      ? "—"
-                      : `${delta > 0 ? "▲" : "▼"}£${Math.abs(delta).toFixed(1)}m`}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+        <Panel
+          title="Konverzný lievik · počet prípadov (live what-if)"
+          source="model/pipeline.py chain · lib/chain.ts"
+        >
+          <ThesisFunnel values={funnelValues} />
         </Panel>
       </div>
 
-      <Panel title="Backtest" source="MANO RNS · model/pipeline.py v0.2.1">
-        <table className="backtest-table mono">
-          <thead>
-            <tr>
-              <th>ROK</th>
-              <th className="num">MODEL</th>
-              <th className="num">REALITA</th>
-              <th className="num">CHYBA</th>
-            </tr>
-          </thead>
-          <tbody>
-            {BACKTEST.map((r) => (
-              <tr key={r.fy}>
-                <td>{r.fy}</td>
-                <td className="num">£{r.model.toFixed(1)}m</td>
-                <td className="num">£{r.actual.toFixed(1)}m</td>
-                <td className={`num ${errClass(r.err)}`}>{r.err}%</td>
-              </tr>
-            ))}
-            <tr className="mape-row">
-              <td colSpan={4}>
-                MAPE {mape.toFixed(0)}% · cieľ &lt;30%
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <Panel
+        title="Tornado · citlivosť FY27 tržieb na predpoklady"
+        source="model/pipeline.py · tornado.json"
+      >
+        <TornadoChart />
+      </Panel>
+
+      <Panel
+        title="Lag mechanizmus · 25 mesiacov od kohorty po tržbu"
+        source="model/pipeline.py · chain_constants.json"
+      >
+        <CohortLag />
+      </Panel>
+
+      <Panel
+        title="Backtest · model vs realita (honest fit)"
+        source="MANO RNS realised · model/pipeline.py lagged chain"
+      >
+        <BacktestTable />
+      </Panel>
+
+      <Panel
+        title="Model → oceňovací most · tržby implikujú cenu akcie"
+        source="model/pipeline.py · valuation_bridge.json · predpoklady: valuationBridge.ts"
+      >
+        <ValuationBridge />
       </Panel>
     </>
   );

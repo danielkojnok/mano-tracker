@@ -20,7 +20,14 @@ OUT_DIR = ROOT / "frontend" / "public" / "data"
 
 # pipeline.py is the ONLY place model numbers are computed (R1.2).
 sys.path.insert(0, str(ROOT / "model"))
-from pipeline import get_overview, print_overview_chain  # noqa: E402
+from pipeline import (  # noqa: E402
+    get_overview,
+    print_overview_chain,
+    get_chain_constants,
+    get_backtest,
+    get_tornado,
+    get_valuation_bridge,
+)
 
 COMPACT = {"ensure_ascii": False, "separators": (",", ":")}
 
@@ -475,6 +482,14 @@ def main():
     overview = get_overview(DB_PATH)
     overview_out = {**overview, "source": "model/pipeline.py"}
 
+    # R2 Pipeline-page single-source files. All computed in pipeline.py; the
+    # frontend reads these and computes no model number (the sole exception —
+    # the live slider what-if — uses chain_constants.json + the identical chain).
+    chain_constants = {**get_chain_constants(DB_PATH), "source": "model/pipeline.py"}
+    backtest = {**get_backtest(DB_PATH), "source": "MANO RNS realised · model/pipeline.py lagged chain"}
+    tornado = {**get_tornado(DB_PATH), "source": "model/pipeline.py · ±20% sensitivity"}
+    valuation_bridge = get_valuation_bridge(DB_PATH)
+
     con = sqlite3.connect(DB_PATH)
     try:
         kpis = build_kpis(con, insolvencies_12m_override=overview["insolvencies_12m"])
@@ -491,6 +506,10 @@ def main():
             "peers.json": build_peers(),
             "pipeline_overview.json": overview_out,
             "mano_price_history.json": build_price_history(con),
+            "chain_constants.json": chain_constants,
+            "backtest.json": backtest,
+            "tornado.json": tornado,
+            "valuation_bridge.json": valuation_bridge,
         }
     finally:
         con.close()
@@ -502,6 +521,41 @@ def main():
 
     # Print the chain so it can be confirmed by hand (HARD CONSTRAINT 1).
     print_overview_chain(overview)
+
+    # R2 — print new chains so they reconcile by hand against the Overview.
+    print("\n── chain_constants (slider what-if inputs) ──")
+    cc = chain_constants
+    print(f"  insolvencies_12m {cc['insolvencies_12m']:,}  referral {cc['referral_rate']}"
+          f"  acceptance {cc['acceptance_rate']}  weight {cc['compulsory_weight']}"
+          f"  cap {cc['capacity_cap']}  ARRCC {cc['arrcc']}")
+
+    print("\n── backtest (model vs realised, lagged real series) ──")
+    for r in backtest["rows"]:
+        print(f"  {r['fy']}  model £{r['model_m']:>5}m  realita £{r['actual_m']:>5}m"
+              f"  chyba {r['error_pct']:>6}%")
+    print(f"  MAPE {backtest['mape_pct']}%  (cieľ <{backtest['target_mape_pct']}%)")
+
+    print("\n── tornado (FY27 revenue ±20% sensitivity, base £"
+          f"{tornado['base_m']}m) ──")
+    for r in tornado["rows"]:
+        print(f"  {r['label']:<22} £{r['low_m']:>5}m ↔ £{r['high_m']:>5}m"
+              f"  (swing £{r['swing_m']}m)")
+
+    print("\n── valuation bridge (revenue → implied price) ──")
+    vb = valuation_bridge
+    a = vb["assumptions"]
+    print(f"  assumptions: margin {a['pbt_margin_low']}/{a['pbt_margin_base']}/"
+          f"{a['pbt_margin_high']}  tax {a['tax_rate']}  P/E {a['pe_multiple']}"
+          f"  shares {a['shares_m']}m")
+    for r in vb["rows"]:
+        b = r["base"]
+        print(f"  {r['scenario']:<5} rev £{r['revenue_m']:>5}m → @20% margin "
+              f"PBT £{b['pbt_m']}m net £{b['net_m']}m EPS {b['eps_p']}p "
+              f"→ {b['price_p']}p  ({b['upside_pct']:+.0f}% vs {vb['current_price_p']}p)")
+    print(f"  sanity: base@20% {vb['rows'][1]['base']['price_p']}p vs Singer "
+          f"{vb['singer_target_p']}p · base@10% {vb['rows'][1]['low']['price_p']}p "
+          f"vs current {vb['current_price_p']}p")
+
     print("\nDone.")
 
 
