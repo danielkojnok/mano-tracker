@@ -22,11 +22,22 @@ import "./VerdictBlock.css";
 
 const signed = (n: number) => (n >= 0 ? `+${n.toFixed(1)}` : n.toFixed(1));
 
-function FactorRow({ f, evidence }: { f: ScoreFactor; evidence: string }) {
+/* `mirror` flips the row horizontally so the OHROZUJE column is a true mirror
+   image of PODPORUJE around the central divider: marker/label/score order is
+   reversed and the weight bar grows leftward. Layout only — same data. */
+function FactorRow({
+  f,
+  evidence,
+  mirror = false,
+}: {
+  f: ScoreFactor;
+  evidence: string;
+  mirror?: boolean;
+}) {
   const isSupport = f.score >= 0;
   const barPct = (Math.abs(f.score) / MAX_WEIGHT) * 100;
   return (
-    <div className="verdict-factor">
+    <div className={`verdict-factor${mirror ? " verdict-factor-mirror" : ""}`}>
       <div className="verdict-factor-top">
         <span className={`verdict-marker mono ${isSupport ? "gold-dim" : "down"}`}>
           {f.marker}
@@ -105,17 +116,19 @@ export default function VerdictBlock() {
             OHROZUJE <span className="verdict-col-sum mono">{signed(RISK_SUM)}</span>
           </h3>
           {RISK_FACTORS.map((f) => (
-            <FactorRow key={f.label} f={f} evidence={evidenceFor(f)} />
+            <FactorRow key={f.label} f={f} evidence={evidenceFor(f)} mirror />
           ))}
         </div>
       </div>
 
-      {/* ZONE 3 — verdict summary strip */}
+      {/* ZONE 3 — verdict summary strip. Separators use explicit {" · "} so the
+          spaces around each "·" survive JSX whitespace collapsing (the bug was
+          "10·oceňovacia" with no surrounding spaces). */}
       <div className="verdict-summary">
-        ZÁVER · pipeline drží (<span className="gold">{signed(SUPPORT_SUM)}</span>)
-        · riziko exekúcie a súvahy (<span className="gold">{signed(RISK_SUM)}</span>)
-        · čistá pozícia <span className="gold">{signed(NET_SCORE)} / 10</span> ·
-        oceňovacia medzera <span className="gold">+{singerUpside}%</span> k Singer
+        ZÁVER{" · "}pipeline drží (<span className="gold">{signed(SUPPORT_SUM)}</span>)
+        {" · "}riziko exekúcie a súvahy (<span className="gold">{signed(RISK_SUM)}</span>)
+        {" · "}čistá pozícia <span className="gold">{signed(NET_SCORE)} / 10</span>
+        {" · "}oceňovacia medzera <span className="gold">+{singerUpside}%</span> k Singer
       </div>
     </div>
   );
