@@ -59,8 +59,16 @@ function MiniBars({ series, metric }: { series: ManoFy[]; metric: Metric }) {
   const slot = W / n;
   const barW = slot * 0.62;
 
-  // latest period with a value → gold
-  const lastIdx = (() => {
+  // Emphasis is anchored to the SAME period across every metric: the latest
+  // fiscal year in the dataset (the rightmost slot = "now"). A bar is gold only
+  // when it is that period AND has a value. Metrics whose latest period is null
+  // (e.g. ROI has no FY26) simply show no gold bar — they never borrow a
+  // different year's emphasis, so all four charts read consistently.
+  const currentIdx = n - 1;
+
+  // Latest period that actually HAS a value — used only for the footer caption
+  // (so an all-recent-null metric still reports its most recent figure).
+  const lastWithValueIdx = (() => {
     for (let i = n - 1; i >= 0; i--) if (vals[i] != null) return i;
     return -1;
   })();
@@ -75,26 +83,34 @@ function MiniBars({ series, metric }: { series: ManoFy[]; metric: Metric }) {
         {series.map((f, i) => {
           const v = vals[i];
           const x = i * slot + (slot - barW) / 2;
+          const baseY = H - PAD_B;
           if (v == null) {
+            // No-data year: a faint baseline stub instead of a lonely "–", so
+            // early years read as "no data" without looking like broken bars.
             return (
-              <text
+              <rect
                 key={f.fy}
-                x={i * slot + slot / 2}
-                y={H - PAD_B - 4}
-                className="sm-na mono"
-                textAnchor="middle"
-              >
-                –
-              </text>
+                x={x}
+                y={baseY - 2}
+                width={barW}
+                height={2}
+                className="sm-bar-empty"
+              />
             );
           }
           const h = Math.max(2, ((v / max) * (H - PAD_B - PAD_T)));
-          const y = H - PAD_B - h;
-          const isLast = i === lastIdx;
+          const y = baseY - h;
+          const isCurrent = i === currentIdx;
           return (
-            <g key={f.fy}>
-              <rect x={x} y={y} width={barW} height={h} fill={isLast ? T.gold : T.signal} opacity={isLast ? 1 : 0.75} />
-            </g>
+            <rect
+              key={f.fy}
+              x={x}
+              y={y}
+              width={barW}
+              height={h}
+              fill={isCurrent ? T.gold : T.signal}
+              opacity={isCurrent ? 1 : 0.75}
+            />
           );
         })}
         {/* x labels every other year to avoid clutter (law 7: no rotation) */}
@@ -111,9 +127,10 @@ function MiniBars({ series, metric }: { series: ManoFy[]; metric: Metric }) {
         ))}
       </svg>
       <div className="sm-foot mono">
-        {lastIdx >= 0 && vals[lastIdx] != null ? (
+        {lastWithValueIdx >= 0 ? (
           <>
-            {series[lastIdx].fy}: <b>{metric.fmt(vals[lastIdx] as number)}</b>
+            {series[lastWithValueIdx].fy}:{" "}
+            <b>{metric.fmt(vals[lastWithValueIdx] as number)}</b>
           </>
         ) : (
           "—"

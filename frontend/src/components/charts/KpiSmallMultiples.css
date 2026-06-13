@@ -47,9 +47,10 @@
   fill: var(--text-2);
 }
 
-.sm-na {
-  font-size: 11px;
+/* No-data year — faint baseline stub (not an orphan dash) */
+.sm-bar-empty {
   fill: var(--border-strong);
+  opacity: 0.5;
 }
 
 .sm-foot {
