@@ -1,10 +1,14 @@
 import { useFetch } from "../../hooks/useData";
 import type { Backtest } from "../../types/data";
+import { BACKTEST_NOTE_SK } from "../../lib/captions";
 import "../../pages/PipelineModel.css";
 
 /* Honest backtest — model (chain on the REAL lagged insolvency series) vs the
  * canonical realised series. Color by |error%|. Covid-distorted years are
- * reported truthfully. All from backtest.json (model/pipeline.py). */
+ * reported truthfully. All from backtest.json (model/pipeline.py).
+ *
+ * backtest.json's `note` is English; the JSON is the model's single source and
+ * must not be edited, so we render a Slovak presentation translation instead. */
 
 function errClass(absErr: number): string {
   if (absErr < 15) return "up";
@@ -52,7 +56,7 @@ export default function BacktestTable() {
           </tr>
         </tbody>
       </table>
-      <div className="backtest-note mono">{data.note}</div>
+      <div className="backtest-note mono">{BACKTEST_NOTE_SK}</div>
     </div>
   );
 }

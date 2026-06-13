@@ -101,7 +101,9 @@ export default function LeadLagChart() {
       </div>
       <ReactECharts option={option} theme="mano" style={{ height: 280 }} notMerge />
       <div className="chart-footnote">
-        <b className="down">Korelácia je naprieč všetkými lagmi záporná.</b>{" "}
+        {/* The caveat (from JSON) already opens with the "correlation is
+            negative at every lag" statement, so we render it alone — the
+            previously hardcoded duplicate sentence was removed. */}
         {data.caveat} <br />
         <span className="mono" style={{ color: "var(--text-2)", fontSize: 11 }}>
           Zdroj: {data.source}
