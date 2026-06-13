@@ -3,6 +3,7 @@ import "../../lib/echartsTheme";
 import { T } from "../../styles/tokens";
 import { useFetch } from "../../hooks/useData";
 import type { PriceHistory, Valuation } from "../../types/data";
+import { computeDrawdown, fmtDrawdown } from "../../lib/drawdown";
 import "./PriceChart.css";
 
 /* MANO.L price vs valuation anchors — the scale-sanity test (manual §18).
@@ -38,8 +39,9 @@ export default function PriceChart() {
   const windowed = hist.series.filter((p) => toTs(p.date) >= startTs);
   const priceData: [number, number][] = windowed.map((p) => [toTs(p.date), p.close]);
 
-  const peak = Math.max(...hist.series.map((p) => p.close)); // all-time, for drawdown
-  const drawdown = Math.round(((peak - val.price_gbx) / peak) * 100);
+  // Canonical drawdown — deepest historical trough, one decimal, shared with
+  // the underwater chart so the two never show different roundings.
+  const { deepestPct: drawdownPct } = computeDrawdown(hist.series, toTs);
   const navUpside = Math.round(((val.nav_per_share_gbx - val.price_gbx) / val.price_gbx) * 100);
   const singerUpside = Math.round(((val.singer_target_gbx - val.price_gbx) / val.price_gbx) * 100);
   const navDiscount = Math.round(
@@ -153,7 +155,7 @@ export default function PriceChart() {
       {/* compact stat line — drawdown / upside, all computed from anchors */}
       <div className="price-stats mono">
         <span>
-          Drawdown z peaku <b className="down">−{drawdown}%</b>
+          Drawdown z peaku <b className="down">{fmtDrawdown(drawdownPct)}</b>
         </span>
         <span className="price-stats-sep">·</span>
         <span>
@@ -217,7 +219,9 @@ export function PriceChartFull() {
   const priceData: [number, number][] = hist.series.map((p) => [toTs(p.date), p.close]);
   const peak = Math.max(...hist.series.map((p) => p.close));
   const trough = Math.min(...hist.series.map((p) => p.close));
-  const drawdown = Math.round(((peak - val.price_gbx) / peak) * 100);
+  // Canonical drawdown — same helper as the windowed chart and the underwater
+  // chart, so "−93.5%" is identical everywhere.
+  const { deepestPct: drawdownPct } = computeDrawdown(hist.series, toTs);
 
   const anchor = (yVal: number, color: string, label: string, dashed: boolean) => ({
     yAxis: yVal,
@@ -234,7 +238,9 @@ export function PriceChartFull() {
 
   const option = {
     tooltip: { trigger: "axis" },
-    grid: { top: 24, right: 96, bottom: 40, left: 52 },
+    // extra top headroom so the staggered RNS labels sit above the plot
+    // instead of over the x-axis ticks.
+    grid: { top: 40, right: 96, bottom: 40, left: 52 },
     xAxis: {
       type: "time",
       axisLabel: { hideOverlap: true, fontSize: 12 },
@@ -263,12 +269,18 @@ export function PriceChartFull() {
             anchor(val.singer_target_gbx, T.up, `SINGER ${val.singer_target_gbx}p`, true),
             anchor(val.nav_per_share_gbx, T.text2, `NAV ~${val.nav_per_share_gbx}p`, true),
             anchor(val.price_gbx, T.gold, `${val.price_gbx}p dnes`, false),
-            ...hist.rns_events.map((e) => ({
+            // RNS event markers — labels pinned to the TOP of each line
+            // (position "end") so they sit above the plot and no longer collide
+            // with the year tick labels on the x-axis. They are vertically
+            // staggered (alternating distance) so adjacent labels don't overlap
+            // each other either.
+            ...hist.rns_events.map((e, i) => ({
               xAxis: toTs(e.date),
               lineStyle: { color: T.goldDim, width: 1, type: "dashed" as const },
               label: {
                 formatter: e.label,
-                position: "start" as const,
+                position: "end" as const,
+                distance: i % 2 === 0 ? 4 : 16,
                 rotate: 0,
                 fontFamily: "JetBrains Mono",
                 fontSize: 10,
@@ -297,7 +309,7 @@ export function PriceChartFull() {
         </span>
         <span className="price-stats-sep">·</span>
         <span>
-          Drawdown z peaku <b className="down">−{drawdown}%</b>
+          Drawdown z peaku <b className="down">{fmtDrawdown(drawdownPct)}</b>
         </span>
       </div>
       <ReactECharts option={option} theme="mano" style={{ height: 360 }} notMerge />
