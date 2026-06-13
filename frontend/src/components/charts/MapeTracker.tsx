@@ -3,6 +3,7 @@ import "../../lib/echartsTheme";
 import { T } from "../../styles/tokens";
 import { useFetch } from "../../hooks/useData";
 import type { Backtest } from "../../types/data";
+import { BACKTEST_NOTE_SK } from "../../lib/captions";
 
 /* MAPE tracker (manual §21) — per-FY absolute error bars + the MAPE figure vs
  * the <30% target. Reuses backtest.json (the SAME honest backtest shown on
@@ -56,8 +57,10 @@ export default function MapeTracker() {
               yAxis: data.mape_pct,
               lineStyle: { color: T.gold, width: 1.5, type: "solid" as const },
               label: {
+                // MAPE (yellow) label sits BELOW its line so it can't collide
+                // with the target label (the two lines are close together).
                 formatter: `MAPE ${data.mape_pct}%`,
-                position: "insideEndTop" as const,
+                position: "insideEndBottom" as const,
                 fontFamily: "JetBrains Mono",
                 fontSize: 11,
                 color: T.gold,
@@ -67,8 +70,9 @@ export default function MapeTracker() {
               yAxis: data.target_mape_pct,
               lineStyle: { color: T.up, width: 1, type: "dashed" as const },
               label: {
+                // target (green) label sits ABOVE its line.
                 formatter: `cieľ <${data.target_mape_pct}%`,
-                position: "insideEndBottom" as const,
+                position: "insideEndTop" as const,
                 fontFamily: "JetBrains Mono",
                 fontSize: 10,
                 color: T.up,
@@ -89,7 +93,7 @@ export default function MapeTracker() {
         </span>
       </div>
       <ReactECharts option={option} theme="mano" style={{ height: 220 }} notMerge />
-      <div className="chart-footnote">{data.note}</div>
+      <div className="chart-footnote">{BACKTEST_NOTE_SK}</div>
     </div>
   );
 }
