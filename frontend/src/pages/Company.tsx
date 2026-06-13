@@ -19,6 +19,12 @@ function CompanyKpis() {
   const { data: val } = useFetch<Valuation>("valuation.json");
   const { data: peers } = useFetch<Peers>("peers.json");
   const mano = peers?.peers.find((p) => p.is_mano);
+  // Two distinct framings of the same price/NAV gap, both derived from JSON:
+  //   discount = how far the price sits BELOW NAV       (nav − price) / nav
+  //   upside   = how far the price must rise to reach NAV (nav − price) / price
+  const navDiscount = val
+    ? Math.round(((val.nav_per_share_gbx - val.price_gbx) / val.nav_per_share_gbx) * 100)
+    : null;
   const navUpside = val
     ? Math.round(((val.nav_per_share_gbx - val.price_gbx) / val.price_gbx) * 100)
     : null;
@@ -35,7 +41,12 @@ function CompanyKpis() {
       <KpiCard
         label="NAV / AKCIA"
         value={val ? `~${val.nav_per_share_gbx}p` : "--"}
-        sub={navUpside != null ? `cena ${navUpside}% pod NAV` : "—"}
+        sub={navDiscount != null ? `cena ${navDiscount}% pod NAV` : "—"}
+        subTooltip={
+          navUpside != null
+            ? `Cena je ${navDiscount}% pod NAV (diskont). Upside k NAV: +${navUpside}% (toľko by musela cena vzrásť, aby dosiahla NAV).`
+            : undefined
+        }
       />
       <KpiCard
         label="P/B NÁSOBOK"
