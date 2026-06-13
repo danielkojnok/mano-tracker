@@ -113,7 +113,8 @@ export default function TornadoChart() {
         // stub leg) via a paired scatter so labels never sit inside a 4px stub.
         z: 2,
       },
-      // low-value labels (left of base)
+      // low-value labels (left of base) — high contrast (bright text + a dark
+      // text outline) so the small rows' values stay readable over any fill.
       {
         type: "scatter",
         symbolSize: 0,
@@ -124,7 +125,10 @@ export default function TornadoChart() {
           formatter: (p: { dataIndex: number }) => `£${rows[p.dataIndex].low_m}m`,
           fontFamily: "JetBrains Mono",
           fontSize: 11,
-          color: T.text2,
+          fontWeight: 600,
+          color: T.text,
+          textBorderColor: T.bg1,
+          textBorderWidth: 3,
         },
         tooltip: { show: false },
         z: 3,
@@ -140,7 +144,10 @@ export default function TornadoChart() {
           formatter: (p: { dataIndex: number }) => `£${rows[p.dataIndex].high_m}m`,
           fontFamily: "JetBrains Mono",
           fontSize: 11,
-          color: T.text2,
+          fontWeight: 600,
+          color: T.text,
+          textBorderColor: T.bg1,
+          textBorderWidth: 3,
         },
         tooltip: { show: false },
         z: 3,
