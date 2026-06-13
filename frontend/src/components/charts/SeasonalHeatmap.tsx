@@ -32,7 +32,9 @@ export default function SeasonalHeatmap() {
       formatter: (p: { data: [number, number, number] }) =>
         `${years[p.data[1]]}-${String(p.data[0] + 1).padStart(2, "0")}<br/>${p.data[2].toLocaleString("en-GB")} insolvencií`,
     },
-    grid: { top: 8, right: 16, bottom: 56, left: 48 },
+    // right margin leaves room for the vertical visualMap; bottom only needs
+    // the month-letter axis (the visualMap no longer sits there).
+    grid: { top: 8, right: 84, bottom: 28, left: 48 },
     xAxis: {
       type: "category",
       data: MONTHS,
@@ -47,15 +49,17 @@ export default function SeasonalHeatmap() {
       axisLabel: { fontSize: 11, color: T.text2 },
       axisTick: { show: false },
     },
+    // Vertical, right-aligned so the min/max labels (e.g. 623 / 2369) never
+    // collide with the month-letter x-axis at the bottom.
     visualMap: {
       min: vmin,
       max: vmax,
       calculable: true,
-      orient: "horizontal",
-      left: "center",
-      bottom: 8,
+      orient: "vertical",
+      right: 8,
+      top: "center",
       itemWidth: 12,
-      itemHeight: 120,
+      itemHeight: 140,
       text: ["viac", "menej"],
       textStyle: { fontFamily: "JetBrains Mono", fontSize: 10, color: T.text2 },
       inRange: { color: [T.bg2, T.goldDim, T.gold, T.down] },
