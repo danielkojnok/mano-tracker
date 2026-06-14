@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ReactECharts from "echarts-for-react";
 import "../../lib/echartsTheme";
 import { T } from "../../styles/tokens";
@@ -49,6 +49,19 @@ export default function HeroChart() {
   );
 
   const [shifted, setShifted] = useState(false);
+
+  // Mobile (≤768) only: the full ~9-year span is unreadable on a phone, so we
+  // default the visible window to recent years and let the finger pan back
+  // through history (desktop is unaffected — no dataZoom is added there).
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(max-width: 768px)").matches,
+  );
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 768px)");
+    const onChange = () => setIsMobile(mq.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
 
   if (l1 || l2 || l3) return <div className="chart-skeleton" aria-hidden="true" />;
   if (e1 || e2 || e3 || !insol || !mano || !ov)
@@ -170,6 +183,21 @@ export default function HeroChart() {
     legend: { bottom: 0, data: legendData },
     grid: { top: 44, right: 64, bottom: 56, left: 56 },
     graphic: fy26Block ? [fy26Block] : [],
+    // Mobile only: a pan-only (zoom-locked) window so the chart opens on recent
+    // years with comfortable spacing and the finger pans back through history.
+    // The y-axes stay pinned (only the x-window moves). Desktop: no dataZoom.
+    dataZoom: isMobile
+      ? [
+          {
+            type: "inside",
+            xAxisIndex: 0,
+            zoomLock: true, // fixed window width → consistent spacing, pan only
+            startValue: ts("2024-01"), // recent ~4y incl. FY26 callout + FY27 proj.
+            endValue: ts("2028-03"),
+            moveOnMouseMove: true,
+          },
+        ]
+      : undefined,
     xAxis: {
       type: "time",
       min: ts("2019-01"),
