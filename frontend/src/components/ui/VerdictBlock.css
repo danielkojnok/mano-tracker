@@ -207,6 +207,15 @@
 
 .gold { color: var(--gold); }
 
+/* the single flex child: normal inline text flow, so the gold spans are NOT
+   independent flex items (desktop look unchanged — one centered line). */
+.verdict-summary-inner {
+  max-width: 100%;
+}
+.verdict-sep {
+  color: var(--text-2);
+}
+
 @media (max-width: 768px) {
   .verdict-cols {
     grid-template-columns: 1fr;
@@ -223,5 +232,25 @@
   .verdict-gauge {
     max-width: none;
     width: 100%;
+  }
+
+  /* stack the ZÁVER clauses one-per-line, left-aligned; hide the · separators */
+  .verdict-summary {
+    justify-content: flex-start;
+    text-align: left;
+    padding: 14px 16px;
+  }
+  .verdict-summary-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 7px;
+    width: 100%;
+  }
+  .verdict-clause {
+    display: block;
+  }
+  .verdict-sep {
+    display: none;
   }
 }

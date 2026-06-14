@@ -122,21 +122,27 @@ export default function VerdictBlock() {
         </div>
       </div>
 
-      {/* ZONE 3 — verdict summary strip. .verdict-summary is display:flex, which
-          splits each text run and each <span> into separate flex items and trims
-          each item's edge whitespace — so a plain space next to a coloured value
-          gets eaten ("pozícia+4.2 / 10· … medzera+231 %k Singer"). The (+9.0) and
-          (−4.8) spans are safe (bordered by parens), but the net-score and singer
-          values are bordered by spaces, so we pin those with non-breaking spaces
-          ( ) INSIDE the span boundaries — NBSP is not collapsible whitespace,
-          so flex never trims it. Target reads:
-          "ZÁVER · pipeline drží (+9.0) · riziko exekúcie a súvahy (−4.8) ·
-           čistá pozícia +4.2 / 10 · oceňovacia medzera +231 % k Singer". */}
+      {/* ZONE 3 — verdict summary strip. All content lives in ONE child
+          (.verdict-summary-inner) so the flex parent centers exactly one item and
+          the gold <span>s flow as NORMAL inline text — not independent flex items
+          that wrap/shatter and drop their edge spaces (the prior per-span bug).
+          Each `·`-separated clause is its own .verdict-clause so the ≤768
+          media query can stack them one-per-line. */}
       <div className="verdict-summary">
-        ZÁVER{" · "}pipeline drží{" "}(<span className="gold">{signed(SUPPORT_SUM)}</span>)
-        {" · "}riziko exekúcie a súvahy{" "}(<span className="gold">{signed(RISK_SUM)}</span>)
-        {" · "}čistá pozícia<span className="gold">{" "}{signed(NET_SCORE)} / 10{" "}</span>
-        {" · "}oceňovacia medzera<span className="gold">{" "}+{singerUpside} %{" "}</span>k Singer
+        <div className="verdict-summary-inner">
+          {[
+            <>ZÁVER</>,
+            <>pipeline drží (<span className="gold">{signed(SUPPORT_SUM)}</span>)</>,
+            <>riziko exekúcie a súvahy (<span className="gold">{signed(RISK_SUM)}</span>)</>,
+            <>čistá pozícia <span className="gold">{signed(NET_SCORE)} / 10</span></>,
+            <>oceňovacia medzera <span className="gold">+{singerUpside} %</span> k Singer</>,
+          ].map((clause, i) => (
+            <span className="verdict-clause" key={i}>
+              {i > 0 && <span className="verdict-sep" aria-hidden="true"> · </span>}
+              {clause}
+            </span>
+          ))}
+        </div>
       </div>
     </div>
   );
