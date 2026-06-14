@@ -1,0 +1,46 @@
+.rmap {
+  display: flex;
+  flex-direction: column;
+}
+
+.rmap-svg {
+  display: block;
+  width: 100%;
+  /* cap width so the portrait map's height lands near the SIC panel beside it
+     (coordinate height — PART 5/6 read as a balanced pair) */
+  max-width: 480px;
+  height: auto;
+  /* center the (portrait) map+gutters block within the panel */
+  margin: 0 auto;
+}
+
+.rmap-name {
+  font-family: var(--font-ui);
+  font-size: 38px; /* viewBox units; scales down with the map */
+  fill: var(--text);
+}
+
+.rmap-count {
+  font-size: 30px;
+  fill: var(--text-2);
+}
+
+.rmap-legend {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  justify-content: center;
+  margin-top: 8px;
+  font-size: 10px;
+  color: var(--text-2);
+}
+
+.rmap-legend-label {
+  white-space: nowrap;
+}
+
+.rmap-swatch {
+  display: inline-block;
+  width: 22px;
+  height: 10px;
+}

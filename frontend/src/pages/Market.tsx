@@ -5,8 +5,8 @@ import InsolvencyChart from "../components/charts/InsolvencyChart";
 import SeasonalHeatmap from "../components/charts/SeasonalHeatmap";
 import LeadLagChart from "../components/charts/LeadLagChart";
 import PetitionsVsCvl from "../components/charts/PetitionsVsCvl";
-import RegionalHexMap from "../components/charts/RegionalHexMap";
-import IpConstellation from "../components/charts/IpConstellation";
+import RegionalMap from "../components/charts/RegionalMap";
+import IpMap from "../components/charts/IpMap";
 import SicTable from "../components/ui/SicTable";
 import GazetteFeed from "../components/ui/GazetteFeed";
 
@@ -17,7 +17,7 @@ export default function Market() {
         <ScrambleText text="INSOLVENČNÝ TRH" />
       </h1>
       <p className="page-subtitle">
-        UK insolvenčný trh ako ~24-mesačný predstih pred tržbami MANO — a či ho
+        UK insolvenčný trh ako ~25-mesačný predstih pred tržbami MANO — a či ho
         trh už cení.
       </p>
 
@@ -56,24 +56,24 @@ export default function Market() {
 
       <div className="two-col">
         <Panel
-          title="Regionálne rozloženie firiem · UK hex kartogram"
+          title="Regionálne rozloženie firiem · UK ITL1 mapa"
           source="Companies House enrichment · PSČ → región"
         >
-          <RegionalHexMap />
+          <RegionalMap />
         </Panel>
-        <Panel title="Sektory SIC · zoradené podľa 12M" source="Insolvency Service · jún 2026">
+        <Panel
+          title="Sektory SIC · 12M počet a medziročná zmena"
+          source="Insolvency Service record-level · SIC 2-digit"
+        >
           <SicTable />
         </Panel>
       </div>
 
-      <Panel
-        title="Trhová štruktúra IP · geografická mapa · bez fabrikovaných hrán"
-        source="The Gazette appointments → ip_network (1 175 entít)"
-      >
-        <IpConstellation />
+      <Panel title="Trhová štruktúra IP · mapa + filtre · bez fabrikovaných hrán">
+        <IpMap />
       </Panel>
 
-      <Panel title="Gazette feed · živé oznámenia" source="The Gazette · gazette_notices">
+      <Panel title="Gazette feed · posledné oznámenia" source="The Gazette · gazette_notices">
         <GazetteFeed />
       </Panel>
     </>
