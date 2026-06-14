@@ -59,6 +59,133 @@
   font-weight: 600;
 }
 
+/* changed-value flash — gold-tint for 600ms (§06 / §19) */
+@keyframes bsh-flash {
+  from { background: var(--gold-tint); }
+  to { background: transparent; }
+}
+.bsh-flash {
+  animation: bsh-flash 600ms ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .bsh-flash { animation: none; }
+}
+
+/* ── interactive EBITDA slider (§06 scenario slider) ── */
+.bsh-sim {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.bsh-sim-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.bsh-sim-label {
+  font-size: 11px;
+  color: var(--text-2);
+}
+
+.bsh-sim-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--gold);
+}
+
+.bsh-sim-reset {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--signal);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  cursor: pointer;
+}
+.bsh-sim-reset:hover { color: var(--gold-bright); }
+
+/* §06: track 4px, thumb 14px square with a 2px gold frame */
+.bsh-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  outline: none;
+  cursor: pointer;
+}
+.bsh-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background: var(--bg-0);
+  border: 2px solid var(--gold);
+  border-radius: 0;
+  cursor: pointer;
+}
+.bsh-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: var(--bg-0);
+  border: 2px solid var(--gold);
+  border-radius: 0;
+  cursor: pointer;
+}
+.bsh-slider:focus-visible {
+  outline: 1px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.bsh-sim-scale {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--text-2);
+  margin-top: 4px;
+}
+
+.bsh-sim-readout {
+  display: flex;
+  gap: 24px;
+  margin-top: 12px;
+}
+
+.bsh-ro {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bsh-ro-label {
+  font-size: 9.5px;
+  letter-spacing: 0.04em;
+  color: var(--text-2);
+}
+
+.bsh-ro-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.bsh-ro-sub {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-2);
+}
+
+.bsh-sim-note {
+  margin-top: 12px;
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+
 .bsh-metrics {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
