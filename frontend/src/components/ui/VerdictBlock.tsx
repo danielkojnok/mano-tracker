@@ -122,17 +122,21 @@ export default function VerdictBlock() {
         </div>
       </div>
 
-      {/* ZONE 3 — verdict summary strip. EVERY space is an explicit {" "} or part
-          of the {" · "} separator — never a literal line-edge space — so JSX
-          whitespace trimming can't drop it. Prior bug rendered
-          "pozícia+4.2 / 10· oceňovacia medzera+231%k Singer". Target reads:
+      {/* ZONE 3 — verdict summary strip. .verdict-summary is display:flex, which
+          splits each text run and each <span> into separate flex items and trims
+          each item's edge whitespace — so a plain space next to a coloured value
+          gets eaten ("pozícia+4.2 / 10· … medzera+231 %k Singer"). The (+9.0) and
+          (−4.8) spans are safe (bordered by parens), but the net-score and singer
+          values are bordered by spaces, so we pin those with non-breaking spaces
+          ( ) INSIDE the span boundaries — NBSP is not collapsible whitespace,
+          so flex never trims it. Target reads:
           "ZÁVER · pipeline drží (+9.0) · riziko exekúcie a súvahy (−4.8) ·
            čistá pozícia +4.2 / 10 · oceňovacia medzera +231 % k Singer". */}
       <div className="verdict-summary">
         ZÁVER{" · "}pipeline drží{" "}(<span className="gold">{signed(SUPPORT_SUM)}</span>)
         {" · "}riziko exekúcie a súvahy{" "}(<span className="gold">{signed(RISK_SUM)}</span>)
-        {" · "}čistá pozícia{" "}<span className="gold">{signed(NET_SCORE)} / 10</span>
-        {" · "}oceňovacia medzera{" "}<span className="gold">+{singerUpside} %</span>{" "}k Singer
+        {" · "}čistá pozícia<span className="gold">{" "}{signed(NET_SCORE)} / 10{" "}</span>
+        {" · "}oceňovacia medzera<span className="gold">{" "}+{singerUpside} %{" "}</span>k Singer
       </div>
     </div>
   );
