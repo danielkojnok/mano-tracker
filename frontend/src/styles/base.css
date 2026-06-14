@@ -131,6 +131,7 @@ textarea {
 
 .chart-footnote b { color: var(--text); }
 .chart-footnote .gold { color: var(--gold); }
+.chart-footnote .up { color: var(--up); }
 .chart-footnote .down { color: var(--down); }
 .chart-footnote .signal { color: var(--signal); }
 
@@ -175,4 +176,36 @@ textarea {
   grid-template-columns: repeat(4, 1fr);
   gap: 16px;
   margin-bottom: 16px; /* + flex gap = 32px section break before first panel */
+}
+
+/* ── PART 8 — basic mobile responsivity (minimum viable) ──────────────────────
+   Goal: nothing overlaps, everything readable, no page-level horizontal scroll.
+   Side-by-side grids already collapse at ≤1024px (.two-col, .grid-7-5). */
+@media (max-width: 768px) {
+  /* KPI cards: 4 → 2 across */
+  .kpi-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  /* wide tables (peer, backtest, valuation bridge, gazette, freshness) scroll
+     horizontally inside their panel instead of clipping or forcing the page
+     wider — the chart components are width:100% so they never trigger this. */
+  .panel-body {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .page-title {
+    font-size: 21px;
+  }
+  .page-subtitle {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 440px) {
+  .kpi-row {
+    grid-template-columns: 1fr;
+  }
 }

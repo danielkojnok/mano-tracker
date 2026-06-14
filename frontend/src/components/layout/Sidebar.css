@@ -35,3 +35,27 @@
 .sidebar-item:not(.active) .sidebar-marker {
   color: var(--text-2);
 }
+
+/* PART 8 — collapse to a horizontal, scrollable top bar on phones. All 5 pages
+   stay reachable (swipe/scroll); active marker moves to an underline. */
+@media (max-width: 768px) {
+  .sidebar {
+    flex-direction: row;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 0;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-item {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    padding: 12px 14px; /* comfortable touch target */
+    border-left: none;
+    border-bottom: 2px solid transparent;
+  }
+  .sidebar-item.active {
+    border-left-color: transparent;
+    border-bottom-color: var(--gold);
+  }
+}

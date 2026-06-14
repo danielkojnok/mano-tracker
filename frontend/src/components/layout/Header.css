@@ -41,3 +41,24 @@
   gap: 24px;
   font-size: 12px;
 }
+
+/* PART 8 — let the header wrap on phones so the quotes drop to their own line
+   instead of overflowing the brand. */
+@media (max-width: 768px) {
+  .app-header {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 12px;
+  }
+  .header-wordmark {
+    font-size: 14px;
+  }
+  .header-brand {
+    gap: 12px;
+  }
+  .header-quotes {
+    gap: 16px;
+    font-size: 11px;
+    width: 100%;
+  }
+}

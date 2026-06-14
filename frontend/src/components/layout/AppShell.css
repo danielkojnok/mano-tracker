@@ -19,3 +19,15 @@
   flex-direction: column;
   gap: 16px; /* Law 3 — panel gap; section breaks add margin on top of this */
 }
+
+/* PART 8 — on phones the sidebar becomes a horizontal top bar (see Sidebar.css)
+   so the body is a single column and the main content gets the full width. */
+@media (max-width: 768px) {
+  .app-body {
+    display: flex;
+    flex-direction: column;
+  }
+  .app-main {
+    padding: 20px 12px;
+  }
+}
