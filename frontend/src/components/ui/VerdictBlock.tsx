@@ -20,12 +20,18 @@ import "./VerdictBlock.css";
  * evidence (model miss, Singer upside) is read from pipeline_overview /
  * valuation — never hardcoded. */
 
-const signed = (n: number) => (n >= 0 ? `+${n.toFixed(1)}` : n.toFixed(1));
+/* Uses the typographic minus (U+2212) so scores read "−4.8" — matches the gauge
+   scale labels and the ZÁVER summary. Display only; never parsed back. */
+const signed = (n: number) =>
+  n >= 0 ? `+${n.toFixed(1)}` : `−${Math.abs(n).toFixed(1)}`;
 
-/* Both columns use the IDENTICAL row layout (label left, score right, evidence
-   + weight bar below, aligned row-for-row across the central divider). The two
-   columns differ ONLY by colour (green PODPORUJE / red OHROZUJE) and the sign
-   of the score — no mirror/flip. Layout only; values unchanged. */
+/* Both columns use the IDENTICAL row layout and CSS — they differ ONLY by colour
+   (green PODPORUJE / red OHROZUJE) and the sign of the score. No mirror/flip.
+   Each item is a single, non-wrapping row:
+     line 1 — label (nowrap, ellipsis + title tooltip if it ever overflows) on
+              the left, score on the right;
+     line 2 — compact sub-value under the label;
+     line 3 — the weight bar on its own full-width line. */
 function FactorRow({ f, evidence }: { f: ScoreFactor; evidence: string }) {
   const isSupport = f.score >= 0;
   const barPct = (Math.abs(f.score) / MAX_WEIGHT) * 100;
@@ -35,20 +41,22 @@ function FactorRow({ f, evidence }: { f: ScoreFactor; evidence: string }) {
         <span className={`verdict-marker mono ${isSupport ? "gold-dim" : "down"}`}>
           {f.marker}
         </span>
-        <span className="verdict-flabel">{f.label}</span>
+        <span className="verdict-flabel" title={f.label}>
+          {f.label}
+        </span>
         <span className={`verdict-score mono ${isSupport ? "up" : "down"}`}>
           {signed(f.score)}
         </span>
       </div>
-      <div className="verdict-factor-bot">
-        <span className="verdict-evidence mono" title={evidence}>{evidence}</span>
-        <span className="verdict-wbar" aria-hidden="true">
-          <span
-            className={`verdict-wbar-fill ${isSupport ? "support" : "risk"}`}
-            style={{ width: `${barPct}%` }}
-          />
-        </span>
+      <div className="verdict-factor-sub mono" title={evidence}>
+        {evidence}
       </div>
+      <span className="verdict-wbar" aria-hidden="true">
+        <span
+          className={`verdict-wbar-fill ${isSupport ? "support" : "risk"}`}
+          style={{ width: `${barPct}%` }}
+        />
+      </span>
     </div>
   );
 }
@@ -114,14 +122,17 @@ export default function VerdictBlock() {
         </div>
       </div>
 
-      {/* ZONE 3 — verdict summary strip. Separators use explicit {" · "} so the
-          spaces around each "·" survive JSX whitespace collapsing (the bug was
-          "10·oceňovacia" with no surrounding spaces). */}
+      {/* ZONE 3 — verdict summary strip. EVERY space is an explicit {" "} or part
+          of the {" · "} separator — never a literal line-edge space — so JSX
+          whitespace trimming can't drop it. Prior bug rendered
+          "pozícia+4.2 / 10· oceňovacia medzera+231%k Singer". Target reads:
+          "ZÁVER · pipeline drží (+9.0) · riziko exekúcie a súvahy (−4.8) ·
+           čistá pozícia +4.2 / 10 · oceňovacia medzera +231 % k Singer". */}
       <div className="verdict-summary">
-        ZÁVER{" · "}pipeline drží (<span className="gold">{signed(SUPPORT_SUM)}</span>)
-        {" · "}riziko exekúcie a súvahy (<span className="gold">{signed(RISK_SUM)}</span>)
-        {" · "}čistá pozícia <span className="gold">{signed(NET_SCORE)} / 10</span>
-        {" · "}oceňovacia medzera <span className="gold">+{singerUpside}%</span> k Singer
+        ZÁVER{" · "}pipeline drží{" "}(<span className="gold">{signed(SUPPORT_SUM)}</span>)
+        {" · "}riziko exekúcie a súvahy{" "}(<span className="gold">{signed(RISK_SUM)}</span>)
+        {" · "}čistá pozícia{" "}<span className="gold">{signed(NET_SCORE)} / 10</span>
+        {" · "}oceňovacia medzera{" "}<span className="gold">+{singerUpside} %</span>{" "}k Singer
       </div>
     </div>
   );

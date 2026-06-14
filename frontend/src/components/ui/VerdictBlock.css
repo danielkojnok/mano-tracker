@@ -107,8 +107,13 @@
 .up { color: var(--up); }
 .down { color: var(--down); }
 
-/* two-line factor row — top: label + score, bottom: evidence + weight bar.
-   Nothing wraps or overlaps (prior single-line cram broke). */
+/* Factor row — three stacked lines, IDENTICAL CSS in both columns:
+     line 1 — marker + label (nowrap) + score
+     line 2 — compact sub-value under the label
+     line 3 — weight bar on its own full-width line.
+   The label never wraps and never stacks words: it stays on one line and
+   ellipsises only if it truly overflows (full text stays in the title tooltip).
+   This is what makes OHROZUJE read identically to PODPORUJE. */
 .verdict-factor {
   padding: 8px 0;
   border-bottom: 1px solid var(--row-line);
@@ -119,54 +124,54 @@
 }
 
 .verdict-factor-top {
-  display: grid;
-  grid-template-columns: 16px 1fr auto;
+  display: flex;
   align-items: baseline;
   gap: 8px;
 }
 
 .verdict-marker {
+  flex: none;
+  width: 12px;
   font-size: 12px;
 }
 
 .verdict-marker.gold-dim { color: var(--gold-dim); }
 
 .verdict-flabel {
+  flex: 1 1 auto;
+  min-width: 0; /* let the flex item shrink so the ellipsis can engage */
   font-size: 14px;
   color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .verdict-score {
+  flex: none;
   font-size: 13px;
   font-weight: 600;
   text-align: right;
 }
 
-/* Evidence (left, may be a multi-token mono string like "£96k vs £204k") and a
-   fixed-width weight bar (right). The evidence column never wraps mid-word: it
-   stays on one line and ellipsises if it ever overflows, so sub-values read
-   cleanly. Both columns use this IDENTICAL layout — no mirror. */
-.verdict-factor-bot {
-  display: grid;
-  grid-template-columns: 1fr 72px;
-  align-items: center;
-  gap: 12px;
-  margin-top: 3px;
-  padding-left: 24px;
-}
-
-.verdict-evidence {
+/* sub-value (e.g. "£4.7m exp.", "0.4× / £42m") — compact, aligned under the
+   label (clearing the 12px marker + 8px gap), single line. */
+.verdict-factor-sub {
+  margin-top: 2px;
+  padding-left: 20px;
   font-size: 12px;
   color: var(--text-2);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  min-width: 0; /* allow the cell to shrink so ellipsis can engage in the grid */
 }
 
+/* weight bar on its own full-width line below */
 .verdict-wbar {
   display: block;
+  width: 100%;
   height: 4px;
+  margin-top: 6px;
   background: var(--border);
 }
 
