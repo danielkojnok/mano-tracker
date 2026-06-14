@@ -76,14 +76,21 @@
   color: var(--text);
 }
 
-/* ZONE 2 — scorecard */
+/* ZONE 2 — scorecard.
+   TWO equal columns for the TWO rendered .verdict-col children. The earlier
+   `1fr 1px 1fr` template declared a phantom 1px middle track with no element to
+   fill it, so the OHROZUJE column was placed INTO that 1px track — its
+   nowrap/ellipsis label, sub-value and full-width bar clipped to ~1px and only
+   the (flex:none) score overflowed visibly. The divider is the border-left on
+   .verdict-col-right, NOT a grid track. Both columns are now equal-width. */
 .verdict-cols {
   display: grid;
-  grid-template-columns: 1fr 1px 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 0;
 }
 
 .verdict-col {
+  min-width: 0; /* allow the column to shrink so in-row ellipsis can engage */
   padding: 16px 24px;
 }
 
