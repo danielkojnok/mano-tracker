@@ -1,6 +1,7 @@
 /* JS mirror of tokens.css — for ECharts configs (no CSS vars in canvas). */
 export const T = {
   gold: '#F5C400',
+  goldBright: '#FFD93B',
   goldDim: '#8A7A2B',
   signal: '#4CB8E8',
   up: '#3DC97B',

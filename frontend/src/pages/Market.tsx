@@ -5,7 +5,7 @@ import InsolvencyChart from "../components/charts/InsolvencyChart";
 import SeasonalHeatmap from "../components/charts/SeasonalHeatmap";
 import LeadLagChart from "../components/charts/LeadLagChart";
 import PetitionsVsCvl from "../components/charts/PetitionsVsCvl";
-import RegionalChart from "../components/charts/RegionalChart";
+import RegionalHexMap from "../components/charts/RegionalHexMap";
 import IpConstellation from "../components/charts/IpConstellation";
 import SicTable from "../components/ui/SicTable";
 import GazetteFeed from "../components/ui/GazetteFeed";
@@ -56,10 +56,10 @@ export default function Market() {
 
       <div className="two-col">
         <Panel
-          title="Regionálne rozloženie firiem"
+          title="Regionálne rozloženie firiem · UK hex kartogram"
           source="Companies House enrichment · PSČ → región"
         >
-          <RegionalChart />
+          <RegionalHexMap />
         </Panel>
         <Panel title="Sektory SIC · zoradené podľa 12M" source="Insolvency Service · jún 2026">
           <SicTable />
