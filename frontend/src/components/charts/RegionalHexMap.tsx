@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useFetch } from "../../hooks/useData";
 import type { Regional, RegionCount } from "../../types/data";
 import { T } from "../../styles/tokens";
+import { HEX_POS, hexCenter, hexPath, hexViewBox } from "../../lib/ukHexGrid";
 import "./RegionalHexMap.css";
 
 /* UK hex-cartogram of insolvency-firm counts by ITL1 region (manual §12 +
@@ -18,28 +19,7 @@ import "./RegionalHexMap.css";
  *    we do not invent a YoY number.
  *  Coverage caption comes straight from the data (mapped / total). */
 
-// Fixed hex grid: col/row in an offset (odd-r) layout. Positions are a stylised
-// UK: Scotland top, NE/NW/Yorks upper band, Midlands/East middle, SW/SE/London
-// bottom, Wales + NI on the left. Keyed by the Slovak region names in the data.
-interface HexPos {
-  col: number;
-  row: number;
-}
-const HEX_POS: Record<string, HexPos> = {
-  "Škótsko": { col: 2, row: 0 },
-  "Severné Írsko": { col: 0, row: 1 },
-  "Severovýchod": { col: 3, row: 1 },
-  "Severozápad": { col: 2, row: 2 },
-  "Yorkshire": { col: 3, row: 2 },
-  "Wales": { col: 1, row: 3 },
-  "West Midlands": { col: 2, row: 3 },
-  "East Midlands": { col: 3, row: 3 },
-  "Východ": { col: 4, row: 3 },
-  "Juhozápad": { col: 1, row: 4 },
-  "Juhovýchod": { col: 3, row: 4 },
-  "Londýn": { col: 4, row: 4 },
-};
-const MAX_ROW = 4; // largest row index in HEX_POS (for viewBox height)
+// Hex grid (positions + geometry) is shared with the IP map via lib/ukHexGrid.
 
 // short label inside each hex (full name kept in the legend row + tooltip)
 const SHORT: Record<string, string> = {
@@ -56,30 +36,6 @@ const SHORT: Record<string, string> = {
   "Juhovýchod": "JV",
   "Londýn": "LDN",
 };
-
-// hex geometry (flat-top pointy layout: pointy-top hexes in an odd-r offset)
-const HEX_R = 38; // circumradius
-const HEX_W = Math.sqrt(3) * HEX_R; // pointy-top width
-const HEX_H = 2 * HEX_R; // pointy-top height
-const V_SPACING = HEX_H * 0.75; // row vertical advance
-const MARGIN = 14;
-
-function hexCenter(col: number, row: number): [number, number] {
-  const xOff = row % 2 === 1 ? HEX_W / 2 : 0;
-  const cx = MARGIN + HEX_W / 2 + col * HEX_W + xOff;
-  const cy = MARGIN + HEX_H / 2 + row * V_SPACING;
-  return [cx, cy];
-}
-
-function hexPath(cx: number, cy: number): string {
-  // pointy-top hexagon: vertices at 30°,90°,...,330°
-  const pts: string[] = [];
-  for (let i = 0; i < 6; i++) {
-    const ang = (Math.PI / 180) * (60 * i - 90);
-    pts.push(`${(cx + HEX_R * Math.cos(ang)).toFixed(1)},${(cy + HEX_R * Math.sin(ang)).toFixed(1)}`);
-  }
-  return `M${pts.join("L")}Z`;
-}
 
 // bg-2 → gold-dim → gold ramp by share of max (manual heat scale)
 function shadeFor(t: number): string {
@@ -105,9 +61,8 @@ export default function RegionalHexMap() {
   const total = counts.reduce((a, r) => a + r.count, 0);
   const max = Math.max(...counts.map((r) => r.count));
 
-  // viewBox extent from the grid (5 cols incl. the +0.5 offset on odd rows)
-  const VB_W = MARGIN * 2 + HEX_W * 5.5;
-  const VB_H = MARGIN * 2 + HEX_H + V_SPACING * MAX_ROW;
+  // viewBox extent from the shared grid
+  const { w: VB_W, h: VB_H } = hexViewBox();
 
   // draw only regions present in the data that we have a position for
   const drawn = counts.filter((r) => HEX_POS[r.region]);

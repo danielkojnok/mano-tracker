@@ -67,8 +67,8 @@ export default function Market() {
       </div>
 
       <Panel
-        title="Trhová štruktúra IP firiem · bez fabrikovaných hrán"
-        source="The Gazette appointments → ip_network (1 175 firiem)"
+        title="Trhová štruktúra IP · geografická mapa · bez fabrikovaných hrán"
+        source="The Gazette appointments → ip_network (1 175 entít)"
       >
         <IpConstellation />
       </Panel>
