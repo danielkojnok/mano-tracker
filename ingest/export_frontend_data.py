@@ -628,6 +628,58 @@ def build_regional(con: sqlite3.Connection) -> dict:
         return {"regions": [], "source": "Companies House enrichment"}
 
 
+# FILE — sic_sectors.json (insolvencies by SIC 2-digit sector: 12m vs prior 12m)
+def build_sic_sectors(con: sqlite3.Connection) -> dict:
+    """Real SIC 2-digit sector counts over the trailing 12 months vs the prior
+    12 months, for EVERY sector present in the record-level data (no top-N cap
+    here — the frontend applies the display cap and folds the long tail / any
+    code without a readable Slovak name into 'Ostatné'). Counts are real; only
+    presentation (names, cap) happens client-side."""
+    if "insolvencies_record_level" not in _tables(con):
+        return {"sectors": [], "source": "Insolvency Service record-level"}
+    try:
+        df = pd.read_sql(
+            "SELECT sic_2digit, month_registered FROM insolvencies_record_level",
+            con,
+        )
+        df["dt"] = pd.to_datetime(df["month_registered"] + "-01", errors="coerce")
+        df = df.dropna(subset=["dt"])
+        last = df["dt"].max()
+        win_now = df[df["dt"] > last - pd.DateOffset(months=12)]
+        win_prev = df[(df["dt"] <= last - pd.DateOffset(months=12))
+                      & (df["dt"] > last - pd.DateOffset(months=24))]
+        now_c = win_now["sic_2digit"].value_counts()
+        prev_c = win_prev["sic_2digit"].value_counts()
+
+        sectors = []
+        for code, n in now_c.items():
+            p = int(prev_c.get(code, 0))
+            yoy = round((int(n) - p) / p * 100) if p else None
+            sectors.append({
+                "code": str(code),
+                "n12m": int(n),
+                "prev12m": p,
+                "yoy": yoy,  # null where prior-year base is 0 (cannot compute)
+            })
+        sectors.sort(key=lambda s: s["n12m"], reverse=True)
+        return {
+            "sectors": sectors,
+            "total_12m": int(len(win_now)),
+            "distinct_sectors": len(sectors),
+            "window_now": [
+                (last - pd.DateOffset(months=11)).strftime("%Y-%m"),
+                last.strftime("%Y-%m"),
+            ],
+            "window_prev": [
+                (last - pd.DateOffset(months=23)).strftime("%Y-%m"),
+                (last - pd.DateOffset(months=12)).strftime("%Y-%m"),
+            ],
+            "source": "Insolvency Service record-level (SIC 2-digit)",
+        }
+    except Exception:
+        return {"sectors": [], "source": "Insolvency Service record-level"}
+
+
 # FILE — gazette_explorer.json (compact columnar; recent N, honest total)
 def build_gazette_explorer(con: sqlite3.Connection, max_rows: int = 30_000) -> dict:
     if "gazette_notices" not in _tables(con):
@@ -859,6 +911,7 @@ def main():
             "leadlag.json": build_leadlag(con),
             "regional.json": build_regional(con),
             "petitions_cvl.json": build_petitions_cvl(con),
+            "sic_sectors.json": build_sic_sectors(con),
             "gazette_explorer.json": build_gazette_explorer(con),
             "freshness.json": build_freshness(con),
         }

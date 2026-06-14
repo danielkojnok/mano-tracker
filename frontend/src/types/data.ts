@@ -308,6 +308,22 @@ export interface Regional {
   source: string;
 }
 
+export interface SicSector {
+  code: string; // SIC 2-digit code (raw; frontend resolves the Slovak name)
+  n12m: number;
+  prev12m: number;
+  yoy: number | null; // null where prior-year base is 0
+}
+
+export interface SicSectors {
+  sectors: SicSector[]; // ALL sectors, sorted by n12m desc (no cap applied here)
+  total_12m: number;
+  distinct_sectors: number;
+  window_now: [string, string];
+  window_prev: [string, string];
+  source: string;
+}
+
 export interface PetitionsCvlPoint {
   date: string; // YYYY-MM
   appointments: number;

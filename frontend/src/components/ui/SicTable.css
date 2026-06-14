@@ -1,45 +1,156 @@
-.sic-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 12px;
+/* Sektory SIC — lollipop (left) + diverging YoY (right), one row per sector.
+   Shared column template across header and rows so the two sub-columns line up
+   with the regional map module (PART 6) sitting beside it. */
+.sic2 {
+  display: flex;
+  flex-direction: column;
 }
 
-.sic-table th {
-  font-size: 11px;
-  font-weight: 400;
+.sic2-head,
+.sic2-row {
+  display: grid;
+  grid-template-columns: minmax(96px, 1.25fr) 1.4fr 1.1fr;
+  align-items: center;
+  column-gap: 12px;
+}
+
+.sic2-head {
+  font-size: 10px;
+  letter-spacing: 0.04em;
   color: var(--text-2);
-  text-align: left;
-  padding: 0 8px 8px;
+  padding: 0 0 8px;
   border-bottom: 1px solid var(--border);
 }
 
-.sic-table td {
-  height: 38px;
-  padding: 0 8px;
+.sic2-h-lolli { text-align: left; }
+.sic2-h-yoy { text-align: center; }
+
+.sic2-row {
+  height: 34px;
   border-bottom: 1px solid var(--row-line);
 }
 
-.sic-table tbody tr:hover {
-  background: var(--bg-2);
+.sic2-row:hover { background: var(--bg-2); }
+
+/* label */
+.sic2-label {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  line-height: 1.15;
 }
 
-.sic-table .num {
+.sic2-name {
+  font-size: 12px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sic2-code {
+  font-size: 9.5px;
+  color: var(--text-2);
+}
+
+/* LEFT — lollipop: thin stem from the axis + dot, number to the right */
+.sic2-lolli {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sic2-track {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 12px;
+}
+
+.sic2-stem {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  height: 2px;
+  transform: translateY(-50%);
+  background: var(--gold-dim);
+}
+
+.sic2-dot {
+  position: absolute;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--gold);
+}
+
+/* Ostatné aggregate: a faint dashed full-width track, no dot (not a real point
+   on the lollipop scale) */
+.sic2-track-rest {
+  border-top: 1px dashed var(--border-strong);
+  height: 0;
+  align-self: center;
+}
+
+.sic2-num {
+  flex: none;
+  width: 48px;
   text-align: right;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+
+/* RIGHT — diverging YoY around a centred zero axis */
+.sic2-yoy {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sic2-div {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 12px;
+}
+
+.sic2-zero {
+  position: absolute;
+  left: 50%;
+  top: -1px;
+  width: 1px;
+  height: 14px;
+  background: var(--border-strong);
+}
+
+.sic2-bar {
+  position: absolute;
+  top: 50%;
+  height: 7px;
+  transform: translateY(-50%);
+}
+
+.sic2-bar.pos { background: var(--up); }    /* growth → right, green */
+.sic2-bar.neg { background: var(--down); }  /* decline → left, red */
+
+.sic2-yval {
+  flex: none;
+  width: 48px;
+  text-align: right;
+  font-size: 11px;
   font-variant-numeric: tabular-nums;
 }
 
-/* In-cell bar behind the number — number always outside the bar, right */
-.cell-bar-wrap {
-  display: inline-block;
-  width: 70px;
-  height: 12px;
-  margin-right: 8px;
-  vertical-align: middle;
+.sic2-yval-na { color: var(--text-2); }
+
+/* Ostatné row sits slightly muted, separated by a firmer top rule */
+.sic2-row-rest {
+  border-top: 1px solid var(--border);
+  color: var(--text-2);
 }
 
-.cell-bar {
-  display: block;
-  height: 100%;
-  background: var(--gold-dim);
-  opacity: 0.3;
-}
+.sic2-row-rest .sic2-name { color: var(--text-2); }
