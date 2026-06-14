@@ -154,3 +154,40 @@
 }
 
 .sic2-row-rest .sic2-name { color: var(--text-2); }
+
+/* C1 — equal-height row with the regional map on desktop. Scoped to .geo-row so
+   no other two-col row is affected; mobile (≤1024 stacked) keeps natural heights.
+   Both panels become flex columns whose body fills the row height; the SIC rows
+   then distribute (flex, with a min so they never clip) to fill that height, and
+   the map centres vertically in any slack — so the pair reads balanced. */
+@media (min-width: 1024px) {
+  .geo-row {
+    align-items: stretch;
+  }
+  .geo-row > .panel {
+    display: flex;
+    flex-direction: column;
+  }
+  .geo-row > .panel > .panel-body {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+  .geo-row .sic2 {
+    height: 100%;
+  }
+  .geo-row .sic2-body {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .geo-row .sic2-row {
+    flex: 1 1 0;
+    height: auto;
+    min-height: 26px;
+  }
+  /* map centres vertically if its panel is stretched taller than the map */
+  .geo-row .rmap {
+    height: 100%;
+    justify-content: center;
+  }
+}

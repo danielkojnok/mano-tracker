@@ -48,9 +48,9 @@
 .rmap-svg {
   display: block;
   width: 100%;
-  /* cap width so the portrait map's height lands near the SIC panel beside it
-     (coordinate height — PART 5/6 read as a balanced pair) */
-  max-width: 480px;
+  /* cap width so the portrait map's height lands near the (now taller, ~25-row)
+     SIC panel beside it — coordinate height, read as a balanced pair */
+  max-width: 560px;
   height: auto;
   /* center the (portrait) map+gutters block within the panel */
   margin: 0 auto;

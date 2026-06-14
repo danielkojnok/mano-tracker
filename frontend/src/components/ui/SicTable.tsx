@@ -10,12 +10,13 @@ import "./SicTable.css";
  *
  * HONESTY:
  *  - counts are real (sic_sectors.json ← Insolvency Service record-level);
- *  - HARD CAP top-12 NAMED sectors; the rest roll into one "Ostatné (n)" row,
- *    value = their summed 12M; YoY omitted for Ostatné (mixed);
- *  - a SIC code with no readable Slovak name (placeholder codes, rare
+ *  - HARD CAP top-25 NAMED sectors; the rest (the long tail + any code without a
+ *    readable Slovak name) roll into one "Ostatné (n)" row, value = their summed
+ *    12M; YoY omitted for Ostatné (mixed);
+ *  - a SIC code with no readable Slovak name (placeholder codes like UNK, rare
  *    divisions) is NEVER shown as a bare code — it folds into Ostatné. */
 
-const CAP = 12;
+const CAP = 25;
 
 interface Row {
   code: string;
@@ -134,10 +135,10 @@ export default function SicTable() {
         Lollipop = počet insolvencií za 12M (do {nowTo}); diverging =
         medziročná zmena (<b className="down">červená vľavo</b> = pokles,{" "}
         <b className="up">zelená vpravo</b> = rast), os ±{maxYoY} %. Top {CAP}{" "}
-        sektorov; zvyšných {ostatneCount} (vrátane kódov bez čitateľného
-        slovenského názvu) je zlúčených do <b>Ostatné</b> (Σ{" "}
-        {ostatneValue.toLocaleString("en-GB")}), YoY pri zmesi neuvádzame.
-        Okno {nowFrom}–{nowTo}. Zdroj: {data.source}.
+        pomenovaných sektorov; zvyšných {ostatneCount} (dlhý chvost + kódy bez
+        čitateľného slovenského názvu, napr. UNK) je zlúčených do{" "}
+        <b>Ostatné</b> (Σ {ostatneValue.toLocaleString("en-GB")}), YoY pri zmesi
+        neuvádzame. Okno {nowFrom}–{nowTo}. Zdroj: {data.source}.
       </div>
     </div>
   );

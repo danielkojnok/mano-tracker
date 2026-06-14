@@ -54,7 +54,7 @@ export default function Market() {
         <PetitionsVsCvl />
       </Panel>
 
-      <div className="two-col">
+      <div className="two-col geo-row">
         <Panel
           title="Regionálne rozloženie firiem · UK ITL1 mapa"
           source="Companies House enrichment · PSČ → región"

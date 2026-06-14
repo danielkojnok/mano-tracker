@@ -35,6 +35,12 @@ export const SIC_NAMES: Record<string, string> = {
   "25": "Kovovýroba",
   "85": "Vzdelávanie",
   "10": "Potravinárstvo",
+  // ── added for the expanded ~25-sector view (standard SIC 2007 divisions) ──
+  "32": "Ostatná výroba",
+  "59": "Film, video a hudba",
+  "42": "Inžinierske stavby",
+  "33": "Oprava a inštalácia strojov",
+  "69": "Právne a účtovné služby",
 };
 
 /** Slovak name for a SIC code, or null if the code has no readable name. */
