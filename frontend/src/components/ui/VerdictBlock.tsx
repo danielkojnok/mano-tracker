@@ -22,22 +22,15 @@ import "./VerdictBlock.css";
 
 const signed = (n: number) => (n >= 0 ? `+${n.toFixed(1)}` : n.toFixed(1));
 
-/* `mirror` flips the row horizontally so the OHROZUJE column is a true mirror
-   image of PODPORUJE around the central divider: marker/label/score order is
-   reversed and the weight bar grows leftward. Layout only — same data. */
-function FactorRow({
-  f,
-  evidence,
-  mirror = false,
-}: {
-  f: ScoreFactor;
-  evidence: string;
-  mirror?: boolean;
-}) {
+/* Both columns use the IDENTICAL row layout (label left, score right, evidence
+   + weight bar below, aligned row-for-row across the central divider). The two
+   columns differ ONLY by colour (green PODPORUJE / red OHROZUJE) and the sign
+   of the score — no mirror/flip. Layout only; values unchanged. */
+function FactorRow({ f, evidence }: { f: ScoreFactor; evidence: string }) {
   const isSupport = f.score >= 0;
   const barPct = (Math.abs(f.score) / MAX_WEIGHT) * 100;
   return (
-    <div className={`verdict-factor${mirror ? " verdict-factor-mirror" : ""}`}>
+    <div className="verdict-factor">
       <div className="verdict-factor-top">
         <span className={`verdict-marker mono ${isSupport ? "gold-dim" : "down"}`}>
           {f.marker}
@@ -48,7 +41,7 @@ function FactorRow({
         </span>
       </div>
       <div className="verdict-factor-bot">
-        <span className="verdict-evidence mono">{evidence}</span>
+        <span className="verdict-evidence mono" title={evidence}>{evidence}</span>
         <span className="verdict-wbar" aria-hidden="true">
           <span
             className={`verdict-wbar-fill ${isSupport ? "support" : "risk"}`}
@@ -116,7 +109,7 @@ export default function VerdictBlock() {
             OHROZUJE <span className="verdict-col-sum mono">{signed(RISK_SUM)}</span>
           </h3>
           {RISK_FACTORS.map((f) => (
-            <FactorRow key={f.label} f={f} evidence={evidenceFor(f)} mirror />
+            <FactorRow key={f.label} f={f} evidence={evidenceFor(f)} />
           ))}
         </div>
       </div>

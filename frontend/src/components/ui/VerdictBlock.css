@@ -142,9 +142,13 @@
   text-align: right;
 }
 
+/* Evidence (left, may be a multi-token mono string like "£96k vs £204k") and a
+   fixed-width weight bar (right). The evidence column never wraps mid-word: it
+   stays on one line and ellipsises if it ever overflows, so sub-values read
+   cleanly. Both columns use this IDENTICAL layout — no mirror. */
 .verdict-factor-bot {
   display: grid;
-  grid-template-columns: 1fr 88px;
+  grid-template-columns: 1fr 72px;
   align-items: center;
   gap: 12px;
   margin-top: 3px;
@@ -154,6 +158,10 @@
 .verdict-evidence {
   font-size: 12px;
   color: var(--text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0; /* allow the cell to shrink so ellipsis can engage in the grid */
 }
 
 .verdict-wbar {
@@ -169,41 +177,6 @@
 
 .verdict-wbar-fill.support { background: var(--up); }
 .verdict-wbar-fill.risk { background: var(--down); }
-
-/* Mirror — OHROZUJE column reflected so it is symmetric to PODPORUJE around the
-   central divider: top row reversed (score · label · marker) and the weight bar
-   anchored right, growing leftward. Layout only; values unchanged. */
-.verdict-factor-mirror .verdict-factor-top {
-  grid-template-columns: auto 1fr 16px;
-}
-.verdict-factor-mirror .verdict-factor-top .verdict-marker {
-  order: 3;
-  text-align: right;
-}
-.verdict-factor-mirror .verdict-factor-top .verdict-flabel {
-  order: 2;
-  text-align: right;
-}
-.verdict-factor-mirror .verdict-factor-top .verdict-score {
-  order: 1;
-  text-align: left;
-}
-.verdict-factor-mirror .verdict-factor-bot {
-  grid-template-columns: 88px 1fr;
-  padding-left: 0;
-  padding-right: 24px;
-}
-.verdict-factor-mirror .verdict-factor-bot .verdict-evidence {
-  order: 2;
-  text-align: right;
-}
-.verdict-factor-mirror .verdict-factor-bot .verdict-wbar {
-  order: 1;
-}
-/* bar fills from the right edge so it grows toward the centre divider */
-.verdict-factor-mirror .verdict-wbar-fill {
-  margin-left: auto;
-}
 
 /* ZONE 3 — summary strip */
 .verdict-summary {
