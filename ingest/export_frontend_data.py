@@ -680,25 +680,30 @@ def build_sic_sectors(con: sqlite3.Connection) -> dict:
         return {"sectors": [], "source": "Insolvency Service record-level"}
 
 
-# FILE — gazette_explorer.json (compact columnar; recent N, honest total)
-def build_gazette_explorer(con: sqlite3.Connection, max_rows: int = 30_000) -> dict:
+# FILE — gazette_explorer.json (compact columnar; full dataset, honest total)
+def build_gazette_explorer(con: sqlite3.Connection, max_rows: int | None = 30_000) -> dict:
     if "gazette_notices" not in _tables(con):
         return {"rows": [], "total": 0, "shown": 0, "source": "The Gazette"}
     try:
         total = int(con.execute("SELECT COUNT(*) FROM gazette_notices").fetchone()[0])
-        df = pd.read_sql(
+        # max_rows=None → emit the FULL dataset (drop the LIMIT); otherwise cap.
+        base_sql = (
             "SELECT date, company_name, notice_type_label"
-            " FROM gazette_notices ORDER BY date DESC LIMIT ?",
-            con, params=(max_rows,),
+            " FROM gazette_notices ORDER BY date DESC"
         )
+        if max_rows is None:
+            df = pd.read_sql(base_sql, con)
+        else:
+            df = pd.read_sql(base_sql + " LIMIT ?", con, params=(max_rows,))
         # compact columnar: parallel arrays + a type code 0/1/2 to shrink size.
+        # Vectorised list comprehensions (not iterrows) — fast over 138k rows.
         type_code = {"liquidator_appointment": 0, "winding_up_petition": 1}
-        dates, names, types = [], [], []
-        for _, r in df.iterrows():
-            dates.append(str(r["date"])[:10] if pd.notna(r["date"]) else "")
-            names.append(str(r["company_name"]) if pd.notna(r["company_name"]) else "")
-            label = str(r["notice_type_label"]) if pd.notna(r["notice_type_label"]) else ""
-            types.append(type_code.get(label, 2))
+        dates = [str(d)[:10] if pd.notna(d) else "" for d in df["date"].to_numpy()]
+        names = [str(n) if pd.notna(n) else "" for n in df["company_name"].to_numpy()]
+        types = [
+            type_code.get(str(lbl), 2) if pd.notna(lbl) else 2
+            for lbl in df["notice_type_label"].to_numpy()
+        ]
         return {
             "columns": {"date": dates, "name": names, "type": types},
             "type_labels": ["LIKVIDÁCIA", "PETÍCIA", "INÉ"],
@@ -912,7 +917,7 @@ def main():
             "regional.json": build_regional(con),
             "petitions_cvl.json": build_petitions_cvl(con),
             "sic_sectors.json": build_sic_sectors(con),
-            "gazette_explorer.json": build_gazette_explorer(con),
+            "gazette_explorer.json": build_gazette_explorer(con, max_rows=None),
             "freshness.json": build_freshness(con),
         }
     finally:

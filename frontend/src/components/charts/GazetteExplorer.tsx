@@ -1,15 +1,18 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useFetch } from "../../hooks/useData";
 import type { GazetteExplorer as GE } from "../../types/data";
 import "./GazetteExplorer.css";
 
-/* Virtualized gazette explorer (137,960 total). We ship the most recent ~30k
- * rows as compact columnar JSON (≤10MB) and render only the VISIBLE rows via a
- * windowed list — so the DOM holds a few dozen rows regardless of dataset size.
+/* Virtualized gazette explorer. We now ship the FULL dataset (137,960 rows) as
+ * compact columnar JSON (~5.5MB plain; Fastly gzips it over the wire) and render
+ * only the VISIBLE rows via a windowed list — the DOM holds a few dozen rows
+ * regardless of dataset size.
  *
- * HONEST LABELLING: the header states the TRUE total and exactly how many are
- * loaded ("zobrazené posledných N z 137,960"). Filters narrow the loaded set;
- * we never imply we're showing all 137k. notice_type and company_name are real
+ * HONEST LABELLING: the header is driven off the real shown/total. When the full
+ * set is loaded (shown === total) it says so ("Všetkých N oznámení · filtre
+ * zužujú celý súbor"); a smaller DB falls back to "posledných shown z total".
+ * The search query is debounced (~180ms) so the O(n) name filter over 137,960
+ * rows doesn't run on every keystroke. notice_type and company_name are real
  * (company_number is bugged and never used). */
 
 const ROW_H = 32;
@@ -21,18 +24,26 @@ const TYPE_VARIANT = ["gold", "signal", "neutral"]; // index = type code
 export default function GazetteExplorer() {
   const { data, loading, error } = useFetch<GE>("gazette_explorer.json");
   const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState<number | "all">("all");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [scrollTop, setScrollTop] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Debounce the search text so the full-dataset (137,960-row) filter runs at
+  // most ~5×/s instead of on every keystroke. The input stays instant.
+  useEffect(() => {
+    const id = setTimeout(() => setDebouncedQuery(query), 180);
+    return () => clearTimeout(id);
+  }, [query]);
+
   // Build filtered index list (indices into the columnar arrays) — cheap, no
   // object allocation per row until render.
   const filtered = useMemo(() => {
     if (!data) return [] as number[];
     const { date, name, type } = data.columns;
-    const q = query.trim().toUpperCase();
+    const q = debouncedQuery.trim().toUpperCase();
     const out: number[] = [];
     for (let i = 0; i < name.length; i++) {
       if (typeFilter !== "all" && type[i] !== typeFilter) continue;
@@ -42,7 +53,7 @@ export default function GazetteExplorer() {
       out.push(i);
     }
     return out;
-  }, [data, query, typeFilter, from, to]);
+  }, [data, debouncedQuery, typeFilter, from, to]);
 
   if (loading) return <div className="chart-skeleton" style={{ height: 480 }} />;
   if (error || !data)
@@ -94,9 +105,18 @@ export default function GazetteExplorer() {
       </div>
 
       <div className="ge-count mono">
-        {total.toLocaleString("en-GB")} výsledkov · zobrazené posledných{" "}
-        {data.shown.toLocaleString("en-GB")} z{" "}
-        <b>{data.total.toLocaleString("en-GB")}</b> oznámení (nie celý dataset)
+        {total.toLocaleString("en-GB")} výsledkov ·{" "}
+        {data.shown >= data.total ? (
+          <>
+            Všetkých <b>{data.total.toLocaleString("en-GB")}</b> oznámení · filtre
+            zužujú celý súbor
+          </>
+        ) : (
+          <>
+            zobrazené posledných {data.shown.toLocaleString("en-GB")} z{" "}
+            <b>{data.total.toLocaleString("en-GB")}</b> oznámení (nie celý dataset)
+          </>
+        )}
       </div>
 
       <div className="ge-head mono">
@@ -135,6 +155,12 @@ export default function GazetteExplorer() {
             <div className="ge-empty mono">ŽIADNE VÝSLEDKY PRE TENTO FILTER</div>
           )}
         </div>
+      </div>
+
+      <div className="chart-footnote">
+        Pokrytie a kvalita feedu sa líšia podľa obdobia (známe riedke úseky,
+        vrátane začiatku 2024) — chýbajúce obdobia nedopĺňame. Zobrazujeme len
+        názov firmy a typ oznámenia (company_number je v zdroji bugnutý).
       </div>
     </div>
   );
