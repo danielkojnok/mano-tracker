@@ -3,6 +3,48 @@
   flex-direction: column;
 }
 
+/* positioned container so the hover tooltip can be placed at the cursor */
+.rmap-stage {
+  position: relative;
+}
+
+.rmap-region {
+  cursor: pointer;
+  transition: fill 120ms ease-out;
+}
+
+/* hover tooltip — DESIGN-MANUAL §07/§12 */
+.rmap-tip {
+  position: absolute;
+  z-index: var(--z-tooltip);
+  pointer-events: none;
+  min-width: 124px;
+  max-width: 220px;
+  padding: 6px 9px;
+  background: var(--bg-2);
+  border: 1px solid var(--border-strong);
+}
+
+.rmap-tip-name {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 3px;
+}
+
+.rmap-tip-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 11px;
+  color: var(--text-2);
+}
+
+.rmap-tip-share {
+  color: var(--gold);
+}
+
 .rmap-svg {
   display: block;
   width: 100%;

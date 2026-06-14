@@ -1,7 +1,15 @@
+import { useRef, useState } from "react";
 import { useFetch } from "../../hooks/useData";
 import type { Regional } from "../../types/data";
 import { UK_GEO } from "../../lib/ukGeo";
 import "./RegionalMap.css";
+
+interface HoverState {
+  name: string;
+  count: number;
+  x: number;
+  y: number;
+}
 
 /* Regionálne rozloženie firiem — REAL UK ITL1/NUTS1 boundaries (not the rejected
  * hex cartogram). Each region is shaded by its real firm count on a flat
@@ -40,6 +48,8 @@ interface Slot {
 
 export default function RegionalMap() {
   const { data, loading, error } = useFetch<Regional>("regional.json");
+  const stageRef = useRef<HTMLDivElement>(null);
+  const [hover, setHover] = useState<HoverState | null>(null);
 
   if (loading) return <div className="chart-skeleton" style={{ height: 460 }} />;
   if (error || !data || data.regions.length === 0)
@@ -91,34 +101,47 @@ export default function RegionalMap() {
     ),
   ];
 
+  // tooltip position: offset from cursor, clamped inside the stage
+  const moveHover = (e: React.MouseEvent, name: string, count: number) => {
+    const rect = stageRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const x = Math.min(e.clientX - rect.left + 14, rect.width - 150);
+    const y = Math.min(e.clientY - rect.top + 14, rect.height - 48);
+    setHover({ name, count, x: Math.max(0, x), y: Math.max(0, y) });
+  };
+
   return (
     <div className="rmap">
-      <svg
-        className="rmap-svg"
-        viewBox={`0 0 ${TOTAL_W} ${H}`}
-        role="img"
-        aria-label="UK ITL1 mapa firiem podľa regiónu"
-      >
-        {/* region polygons — flat fill by count, thin sharp strokes */}
-        {UK_GEO.regions.map((r) => {
-          const count = countByName.get(r.name) ?? 0;
-          return (
-            <path
-              key={r.name}
-              d={r.path}
-              transform={`translate(${GUTTER} 0)`}
-              fill={shadeFor(count / max)}
-              stroke="#14140F"
-              strokeWidth={3}
-              strokeLinejoin="miter"
-            >
-              <title>
-                {r.name}: {count.toLocaleString("en-GB")} firiem (
-                {((count / total) * 100).toFixed(1)} %)
-              </title>
-            </path>
-          );
-        })}
+      <div className="rmap-stage" ref={stageRef}>
+        <svg
+          className="rmap-svg"
+          viewBox={`0 0 ${TOTAL_W} ${H}`}
+          role="img"
+          aria-label="UK ITL1 mapa firiem podľa regiónu"
+        >
+          {/* region polygons — flat fill by count, thin sharp strokes */}
+          {UK_GEO.regions.map((r) => {
+            const count = countByName.get(r.name) ?? 0;
+            return (
+              <path
+                key={r.name}
+                className="rmap-region"
+                d={r.path}
+                transform={`translate(${GUTTER} 0)`}
+                fill={shadeFor(count / max)}
+                stroke="#14140F"
+                strokeWidth={3}
+                strokeLinejoin="miter"
+                onMouseMove={(e) => moveHover(e, r.name, count)}
+                onMouseLeave={() => setHover(null)}
+              >
+                <title>
+                  {r.name}: {count.toLocaleString("en-GB")} firiem (
+                  {((count / total) * 100).toFixed(1)} %)
+                </title>
+              </path>
+            );
+          })}
 
         {/* leader lines + gutter labels (full words, never truncated) */}
         {slots.map((s) => (
@@ -150,7 +173,23 @@ export default function RegionalMap() {
             </text>
           </g>
         ))}
-      </svg>
+        </svg>
+
+        {/* styled hover tooltip — DESIGN-MANUAL §07/§12: bg-2, 1px border-strong,
+            mono numbers. Region name + the value the choropleth encodes (real
+            firm count + share). regional.json has no YoY, so none is shown. */}
+        {hover && (
+          <div className="rmap-tip" style={{ left: hover.x, top: hover.y }}>
+            <div className="rmap-tip-name">{hover.name}</div>
+            <div className="rmap-tip-row mono">
+              <span>{hover.count.toLocaleString("en-GB")} firiem</span>
+              <span className="rmap-tip-share">
+                {((hover.count / total) * 100).toFixed(1)} %
+              </span>
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* heat legend */}
       <div className="rmap-legend mono">
