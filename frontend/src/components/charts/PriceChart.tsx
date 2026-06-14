@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import ReactECharts from "echarts-for-react";
 import "../../lib/echartsTheme";
 import { T } from "../../styles/tokens";
@@ -5,6 +6,21 @@ import { useFetch } from "../../hooks/useData";
 import type { PriceHistory, Valuation } from "../../types/data";
 import { computeDrawdown, fmtDrawdown } from "../../lib/drawdown";
 import "./PriceChart.css";
+
+/* On phones (≤768) the RNS event LABELS pile up unreadably at the top of the
+ * chart. We hide the labels (keeping the dashed event lines + the valuation
+ * anchors) so the price stays readable; the events are not dropped. */
+function useMobile(breakpoint = 768): boolean {
+  const [m, setM] = useState(
+    () => typeof window !== "undefined" && window.innerWidth <= breakpoint,
+  );
+  useEffect(() => {
+    const onR = () => setM(window.innerWidth <= breakpoint);
+    window.addEventListener("resize", onR);
+    return () => window.removeEventListener("resize", onR);
+  }, [breakpoint]);
+  return m;
+}
 
 /* MANO.L price vs valuation anchors — the scale-sanity test (manual §18).
  *
@@ -30,6 +46,7 @@ export default function PriceChart() {
   const { data: val, loading: l2, error: e2 } = useFetch<Valuation>(
     "valuation.json",
   );
+  const mobile = useMobile(768);
 
   if (l1 || l2) return <div className="chart-skeleton" style={{ height: 360 }} />;
   if (e1 || e2 || !hist || !val)
@@ -140,6 +157,7 @@ export default function PriceChart() {
               xAxis: toTs(e.date),
               lineStyle: { color: T.goldDim, width: 1, type: "dashed" as const },
               label: {
+                show: !mobile,
                 formatter: e.label,
                 position: "end" as const,
                 distance: i % 2 === 0 ? 4 : 16,
@@ -216,6 +234,7 @@ export function PriceChartFull() {
   const { data: val, loading: l2, error: e2 } = useFetch<Valuation>(
     "valuation.json",
   );
+  const mobile = useMobile(768);
 
   if (l1 || l2) return <div className="chart-skeleton" style={{ height: 380 }} />;
   if (e1 || e2 || !hist || !val)
@@ -283,6 +302,7 @@ export function PriceChartFull() {
               xAxis: toTs(e.date),
               lineStyle: { color: T.goldDim, width: 1, type: "dashed" as const },
               label: {
+                show: !mobile,
                 formatter: e.label,
                 position: "end" as const,
                 distance: i % 2 === 0 ? 4 : 16,
