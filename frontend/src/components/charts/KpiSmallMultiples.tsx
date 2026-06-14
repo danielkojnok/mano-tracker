@@ -13,9 +13,11 @@ interface Metric {
   unit: string;
   get: (f: ManoFy) => number | null;
   fmt: (v: number) => string;
-  /** When true, show an honest caption naming the first FY that has data
-   *  (this metric is sparsely populated in the source — no fabrication). */
-  explainSparse?: boolean;
+  /** When true, render ONLY the fiscal years that actually have a value (drop
+   *  the empty ones) plus a fixed honest caption — used for ROI, which MANO
+   *  discloses per-year only for FY24/FY25. Bars are styled uniformly (no
+   *  "current year" gold emphasis) so no single year is singled out. */
+  disclosedOnly?: boolean;
 }
 
 const METRICS: Metric[] = [
@@ -46,15 +48,21 @@ const METRICS: Metric[] = [
     unit: "%",
     get: (f) => f.roi_pct,
     fmt: (v) => `${v}%`,
-    // ROI per year is null for FY19–FY23 in the source (MANO disclosed annual
-    // realised ROI only from FY24); we show the honest empty stub + a caption,
-    // never invented numbers.
-    explainSparse: true,
+    // MANO discloses annual realised ROI only for FY24/FY25 (FY19–23 and FY26
+    // have no figure). Show ONLY those two years + an honest caption — never
+    // invented numbers, and no single year singled out by emphasis.
+    disclosedOnly: true,
   },
 ];
 
 function MiniBars({ series, metric }: { series: ManoFy[]; metric: Metric }) {
-  const vals = series.map((f) => metric.get(f));
+  // disclosedOnly metrics (ROI) drop the empty years entirely so the chart shows
+  // only real disclosed data — no zero/empty columns, no fabrication.
+  const display = metric.disclosedOnly
+    ? series.filter((f) => metric.get(f) != null)
+    : series;
+
+  const vals = display.map((f) => metric.get(f));
   const present = vals.filter((v): v is number => v != null);
   const max = present.length ? Math.max(...present) : 1;
 
@@ -62,31 +70,28 @@ function MiniBars({ series, metric }: { series: ManoFy[]; metric: Metric }) {
   const H = 96;
   const PAD_B = 18;
   const PAD_T = 6;
-  const n = series.length;
+  const n = display.length;
   const slot = W / n;
   const barW = slot * 0.62;
 
-  // Emphasis is anchored to the SAME period across every metric: the latest
-  // fiscal year in the dataset (the rightmost slot = "now"). A bar is gold only
-  // when it is that period AND has a value. Metrics whose latest period is null
-  // (e.g. ROI has no FY26) simply show no gold bar — they never borrow a
-  // different year's emphasis, so all four charts read consistently.
+  // Emphasis (gold "current" bar) is anchored to the latest fiscal year — but
+  // only for the normal full-series metrics. disclosedOnly metrics style every
+  // bar identically (gold-dim) so no single year (e.g. FY25) is singled out.
   const currentIdx = n - 1;
 
-  // Latest period that actually HAS a value — used only for the footer caption
-  // (so an all-recent-null metric still reports its most recent figure).
+  // Latest period that actually HAS a value — used for the footer caption.
   const lastWithValueIdx = (() => {
     for (let i = n - 1; i >= 0; i--) if (vals[i] != null) return i;
     return -1;
   })();
 
-  // First period with a value — used for the honest "disclosed only from FYxx"
-  // caption on sparsely-populated metrics (e.g. ROI). Derived from the data.
-  const firstWithValueIdx = vals.findIndex((v) => v != null);
-  const sparseCaption =
-    metric.explainSparse && firstWithValueIdx > 0
-      ? `ROI per rok zverejnené až od ${series[firstWithValueIdx].fy}`
-      : null;
+  // Fixed honest caption for disclosedOnly (ROI): lists exactly the disclosed
+  // years + values, read from the data (not hardcoded).
+  const disclosedCaption = metric.disclosedOnly
+    ? `ROI za jednotlivé roky je zverejnené len pre ${display
+        .map((f) => `${f.fy} (${metric.get(f)} %)`)
+        .join(" a ")}; skoršie roky MANO neudáva.`
+    : null;
 
   return (
     <div className="sm-cell">
@@ -95,7 +100,7 @@ function MiniBars({ series, metric }: { series: ManoFy[]; metric: Metric }) {
         <span className="sm-unit mono">{metric.unit}</span>
       </div>
       <svg className="sm-svg" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
-        {series.map((f, i) => {
+        {display.map((f, i) => {
           const v = vals[i];
           const x = i * slot + (slot - barW) / 2;
           const baseY = H - PAD_B;
@@ -116,20 +121,21 @@ function MiniBars({ series, metric }: { series: ManoFy[]; metric: Metric }) {
           const h = Math.max(2, ((v / max) * (H - PAD_B - PAD_T)));
           const y = baseY - h;
           const isCurrent = i === currentIdx;
+          // disclosedOnly → uniform gold-dim (no year singled out); otherwise the
+          // latest year is gold, the rest signal at reduced opacity.
+          const fill = metric.disclosedOnly
+            ? T.goldDim
+            : isCurrent
+              ? T.gold
+              : T.signal;
+          const opacity = metric.disclosedOnly ? 1 : isCurrent ? 1 : 0.75;
           return (
-            <rect
-              key={f.fy}
-              x={x}
-              y={y}
-              width={barW}
-              height={h}
-              fill={isCurrent ? T.gold : T.signal}
-              opacity={isCurrent ? 1 : 0.75}
-            />
+            <rect key={f.fy} x={x} y={y} width={barW} height={h} fill={fill} opacity={opacity} />
           );
         })}
-        {/* x labels every other year to avoid clutter (law 7: no rotation) */}
-        {series.map((f, i) => (
+        {/* x labels: all years when few (disclosedOnly), else every other
+            (law 7: no rotation) */}
+        {display.map((f, i) => (
           <text
             key={`l-${f.fy}`}
             x={i * slot + slot / 2}
@@ -137,21 +143,21 @@ function MiniBars({ series, metric }: { series: ManoFy[]; metric: Metric }) {
             className="sm-xlabel mono"
             textAnchor="middle"
           >
-            {i % 2 === 0 ? f.fy.replace("FY", "") : ""}
+            {metric.disclosedOnly || i % 2 === 0 ? f.fy.replace("FY", "") : ""}
           </text>
         ))}
       </svg>
       <div className="sm-foot mono">
         {lastWithValueIdx >= 0 ? (
           <>
-            {series[lastWithValueIdx].fy}:{" "}
+            {display[lastWithValueIdx].fy}:{" "}
             <b>{metric.fmt(vals[lastWithValueIdx] as number)}</b>
           </>
         ) : (
           "—"
         )}
       </div>
-      {sparseCaption && <div className="sm-sparse mono">{sparseCaption}</div>}
+      {disclosedCaption && <div className="sm-sparse mono">{disclosedCaption}</div>}
     </div>
   );
 }
