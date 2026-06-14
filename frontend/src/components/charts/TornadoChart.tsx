@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import ReactECharts from "echarts-for-react";
 import "../../lib/echartsTheme";
 import { T } from "../../styles/tokens";
@@ -20,6 +21,15 @@ const MIN_STUB_PX = 4; // a ~0 leg still paints a small, honest stub
 
 export default function TornadoChart() {
   const { data, loading, error } = useFetch<Tornado>("tornado.json");
+  // §00 Zákon 8 — simplified mode when the panel is phone-narrow (<480).
+  const [narrow, setNarrow] = useState(
+    () => typeof window !== "undefined" && window.innerWidth < 480,
+  );
+  useEffect(() => {
+    const onResize = () => setNarrow(window.innerWidth < 480);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   if (loading) return <div className="chart-skeleton" style={{ height: 280 }} />;
   if (error || !data)
@@ -78,8 +88,17 @@ export default function TornadoChart() {
     return { type: "group" as const, children };
   };
 
+  // <480: shrink the left gutter, WRAP the driver labels by word (no mid-word
+  // cut, no truncation) and HIDE the x-axis tick numbers (they collide into one
+  // string — the per-row ±20% labels + gold base line already give the values).
+  const labelFs = narrow ? 9 : 11;
   const option = {
-    grid: { top: 16, right: 96, bottom: 32, left: 160 },
+    grid: {
+      top: 16,
+      right: narrow ? 52 : 96,
+      bottom: narrow ? 24 : 32,
+      left: narrow ? 84 : 160,
+    },
     tooltip: {
       trigger: "axis",
       axisPointer: { type: "shadow" },
@@ -94,14 +113,21 @@ export default function TornadoChart() {
       min: axisMin,
       max: axisMax,
       axisLabel: {
+        show: !narrow,
         formatter: (v: number) => `£${(base + v).toFixed(0)}m`,
         fontSize: 11,
+        hideOverlap: true,
       },
     },
     yAxis: {
       type: "category",
       data: cats,
-      axisLabel: { fontSize: 11, color: T.text2 },
+      axisLabel: {
+        fontSize: labelFs,
+        color: T.text2,
+        lineHeight: narrow ? 11 : 14,
+        formatter: narrow ? (v: string) => v.replace(/\s+/g, "\n") : undefined,
+      },
     },
     series: [
       {
@@ -124,7 +150,7 @@ export default function TornadoChart() {
           position: "left",
           formatter: (p: { dataIndex: number }) => `£${rows[p.dataIndex].low_m}m`,
           fontFamily: "JetBrains Mono",
-          fontSize: 11,
+          fontSize: labelFs,
           fontWeight: 600,
           color: T.text,
           textBorderColor: T.bg1,
@@ -143,7 +169,7 @@ export default function TornadoChart() {
           position: "right",
           formatter: (p: { dataIndex: number }) => `£${rows[p.dataIndex].high_m}m`,
           fontFamily: "JetBrains Mono",
-          fontSize: 11,
+          fontSize: labelFs,
           fontWeight: 600,
           color: T.text,
           textBorderColor: T.bg1,
