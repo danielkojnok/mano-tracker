@@ -65,6 +65,13 @@ export default function PetitionsVsCvl() {
         {data.total_appointments.toLocaleString("en-GB")} likvidácií. Zdroj: The
         Gazette.
       </div>
+      <div className="chart-footnote">
+        <b>Pozn.:</b> prepad takmer k nule v{" "}
+        <b>sep–okt 2023</b> (151, resp. 95 likvidácií) je medzera v zbere dát
+        z Gazette feedu, nie reálny kolaps — okolité mesiace držia ~1 800.
+        Chýbajúce mesiace zámerne nedopĺňame. Nízke petície v 2020–21 sú naopak
+        reálne (COVID moratórium na winding-up petície).
+      </div>
     </div>
   );
 }
