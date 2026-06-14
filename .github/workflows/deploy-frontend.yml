@@ -1,9 +1,9 @@
 name: Deploy frontend to GitHub Pages
 
+# Every push to main auto-deploys; manual dispatch kept for re-runs.
 on:
   push:
     branches: [main]
-    paths: ["frontend/**"]
   workflow_dispatch:
 
 permissions:
@@ -22,20 +22,25 @@ jobs:
       run:
         working-directory: frontend
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Export frontend data
         run: |
           pip install pandas --quiet
           python3 ingest/export_frontend_data.py
         working-directory: ${{ github.workspace }}
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
           cache-dependency-path: frontend/package-lock.json
       - run: npm ci
-      - run: npm run build
-      - uses: actions/upload-pages-artifact@v3
+      - name: Build
+        # GITHUB_SHA is exposed so vite can stamp the build SHA (Part B canary).
+        run: npm run build
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: frontend/dist
 
@@ -47,4 +52,4 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
