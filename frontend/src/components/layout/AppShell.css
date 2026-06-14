@@ -20,14 +20,19 @@
   gap: 16px; /* Law 3 — panel gap; section breaks add margin on top of this */
 }
 
-/* PART 8 — on phones the sidebar becomes a horizontal top bar (see Sidebar.css)
-   so the body is a single column and the main content gets the full width. */
+/* PART 8 / §24 — on phones the sidebar becomes a fixed BOTTOM tab bar
+   (see Sidebar.css), so the body is a single column and the main content gets
+   the full width. Reserve bottom space so the fixed tab bar (~54px) + ticker
+   (~26px, lifted above the bar) never overlap content or the disclaimer. */
 @media (max-width: 768px) {
+  .app-shell {
+    padding-bottom: 0;
+  }
   .app-body {
     display: flex;
     flex-direction: column;
   }
   .app-main {
-    padding: 20px 12px;
+    padding: 20px 12px 96px;
   }
 }

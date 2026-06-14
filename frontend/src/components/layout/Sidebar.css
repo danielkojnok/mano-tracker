@@ -36,26 +36,53 @@
   color: var(--text-2);
 }
 
-/* PART 8 — collapse to a horizontal, scrollable top bar on phones. All 5 pages
-   stay reachable (swipe/scroll); active marker moves to an underline. */
+/* desktop: full label, short label hidden */
+.sidebar-label-short {
+  display: none;
+}
+
+/* ≤768 — fixed BOTTOM TAB BAR (§24). All 5 pages always visible (icon + short
+   label), ≥44px hit targets, active = gold. Replaces the old top scroll bar that
+   hid 2 of 5 tabs. The ticker sits just above it (Ticker.css). */
 @media (max-width: 768px) {
   .sidebar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: var(--z-sticky-header);
     flex-direction: row;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    justify-content: space-around;
     padding: 0;
+    background: var(--bg-1);
     border-right: none;
-    border-bottom: 1px solid var(--border);
+    border-top: 1px solid var(--border-strong);
   }
   .sidebar-item {
-    flex: 0 0 auto;
-    white-space: nowrap;
-    padding: 12px 14px; /* comfortable touch target */
+    flex: 1 1 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    min-height: 52px;
+    padding: 6px 2px;
+    font-size: 10px;
+    text-align: center;
     border-left: none;
-    border-bottom: 2px solid transparent;
+    border-top: 2px solid transparent;
   }
   .sidebar-item.active {
     border-left-color: transparent;
-    border-bottom-color: var(--gold);
+    border-top-color: var(--gold);
+  }
+  .sidebar-marker {
+    font-size: 13px;
+  }
+  .sidebar-label-full {
+    display: none;
+  }
+  .sidebar-label-short {
+    display: inline;
+    line-height: 1.1;
   }
 }
