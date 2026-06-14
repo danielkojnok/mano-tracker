@@ -1,8 +1,8 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useFetch } from "../../hooks/useData";
 import type { IPNetwork, IPNode } from "../../types/data";
 import { areaToRegion, REGION_ORDER } from "../../lib/ukRegions";
-import { classifyIp, type IpKind } from "../../lib/ipEntity";
+import { classifyIp, IP_KIND_LABEL, type IpKind } from "../../lib/ipEntity";
 import { UK_GEO, REGION_COLORS, hash01 } from "../../lib/ukGeo";
 import "./IpMap.css";
 
@@ -43,8 +43,18 @@ interface Placed {
   color: string;
 }
 
+interface Hover {
+  p: Placed;
+  x: number;
+  y: number;
+}
+
+const GOLDEN = Math.PI * (3 - Math.sqrt(5)); // 137.5° — sunflower angle
+
 export default function IpMap() {
   const { data, loading, error } = useFetch<IPNetwork>("ip_network.json");
+  const stageRef = useRef<HTMLDivElement>(null);
+  const initRef = useRef(false);
 
   // ── controls (client-side React state only — no localStorage) ──
   const [showOR, setShowOR] = useState(true);
@@ -52,35 +62,75 @@ export default function IpMap() {
   const [regions, setRegions] = useState<Set<string>>(new Set()); // empty = all
   const [minCases, setMinCases] = useState(0);
   const [query, setQuery] = useState("");
+  const [hover, setHover] = useState<Hover | null>(null);
 
-  // base renderable set (top-N by cases), placed deterministically — computed
-  // once per data load, independent of the live filters.
+  // base renderable set (top-N by cases). D4: instead of random jitter (which
+  // piles coincident points), each region's entities are laid on a deterministic
+  // sunflower spiral around the region anchor — biggest in the centre — so every
+  // point is separated and individually hoverable. Positions remain
+  // region-approximate (no precise coordinates exist; none are invented).
   const base = useMemo<Placed[]>(() => {
     if (!data) return [];
-    const sorted = [...data.nodes].sort((a, b) => b.total_cases - a.total_cases);
-    const shown = sorted.slice(0, TOP_N);
-    const maxCases = shown[0]?.total_cases ?? 1;
-    const sizeFor = (c: number) => 8 + Math.sqrt(c / maxCases) * 38;
-    return shown.map((n): Placed => {
+    const sorted = [...data.nodes]
+      .sort((a, b) => b.total_cases - a.total_cases)
+      .slice(0, TOP_N);
+    const maxCases = sorted[0]?.total_cases ?? 1;
+    const sizeFor = (c: number) => 5 + Math.sqrt(c / maxCases) * 22;
+
+    const byRegion = new Map<string, IPNode[]>();
+    for (const n of sorted) {
       const region = areaToRegion(n.primary_region);
+      const list = byRegion.get(region);
+      if (list) list.push(n);
+      else byRegion.set(region, [n]);
+    }
+
+    const placed: Placed[] = [];
+    const spacing = 30; // viewBox units between successive spiral points
+    for (const [region, nodes] of byRegion) {
       const a = ANCHORS[region] ?? ANCHORS["Ostatné"];
-      const r = sizeFor(n.total_cases);
-      const maxOff = Math.max(0, a.r - r - 4);
-      const ang = hash01(n.id + "a") * Math.PI * 2;
-      const rad = Math.sqrt(hash01(n.id + "r")) * maxOff;
-      return {
-        node: n,
-        region,
-        kind: classifyIp(n.full_name),
-        x: a.cx + Math.cos(ang) * rad,
-        y: a.cy + Math.sin(ang) * rad,
-        r,
-        color: REGION_COLORS[region] ?? REGION_COLORS["Ostatné"],
-      };
-    });
+      const rot = hash01(region) * Math.PI * 2; // deterministic per-region offset
+      nodes.forEach((n, i) => {
+        const rad = spacing * Math.sqrt(i);
+        const ang = i * GOLDEN + rot;
+        placed.push({
+          node: n,
+          region,
+          kind: classifyIp(n.full_name),
+          x: a.cx + Math.cos(ang) * rad,
+          y: a.cy + Math.sin(ang) * rad,
+          r: sizeFor(n.total_cases),
+          color: REGION_COLORS[region] ?? REGION_COLORS["Ostatné"],
+        });
+      });
+    }
+    return placed;
   }, [data]);
 
   const maxCases = base[0]?.node.total_cases ?? 1;
+
+  // D3: data-driven default — preselect the single region with the most entities
+  // so the map is never empty on load.
+  const topRegion = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const p of base) counts.set(p.region, (counts.get(p.region) ?? 0) + 1);
+    let best: string | null = null;
+    let bestN = -1;
+    for (const [reg, n] of counts) {
+      if (n > bestN) {
+        bestN = n;
+        best = reg;
+      }
+    }
+    return best;
+  }, [base]);
+
+  useEffect(() => {
+    if (topRegion && !initRef.current) {
+      setRegions(new Set([topRegion]));
+      initRef.current = true;
+    }
+  }, [topRegion]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -94,9 +144,55 @@ export default function IpMap() {
     });
   }, [base, showOR, showInd, regions, minCases, query]);
 
+  // D1: zoom/fit. With no region selected → full UK; otherwise frame the visible
+  // markers' bounding box (padded, clamped so we never over-zoom).
+  const view = useMemo(() => {
+    if (regions.size === 0 || filtered.length === 0)
+      return { x: 0, y: 0, w: TOTAL_W, h: H };
+    let minx = Infinity;
+    let miny = Infinity;
+    let maxx = -Infinity;
+    let maxy = -Infinity;
+    for (const p of filtered) {
+      minx = Math.min(minx, p.x - p.r);
+      maxx = Math.max(maxx, p.x + p.r);
+      miny = Math.min(miny, p.y - p.r);
+      maxy = Math.max(maxy, p.y + p.r);
+    }
+    const padX = Math.max((maxx - minx) * 0.14, 60);
+    const padY = Math.max((maxy - miny) * 0.14, 60);
+    minx -= padX;
+    maxx += padX;
+    miny -= padY;
+    maxy += padY;
+    let w = maxx - minx;
+    let h = maxy - miny;
+    const MINW = 640; // floor so a single small region doesn't zoom too far
+    if (w < MINW) {
+      const cx = (minx + maxx) / 2;
+      minx = cx - MINW / 2;
+      w = MINW;
+    }
+    const MINH = 760;
+    if (h < MINH) {
+      const cy = (miny + maxy) / 2;
+      miny = cy - MINH / 2;
+      h = MINH;
+    }
+    return { x: minx, y: miny, w, h };
+  }, [regions, filtered]);
+
   if (loading) return <div className="chart-skeleton" style={{ height: 520 }} />;
   if (error || !data || data.nodes.length === 0)
     return <div className="chart-error mono">CHYBA · DÁTA NEDOSTUPNÉ</div>;
+
+  const moveHover = (e: React.MouseEvent, p: Placed) => {
+    const rect = stageRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const x = Math.min(e.clientX - rect.left + 14, rect.width - 180);
+    const y = Math.min(e.clientY - rect.top + 14, rect.height - 70);
+    setHover({ p, x: Math.max(0, x), y: Math.max(0, y) });
+  };
 
   // gutter labels (full Slovak words + leader) for the regions actually present
   const present = new Set(base.map((p) => p.region));
@@ -149,10 +245,10 @@ export default function IpMap() {
     <div className="ipm">
       <div className="ipm-main">
         {/* ── MAP (left) ── */}
-        <div className="ipm-mapcol">
+        <div className="ipm-mapcol" ref={stageRef}>
           <svg
             className="ipm-svg"
-            viewBox={`0 0 ${TOTAL_W} ${H}`}
+            viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`}
             role="img"
             aria-label="IP entity podľa regiónu na reálnej UK mape"
           >
@@ -183,8 +279,9 @@ export default function IpMap() {
               strokeDasharray="8 6"
             />
 
-            {/* leader lines + gutter labels */}
-            {slots.map((s) => (
+            {/* leader lines + gutter labels — only in the full (no-zoom) view;
+                when zoomed to a region the chips show the selection */}
+            {regions.size === 0 && slots.map((s) => (
               <g key={s.name}>
                 <line
                   x1={s.anchor === "end" ? s.labelX + 6 : s.labelX - 6}
@@ -211,6 +308,7 @@ export default function IpMap() {
               p.kind === "or" ? (
                 <rect
                   key={p.node.id}
+                  className="ipm-marker"
                   x={p.x - p.r}
                   y={p.y - p.r}
                   width={p.r * 2}
@@ -219,6 +317,8 @@ export default function IpMap() {
                   fillOpacity={0.82}
                   stroke="#0B0B09"
                   strokeWidth={1.5}
+                  onMouseMove={(e) => moveHover(e, p)}
+                  onMouseLeave={() => setHover(null)}
                 >
                   <title>
                     {p.node.full_name} · OR · {p.region} ·{" "}
@@ -228,6 +328,7 @@ export default function IpMap() {
               ) : (
                 <circle
                   key={p.node.id}
+                  className="ipm-marker"
                   cx={p.x}
                   cy={p.y}
                   r={p.r}
@@ -235,6 +336,8 @@ export default function IpMap() {
                   fillOpacity={0.82}
                   stroke="#0B0B09"
                   strokeWidth={1.5}
+                  onMouseMove={(e) => moveHover(e, p)}
+                  onMouseLeave={() => setHover(null)}
                 >
                   <title>
                     {p.node.full_name} · {p.region} ·{" "}
@@ -244,6 +347,26 @@ export default function IpMap() {
               ),
             )}
           </svg>
+
+          {/* D2 — styled per-point hover tooltip (DESIGN-MANUAL §07/§13). Real
+              ip_network.json fields only: name, kind, region (+ PSČ area),
+              case count, sweet-spot 2016–19. */}
+          {hover && (
+            <div className="ipm-tip" style={{ left: hover.x, top: hover.y }}>
+              <div className="ipm-tip-name">{hover.p.node.full_name}</div>
+              <div className="ipm-tip-meta mono">
+                {IP_KIND_LABEL[hover.p.kind]} · {hover.p.region}
+                {hover.p.node.primary_region ? ` (${hover.p.node.primary_region})` : ""}
+              </div>
+              <div className="ipm-tip-row mono">
+                <span>{hover.p.node.total_cases.toLocaleString("en-GB")} prípadov</span>
+                <span className="ipm-tip-ss">
+                  sweet-spot {hover.p.node.sweet_spot_cases} ({hover.p.node.pct_sweet_spot} %)
+                </span>
+              </div>
+            </div>
+          )}
+
           {/* under the map: ONLY the source line */}
           <div className="ipm-source mono">
             Zdroj: The Gazette appointments → ip_network ({data.meta.total_ips.toLocaleString("en-GB")} entít)
@@ -345,7 +468,10 @@ export default function IpMap() {
             prípadov. Zobrazených top {TOP_N} z{" "}
             {data.nodes.length.toLocaleString("en-GB")} entít (chvost = jednotky
             prípadov). Najväčší uzol: <b>OR Nottingham (1 108)</b>. Entity s PSČ
-            mimo crosswalku sú v boxe „Ostatné".
+            mimo crosswalku sú v boxe „Ostatné". Zaškrtnutie regiónu mapu{" "}
+            <b>priblíži</b> na daný región; pri načítaní je predvolený región s
+            najviac entitami. V rámci regiónu sú body rozložené do špirály
+            (pozícia je približná, nie presná adresa).
           </div>
         </div>
       </div>
