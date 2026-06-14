@@ -4,6 +4,11 @@
   display: block;
 }
 
+/* vertical stepped funnel — desktop hidden, shown ≤768 (see media query) */
+.funnel-vert {
+  display: none;
+}
+
 .funnel-stage {
   font-family: var(--font-ui);
   font-size: 12px;
@@ -125,4 +130,62 @@
 
 .funnel-gap-note b {
   color: var(--text);
+}
+
+/* ≤768 — swap the wide SVG funnel for a readable vertical stepped list */
+@media (max-width: 768px) {
+  .funnel-svg {
+    display: none;
+  }
+  .funnel-vert {
+    display: block;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .funnel-vstep {
+    padding: 2px 0;
+  }
+  .fv-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .fv-name {
+    font-family: var(--font-ui);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--text-2);
+  }
+  .fv-val {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--signal);
+    font-variant-numeric: tabular-nums;
+  }
+  .funnel-vstep.final .fv-val {
+    color: var(--gold);
+  }
+  .fv-bar {
+    display: block;
+    height: 6px;
+    margin-top: 4px;
+    background: var(--bg-2);
+  }
+  .fv-bar-fill {
+    display: block;
+    height: 100%;
+    background: var(--signal);
+  }
+  .funnel-vstep.final .fv-bar-fill {
+    background: var(--gold);
+  }
+  .fv-conn {
+    font-size: 11px;
+    color: var(--text-2);
+    text-align: center;
+    padding: 5px 0;
+  }
 }

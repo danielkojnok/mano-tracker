@@ -174,6 +174,29 @@ export default function ThesisFunnel({ values }: ThesisFunnelProps = {}) {
         })}
       </svg>
 
+      {/* ≤768: a vertical stepped funnel — the wide SVG crushes its labels on a
+          phone. Same stages/values/conversions; CSS toggles SVG ↔ this list so
+          21,716, the rates and stage names stay readable. */}
+      <ol className="funnel-vert">
+        {stages.map((s, i) => (
+          <li key={s.name} className={`funnel-vstep${isFinal(i) ? " final" : ""}`}>
+            <div className="fv-row">
+              <span className="fv-name">{s.name}</span>
+              <span className="fv-val mono">{fmtInt(s.value)}</span>
+            </div>
+            <span className="fv-bar" aria-hidden="true">
+              <span
+                className="fv-bar-fill"
+                style={{ width: `${(Math.sqrt(s.value) / Math.sqrt(maxVal)) * 100}%` }}
+              />
+            </span>
+            {i < n - 1 && (
+              <div className="fv-conn mono">{connectorNote(i, s, stages[i + 1])}</div>
+            )}
+          </li>
+        ))}
+      </ol>
+
       {/* MONEY — a separate, explicit step. Reads the SAME fields as the
           funnel's last stage and ARRCC, so it cannot disagree with it. */}
       <div className="funnel-money mono">
