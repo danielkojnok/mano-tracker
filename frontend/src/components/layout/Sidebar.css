@@ -43,7 +43,7 @@
 
 /* ≤768 — fixed BOTTOM TAB BAR (§24). All 5 pages always visible (icon + short
    label), ≥44px hit targets, active = gold. Replaces the old top scroll bar that
-   hid 2 of 5 tabs. The ticker sits just above it (Ticker.css). */
+   hid 2 of 5 tabs. Sits flush at the bottom, padded for the home-indicator. */
 @media (max-width: 768px) {
   .sidebar {
     position: fixed;
@@ -54,6 +54,7 @@
     flex-direction: row;
     justify-content: space-around;
     padding: 0;
+    padding-bottom: env(safe-area-inset-bottom);
     background: var(--bg-1);
     border-right: none;
     border-top: 1px solid var(--border-strong);

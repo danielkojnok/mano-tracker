@@ -2,8 +2,6 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  /* leave room for the fixed ticker */
-  padding-bottom: 32px;
 }
 
 .app-body {
@@ -22,17 +20,14 @@
 
 /* PART 8 / §24 — on phones the sidebar becomes a fixed BOTTOM tab bar
    (see Sidebar.css), so the body is a single column and the main content gets
-   the full width. Reserve bottom space so the fixed tab bar (~54px) + ticker
-   (~26px, lifted above the bar) never overlap content or the disclaimer. */
+   the full width. Reserve bottom space so the fixed tab bar (~54px + home-
+   indicator safe area) never overlaps content or the disclaimer. */
 @media (max-width: 768px) {
-  .app-shell {
-    padding-bottom: 0;
-  }
   .app-body {
     display: flex;
     flex-direction: column;
   }
   .app-main {
-    padding: 20px 12px 96px;
+    padding: 20px 12px calc(60px + env(safe-area-inset-bottom));
   }
 }

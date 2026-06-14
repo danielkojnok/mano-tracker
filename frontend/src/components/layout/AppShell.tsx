@@ -1,12 +1,11 @@
 import type { ReactNode } from "react";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
-import Ticker from "./Ticker";
 import FooterDisclaimer from "./FooterDisclaimer";
 import CommandPalette from "../ui/CommandPalette";
 import "./AppShell.css";
 
-/** App shell grid: header / sidebar / main / footer + fixed ticker.
+/** App shell grid: header / sidebar / main / footer.
  *  CommandPalette (⌘K) is mounted here so it's available on every page. */
 export default function AppShell({ children }: { children: ReactNode }) {
   return (
@@ -19,7 +18,6 @@ export default function AppShell({ children }: { children: ReactNode }) {
           <FooterDisclaimer />
         </main>
       </div>
-      <Ticker />
       <CommandPalette />
     </div>
   );
