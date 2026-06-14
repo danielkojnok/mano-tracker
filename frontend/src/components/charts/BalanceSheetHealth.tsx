@@ -22,15 +22,24 @@ export default function BalanceSheetHealth() {
   const breach = nd > COVENANT;
   const headroom = Math.round((COVENANT - nd) * 10) / 10;
 
-  // gauge geometry — 0 to GMAX on a horizontal bar
+  // gauge geometry — 0 to GMAX on a horizontal bar. Three label zones with
+  // clear vertical separation so nothing overlaps (the prior version mashed the
+  // current-value, covenant, and end labels into one band):
+  //   top  (y≈18)  — current ND/EBITDA marker label
+  //   bar  (y=34..46)
+  //   bot  (y≈62)  — covenant tick label + axis endpoints
   const GMAX = 5.0;
   const W = 420;
-  const H = 56;
-  const PAD = 8;
+  const H = 80;
+  const PAD = 28; // wider side padding so end labels never clip the viewBox
+  const BAR_Y = 34;
+  const BAR_H = 12;
   const trackW = W - 2 * PAD;
   const x = (v: number) => PAD + (v / GMAX) * trackW;
   const ndX = x(nd);
   const covX = x(COVENANT);
+  // Keep the current-value marker label inside the viewBox even near the ends.
+  const ndLabelX = Math.min(Math.max(ndX, PAD + 12), W - PAD - 12);
   // color: green well under, warn approaching, red breach
   const ndColor = breach ? T.down : nd >= COVENANT - 0.5 ? T.warn : T.up;
 
@@ -49,23 +58,27 @@ export default function BalanceSheetHealth() {
             <span className="bsh-badge mono bsh-badge-ok">OK · {headroom}× rezerva</span>
           )}
         </div>
-        <svg className="bsh-gauge-svg" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
+        <svg className="bsh-gauge-svg" viewBox={`0 0 ${W} ${H}`}>
           {/* track */}
-          <rect x={PAD} y={20} width={trackW} height={10} fill={T.bg2} />
+          <rect x={PAD} y={BAR_Y} width={trackW} height={BAR_H} fill={T.bg2} />
           {/* filled portion up to ND */}
-          <rect x={PAD} y={20} width={ndX - PAD} height={10} fill={ndColor} />
-          {/* covenant marker */}
-          <line x1={covX} y1={12} x2={covX} y2={38} stroke={T.down} strokeWidth={2} strokeDasharray="3 2" />
-          <text x={covX} y={50} className="bsh-tick mono" textAnchor="middle" fill={T.down}>
-            covenant {COVENANT.toFixed(1)}×
-          </text>
-          {/* ND marker label */}
-          <text x={ndX} y={14} className="bsh-tick mono" textAnchor="middle" fill={ndColor}>
+          <rect x={PAD} y={BAR_Y} width={ndX - PAD} height={BAR_H} fill={ndColor} />
+
+          {/* current value — needle through the bar + label ABOVE it */}
+          <line x1={ndX} y1={BAR_Y - 6} x2={ndX} y2={BAR_Y + BAR_H + 6} stroke={ndColor} strokeWidth={2} />
+          <text x={ndLabelX} y={BAR_Y - 11} className="bsh-tick bsh-tick-val mono" textAnchor="middle" fill={ndColor}>
             {nd.toFixed(1)}×
           </text>
-          {/* scale ends */}
-          <text x={PAD} y={50} className="bsh-tick mono" textAnchor="start">0×</text>
-          <text x={W - PAD} y={50} className="bsh-tick mono" textAnchor="end">{GMAX.toFixed(1)}×</text>
+
+          {/* covenant — dashed tick + short label BELOW the bar */}
+          <line x1={covX} y1={BAR_Y - 4} x2={covX} y2={BAR_Y + BAR_H + 4} stroke={T.down} strokeWidth={1.5} strokeDasharray="3 2" />
+          <text x={covX} y={BAR_Y + BAR_H + 18} className="bsh-tick mono" textAnchor="middle" fill={T.down}>
+            covenant {COVENANT.toFixed(1)}×
+          </text>
+
+          {/* axis endpoints — at the very corners, anchored inward */}
+          <text x={PAD} y={BAR_Y + BAR_H + 18} className="bsh-tick mono" textAnchor="middle">0×</text>
+          <text x={W - PAD} y={BAR_Y + BAR_H + 18} className="bsh-tick mono" textAnchor="middle">{GMAX.toFixed(1)}×</text>
         </svg>
       </div>
 

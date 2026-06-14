@@ -1,5 +1,5 @@
 .bsh-gauge-block {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .bsh-gauge-head {
@@ -40,13 +40,23 @@
 
 .bsh-gauge-svg {
   width: 100%;
-  height: 56px;
+  /* match the 420×80 viewBox aspect so labels are not vertically squashed;
+     preserveAspectRatio defaults to meet (no distortion). cap width so the
+     gauge does not stretch absurdly wide on large panels. */
+  max-width: 460px;
+  height: auto;
+  aspect-ratio: 420 / 80;
   display: block;
 }
 
 .bsh-tick {
-  font-size: 9px;
+  font-size: 10px;
   fill: var(--text-2);
+}
+
+/* current-value label sits above the bar — a touch bolder to read as "now" */
+.bsh-tick-val {
+  font-weight: 600;
 }
 
 .bsh-metrics {
