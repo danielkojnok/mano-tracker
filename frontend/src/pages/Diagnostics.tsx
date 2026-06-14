@@ -4,6 +4,7 @@ import FreshnessMatrix from "../components/charts/FreshnessMatrix";
 import MapeTracker from "../components/charts/MapeTracker";
 import GazetteExplorer from "../components/charts/GazetteExplorer";
 import AssumptionsTable from "../components/charts/AssumptionsTable";
+import { buildLabel } from "../lib/buildInfo";
 
 export default function Diagnostics() {
   return (
@@ -14,6 +15,9 @@ export default function Diagnostics() {
       <p className="page-subtitle">
         Vrstva dôvery — čerstvosť zdrojov, presnosť modelu, surové dáta a
         predpoklady. Bez nej je téza len tvrdenie.
+      </p>
+      <p className="diag-build mono" title="verzia nasadeného buildu — canary čerstvosti">
+        BUILD {buildLabel()}
       </p>
 
       <Panel title="Freshness matrix · zdravie zdrojov" source="tracker.db metadata · row counts">

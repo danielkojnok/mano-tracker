@@ -1,7 +1,7 @@
 .footer-disclaimer {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 16px;
   padding: 8px 16px;
   border-top: 1px solid var(--border);
   font-size: 11px;
@@ -15,4 +15,13 @@
 
 .footer-disclaimer a:hover {
   color: var(--gold-bright);
+}
+
+/* build canary — pushed to the far right, muted, never competes with text */
+.footer-build {
+  margin-left: auto;
+  color: var(--text-2);
+  opacity: 0.6;
+  font-size: 10px;
+  letter-spacing: 0.02em;
 }

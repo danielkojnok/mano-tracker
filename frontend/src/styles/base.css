@@ -84,6 +84,16 @@ textarea {
   margin-top: -8px;
 }
 
+/* build canary on the Diagnostics page — small, muted, mono */
+.diag-build {
+  margin-top: 4px;
+  margin-bottom: 20px;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--text-2);
+  opacity: 0.7;
+}
+
 /* Chart loading / error states — manual §23 */
 .chart-skeleton {
   height: 420px;
