@@ -38,6 +38,25 @@
 .bridge-table .up { color: var(--up); }
 .bridge-table .down { color: var(--down); }
 
+/* ≤768 — the table scrolls horizontally inside .panel-body (baseline). Pin the
+   first column (SCENÁR) so the row label stays visible while the values scroll.
+   Sticky cells need a SOLID background or scrolled cells bleed through. */
+@media (max-width: 768px) {
+  .bridge-table th:first-child,
+  .bridge-table td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background-color: var(--bg-1);
+    border-right: 1px solid var(--border);
+  }
+  /* the highlighted base row: bg-1 + gold-tint overlay = solid faint gold,
+     matching the row's translucent tint exactly */
+  .bridge-table .bridge-base td:first-child {
+    background-image: linear-gradient(var(--gold-tint), var(--gold-tint));
+  }
+}
+
 .bridge-caption {
   margin-top: 16px;
   padding-top: 16px;
