@@ -67,7 +67,8 @@ export default function CommandPalette() {
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
-  // global ⌘K / Ctrl+K toggle
+  // global ⌘K / Ctrl+K toggle + a custom event so a tappable trigger (the
+  // header button on mobile, where there's no keyboard) can open it too.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
@@ -77,8 +78,13 @@ export default function CommandPalette() {
         setOpen(false);
       }
     };
+    const onOpen = () => setOpen(true);
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener("mano:open-palette", onOpen);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("mano:open-palette", onOpen);
+    };
   }, []);
 
   useEffect(() => {

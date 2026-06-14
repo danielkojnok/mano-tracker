@@ -319,6 +319,7 @@ export default function IpMap() {
                   strokeWidth={1.5}
                   onMouseMove={(e) => moveHover(e, p)}
                   onMouseLeave={() => setHover(null)}
+                  onClick={(e) => moveHover(e, p)}
                 >
                   <title>
                     {p.node.full_name} · OR · {p.region} ·{" "}
@@ -338,6 +339,7 @@ export default function IpMap() {
                   strokeWidth={1.5}
                   onMouseMove={(e) => moveHover(e, p)}
                   onMouseLeave={() => setHover(null)}
+                  onClick={(e) => moveHover(e, p)}
                 >
                   <title>
                     {p.node.full_name} · {p.region} ·{" "}

@@ -19,6 +19,15 @@ export default function Header() {
           <div className="header-subtitle mono">UK INSOLVENČNÝ PREDSTIH ~25 MES.</div>
         </div>
       </div>
+      {/* mobile-only tap trigger for the ⌘K command palette (no keyboard on a
+          phone); desktop keeps the keyboard shortcut. */}
+      <button
+        className="header-cmdk mono"
+        onClick={() => window.dispatchEvent(new Event("mano:open-palette"))}
+        aria-label="Otvoriť vyhľadávanie (príkazová paleta)"
+      >
+        Hľadať
+      </button>
       <div className="header-quotes mono">
         {kpis ? (
           <>

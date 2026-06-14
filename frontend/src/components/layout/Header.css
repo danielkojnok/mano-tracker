@@ -42,6 +42,11 @@
   font-size: 12px;
 }
 
+/* command-palette tap trigger — desktop uses the ⌘K shortcut, so hide it there */
+.header-cmdk {
+  display: none;
+}
+
 /* PART 8 — let the header wrap on phones so the quotes drop to their own line
    instead of overflowing the brand. */
 @media (max-width: 768px) {
@@ -49,6 +54,23 @@
     flex-wrap: wrap;
     gap: 8px;
     padding: 8px 12px;
+  }
+  /* show the tappable search/command trigger, pushed to the right of the brand */
+  .header-cmdk {
+    display: inline-flex;
+    align-items: center;
+    margin-left: auto;
+    padding: 7px 12px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    color: var(--text-2);
+    font-size: 12px;
+    min-height: 36px;
+  }
+  .header-cmdk:hover {
+    color: var(--text);
+    border-color: var(--border-strong);
   }
   .header-wordmark {
     font-size: 14px;
